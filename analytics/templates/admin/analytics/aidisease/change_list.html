@@ -1,0 +1,68 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<div id="content-main">
+    <!-- Custom header -->
+    <div class="module" style="margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="margin: 0 0 10px 0; color: #333;">{{ cl.opts.verbose_name_plural|capfirst }}</h1>
+                <p style="margin: 0; color: #666;">
+                    Manage your AI Disease records. Total: {{ cl.result_count }} {{ cl.opts.verbose_name_plural }}
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="{% url 'admin:analytics_aidisease_upload_csv' %}" 
+                   style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: #4f46e5; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    Upload CSV
+                </a>
+                <a href="{% url 'admin:analytics_aidisease_add' %}" 
+                   style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: #10b981; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Add AI Disease
+                </a>
+                <a href="{% url 'admin:analytics_aidisease_delete_by_date' %}" 
+                   style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: #ef4444; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Delete by Date
+                </a>
+            </div>
+        </div>
+    </div>
+
+ 
+
+    <!-- Display CSV upload errors if any -->
+    {% if request.session.aidisease_csv_upload_errors %}
+        <div style="margin-bottom: 20px; padding: 16px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 4px;">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <svg style="width: 20px; height: 20px; color: #92400e; margin-right: 8px;" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <h3 style="margin: 0; color: #92400e; font-size: 16px; font-weight: 600;">CSV Upload Errors</h3>
+            </div>
+            <ul style="margin: 0; padding-left: 20px; color: #92400e; font-size: 14px;">
+                {% for error in request.session.aidisease_csv_upload_errors %}
+                    <li style="margin-bottom: 4px;">{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% if request.session.aidisease_csv_upload_errors|length > 10 %}
+                <p style="margin: 8px 0 0 0; color: #92400e; font-size: 12px; font-style: italic;">
+                    Showing first 10 errors only. There were more errors in the file.
+                </p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- Let Unfold render the table -->
+    {{ block.super }}
+</div>
+{% endblock %}

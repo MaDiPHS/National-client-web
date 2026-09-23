@@ -1,0 +1,39 @@
+{% extends "admin/change_list.html" %}
+
+{% load i18n admin_urls %}
+
+{% block content %}
+<div id="content-main">
+    <!-- Custom header -->
+    <div class="module" style="margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="margin: 0 0 10px 0; color: #333;">{{ cl.opts.verbose_name_plural|capfirst }}</h1>
+                <p style="margin: 0; color: #666;">
+                    Manage your farm records. Total: {{ cl.result_count }} {{ cl.opts.verbose_name_plural }}
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="{% url 'admin:analytics_farm_upload_csv' %}" 
+                   style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: #4f46e5; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    Upload CSV
+                </a>
+                <a href="{% url 'admin:analytics_farm_add' %}" 
+                   style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; background: #10b981; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Add Farm
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Let Unfold render the table -->
+    {{ block.super }}
+</div>
+{% endblock %}

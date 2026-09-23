@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block customHeaders %}
+<!-- Google Fonts: Open Sans & Roboto -->
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <h1>Example</h1>
+    <div class="col-md-12">
+        <!-- BEGIN: PRISE Bulletin Widget Embed -->
+        <!-- Base CDN for script loading -->
+        <div id="cabi-base-cdn" data-base-cdn-override="https://cdn.cabi.org"></div>
+
+        <!-- Widget Container -->
+        <section id="prise-bulletin-section" data-type="priseBulletinWidget">
+            <div class="cabi-widget"
+            data-widget-path="/prisebulletin"
+            data-default-settings='{
+            "widget_name": "prise-bulletin",
+            "endpoint": "/cabi_prise_bulletin/api/prise",
+            "matomo_container": "container_3YoklzED_staging_a671eb93156f25b34bf99bc8",
+            "share_url": "https://prise.org/bulletin",
+            "pre_filters": {
+                    "district":"Blantyre",
+                    "month":"01-2025",
+                    "crop":"Beans"
+                }
+            }'>
+            </div>
+        </section>
+
+        <!-- Load Widget Script -->
+        <script src="https://cdn.cabi.org/widgetsupport/load-widgets.min.js"></script>
+
+        <!-- END: PRISE Bulletin Widget Embed -->
+    </div>
+</div>
+{% endblock %}

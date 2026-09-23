@@ -1,0 +1,81 @@
+/*==============================================
+    Sliding Text
+===============================================*/
+.sliding-text {
+    position: relative;
+    display: block;
+    z-index: 3;
+}
+
+.sliding-text__inner {
+    position: relative;
+    display: block;
+    background-color: var(--fixpro-black);
+    padding: 35px 0 35px;
+}
+
+.sliding-text__list {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    flex-wrap: nowrap;
+}
+
+.sliding-text__list li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    float: left;
+    gap: 16px;
+}
+
+.sliding-text__list li+li {
+    margin-left: 16px;
+}
+
+.sliding-text__list li .icon {
+    position: relative;
+    display: block;
+}
+
+.sliding-text__list li .icon>img {
+    width: auto;
+}
+
+.sliding-text__list li>p {
+    font-size: 35px;
+    font-weight: 600;
+    line-height: 35px;
+    color: var(--fixpro-white);
+    font-family: var(--fixpro-font-two);
+    text-transform: uppercase;
+    letter-spacing: -0.72px;
+    position: relative;
+    display: block;
+    top: -1px;
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+}
+
+.sliding-text__list li:hover>p {
+    color: var(--fixpro-base);
+}
+
+/*--------------------------------------------------------------
+# Sliding Text Two
+--------------------------------------------------------------*/
+.sliding-text-two {
+    padding-top: 120px;
+}
+
+
+
+
+
+
+
+
+/*--------------------------------------------------------------
+# End
+--------------------------------------------------------------*/

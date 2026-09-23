@@ -1,0 +1,822 @@
+<!-- templates/dashboard/forecasting.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!--Page Header Start-->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+    </div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>Disease Forecasting</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'analytics:analytics_dashboard' %}">Analytics Dashboard</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>Disease Forecasting</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Page Header End-->
+
+<!--Analytics Dashboard Start -->
+<section class="analytics-dashboard">
+    <div class="container-fluid px-4">
+        <div class="analytics-dashboard__content">
+            <div class="analytics-dashboard__header mb-4">
+                <h3 class="analytics-dashboard__title">Disease Forecasting</h3>
+                <p class="analytics-dashboard__subtitle mb-0">Predict future disease trends using machine learning analysis of historical patterns</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Filter Sidebar -->
+                <div class="col-lg-3">
+                    <div class="analytics-chart-card shadow filter-card mb-4">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-sliders text-primary"></i>
+                            <h6 class="m-0 font-weight-bold text-primary">Forecast Settings</h6>
+                        </div>
+                        <div class="analytics-chart-card__body">
+                            <form method="get" id="forecast-form" class="filter-form">
+                                {{ form.as_p }}
+                                <button type="submit" class="thm-btn w-100 mt-2">
+                                    <i class="fas fa-chart-line"></i> Generate Forecast
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- About Forecasting Card -->
+                    <div class="analytics-chart-card shadow">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-circle-info text-info"></i>
+                            <h6 class="m-0 font-weight-bold text-primary">About Forecasting</h6>
+                        </div>
+                        <div class="analytics-chart-card__body">
+                            <ul class="feature-list list-unstyled">
+                                <li class="feature-list__item">
+                                    <i class="fas fa-robot feature-list__icon text-primary"></i>
+                                    <span>Uses polynomial regression models</span>
+                                </li>
+                                <li class="feature-list__item">
+                                    <i class="fas fa-database feature-list__icon text-primary"></i>
+                                    <span>Combines AI and Human Detected Disease data</span>
+                                </li>
+                                <li class="feature-list__item">
+                                    <i class="fas fa-brain feature-list__icon text-primary"></i>
+                                    <span>Automatically selects best fitting model</span>
+                                </li>
+                                <li class="feature-list__item">
+                                    <i class="fas fa-chart-bar feature-list__icon text-primary"></i>
+                                    <span>Provides confidence intervals</span>
+                                </li>
+                                <li class="feature-list__item">
+                                    <i class="fas fa-lightbulb feature-list__icon text-primary"></i>
+                                    <span>Generates actionable recommendations</span>
+                                </li>
+                            </ul>
+                            <p class="small text-muted mt-3 mb-0">
+                                <i class="fas fa-info-circle"></i> Minimum 4 months of data required for forecast.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forecast Results -->
+                <div class="col-lg-9">
+                    {% if error %}
+                    <div class="analytics-alert analytics-alert--warning mb-4">
+                        <i class="fas fa-triangle-exclamation"></i>
+                        <span>{{ error }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if forecast_data %}
+                    {% with data=forecast_data|safe %}
+                    <script>
+                        var forecastData = {{ forecast_data|safe }};
+                    </script>
+                    
+                    <!-- Metadata Cards -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card stat-card--primary">
+                                <div class="stat-card__icon">
+                                    <i class="fas fa-bullseye"></i>
+                                </div>
+                                <div class="stat-card__content">
+                                    <span class="stat-card__label">Model Accuracy</span>
+                                    <span class="stat-card__value">{{ forecast_data_dict.metadata.model_accuracy }}%</span>
+                                    <small class="stat-card__sub">{{ forecast_data_dict.metadata.model_used }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card {% if forecast_data_dict.metadata.trend_direction == 'increasing' %}stat-card--danger{% else %}stat-card--success{% endif %}">
+                                <div class="stat-card__icon">
+                                    <i class="fas fa-arrow-trend-up"></i>
+                                </div>
+                                <div class="stat-card__content">
+                                    <span class="stat-card__label">Trend Direction</span>
+                                    <span class="stat-card__value">{{ forecast_data_dict.metadata.trend_direction|title }}</span>
+                                    <small class="stat-card__sub">Strength: {{ forecast_data_dict.metadata.trend_strength }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card stat-card--info">
+                                <div class="stat-card__icon">
+                                    <i class="fas fa-clock-rotate-left"></i>
+                                </div>
+                                <div class="stat-card__content">
+                                    <span class="stat-card__label">Historical Total</span>
+                                    <span class="stat-card__value">{{ forecast_data_dict.historical.total_cases }}</span>
+                                    <small class="stat-card__sub">Over {{ forecast_data_dict.historical.dates|length }} months</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 col-6">
+                            <div class="stat-card stat-card--warning">
+                                <div class="stat-card__icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-card__content">
+                                    <span class="stat-card__label">Predicted Total</span>
+                                    <span class="stat-card__value">{{ forecast_data_dict.forecast.total_predicted }}</span>
+                                    <small class="stat-card__sub">Next 12 months</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Forecast Chart -->
+                    <div class="analytics-chart-card shadow mb-4">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                Disease Forecast: {{ forecast_data_dict.metadata.disease }} in {{ forecast_data_dict.metadata.district }}
+                            </h6>
+                            <span class="badge bg-primary">12-Month Projection</span>
+                        </div>
+                        <div class="analytics-chart-card__body chart-card-body">
+                            <canvas id="forecastChart" height="300"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Recommendations & Monthly Breakdown -->
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="analytics-chart-card shadow">
+                                <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                                    <i class="fas fa-lightbulb text-success"></i>
+                                    <h6 class="m-0 font-weight-bold text-success">Recommendations</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    <ul class="recommendation-list list-unstyled">
+                                        {% for rec in forecast_data_dict.recommendations %}
+                                        <li class="recommendation-list__item">
+                                            <span class="recommendation-list__icon">
+                                                <i class="fas fa-check-circle"></i>
+                                            </span>
+                                            <span>{{ rec|safe }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="analytics-chart-card shadow">
+                                <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                                    <i class="fas fa-table text-info"></i>
+                                    <h6 class="m-0 font-weight-bold text-info">Monthly Breakdown</h6>
+                                </div>
+                                <div class="analytics-chart-card__body p-0">
+                                    <div class="table-responsive">
+                                        <table class="forecast-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Month</th>
+                                                    <th>Historical</th>
+                                                    <th>Forecast</th>
+                                                    <th>Range</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for date in forecast_data_dict.historical.dates|slice:"-6:" %}
+                                                <tr>
+                                                    <td>{{ date }}</td>
+                                                    <td>{{ forecast_data_dict.historical.counts|slice:"-6:"|slice:forloop.counter0|first }}</td>
+                                                    <td>-</td>
+                                                    <td>-</td>
+                                                </tr>
+                                                {% endfor %}
+                                                
+                                                {% for date in forecast_data_dict.forecast.dates|slice:":6" %}
+                                                <tr class="forecast-row">
+                                                    <td>{{ date }}</td>
+                                                    <td>-</td>
+                                                    <td>{{ forecast_data_dict.forecast.counts|slice:":6"|slice:forloop.counter0|first }}</td>
+                                                    <td>
+                                                        {{ forecast_data_dict.forecast.confidence_intervals.lower|slice:":6"|slice:forloop.counter0|first }} - 
+                                                        {{ forecast_data_dict.forecast.confidence_intervals.upper|slice:":6"|slice:forloop.counter0|first }}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script>
+                        // Create forecast chart
+                        new Chart(document.getElementById('forecastChart'), {
+                            type: 'line',
+                            data: {
+                                labels: [...forecastData.historical.dates, ...forecastData.forecast.dates],
+                                datasets: [
+                                    {
+                                        label: 'Historical',
+                                        data: [...forecastData.historical.counts, ...Array(forecastData.forecast.dates.length).fill(null)],
+                                        borderColor: '#4e73df',
+                                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                                        tension: 0.1,
+                                        pointRadius: 4,
+                                        pointBackgroundColor: '#4e73df',
+                                        pointBorderColor: '#fff',
+                                        pointBorderWidth: 2
+                                    },
+                                    {
+                                        label: 'Forecast',
+                                        data: [...Array(forecastData.historical.dates.length).fill(null), ...forecastData.forecast.counts],
+                                        borderColor: '#e74a3b',
+                                        backgroundColor: 'rgba(231, 74, 59, 0.1)',
+                                        borderDash: [5, 5],
+                                        tension: 0.1,
+                                        pointRadius: 4,
+                                        pointBackgroundColor: '#e74a3b',
+                                        pointBorderColor: '#fff',
+                                        pointBorderWidth: 2
+                                    },
+                                    {
+                                        label: 'Upper Bound',
+                                        data: [...Array(forecastData.historical.dates.length).fill(null), ...forecastData.forecast.confidence_intervals.upper],
+                                        borderColor: 'rgba(231, 74, 59, 0.3)',
+                                        backgroundColor: 'rgba(231, 74, 59, 0.05)',
+                                        borderDash: [2, 2],
+                                        pointRadius: 0,
+                                        fill: '+1'
+                                    },
+                                    {
+                                        label: 'Lower Bound',
+                                        data: [...Array(forecastData.historical.dates.length).fill(null), ...forecastData.forecast.confidence_intervals.lower],
+                                        borderColor: 'rgba(231, 74, 59, 0.3)',
+                                        backgroundColor: 'rgba(231, 74, 59, 0.05)',
+                                        borderDash: [2, 2],
+                                        pointRadius: 0,
+                                        fill: false
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false
+                                },
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                        labels: {
+                                            usePointStyle: true,
+                                            pointStyle: 'circle',
+                                            padding: 20
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(255,255,255,0.9)',
+                                        titleColor: '#212529',
+                                        bodyColor: '#5a5c69',
+                                        borderColor: '#e3e6f0',
+                                        borderWidth: 1,
+                                        cornerRadius: 8,
+                                        padding: 12,
+                                        callbacks: {
+                                            label: function(context) {
+                                                if (context.parsed.y !== null) {
+                                                    return context.dataset.label + ': ' + Math.round(context.parsed.y);
+                                                }
+                                                return context.dataset.label + ': N/A';
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(0,0,0,0.05)'
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Number of Cases',
+                                            color: '#5a5c69'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Month',
+                                            color: '#5a5c69'
+                                        },
+                                        ticks: {
+                                            maxTicksLimit: 20,
+                                            maxRotation: 45,
+                                            minRotation: 0
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                    {% endwith %}
+                    {% else %}
+                    <div class="analytics-empty-state">
+                        <i class="fas fa-chart-line analytics-empty-state__icon"></i>
+                        <h5 class="analytics-empty-state__title">Select Forecast Parameters</h5>
+                        <p class="analytics-empty-state__text mb-3">Choose a district and disease from the sidebar, then click "Generate Forecast" to view predictions.</p>
+                        <div class="analytics-empty-state__features">
+                            <span class="feature-badge">
+                                <i class="fas fa-robot"></i> ML-Powered
+                            </span>
+                            <span class="feature-badge">
+                                <i class="fas fa-chart-bar"></i> 12-Month Outlook
+                            </span>
+                            <span class="feature-badge">
+                                <i class="fas fa-shield"></i> Confidence Intervals
+                            </span>
+                            <span class="feature-badge">
+                                <i class="fas fa-lightbulb"></i> Actionable Insights
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Analytics Dashboard End-->
+
+{% block extra_js %}
+<script>
+    // Handle chart responsiveness
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            // Force chart resize when tab becomes visible
+            const chart = Chart.getChart('forecastChart');
+            if (chart) {
+                setTimeout(function() {
+                    chart.resize();
+                }, 200);
+            }
+        }
+    });
+
+    // Ensure chart resizes on window load
+    window.addEventListener('load', function () {
+        const chart = Chart.getChart('forecastChart');
+        if (chart) {
+            setTimeout(function() {
+                chart.resize();
+            }, 300);
+        }
+    });
+</script>
+{% endblock %}
+
+<style>
+/* Shared analytics styling */
+.analytics-dashboard {
+    padding: 50px 0 80px;
+}
+
+.analytics-dashboard__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.analytics-dashboard__subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.analytics-chart-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+.analytics-chart-card:hover {
+    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2) !important;
+}
+
+.analytics-chart-card__header {
+    flex: 0 0 auto;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.9rem 1.25rem;
+}
+
+.analytics-chart-card__body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Filter card overflow fix for dropdowns */
+.filter-card,
+.filter-card .analytics-chart-card__body {
+    overflow: visible;
+}
+
+.shadow { box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important; }
+.text-primary { color: #4e73df !important; }
+.text-info { color: #36b9cc !important; }
+.text-success { color: #1cc88a !important; }
+.font-weight-bold { font-weight: 700 !important; }
+
+/* Filter form styling */
+.filter-form p { margin-bottom: 1rem; }
+
+.filter-form label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #5a5c69;
+    margin-bottom: 0.35rem;
+}
+
+.filter-form input,
+.filter-form select,
+.filter-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d3e2;
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+    background: #fff;
+    color: #3a3b45;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.filter-form input:focus,
+.filter-form select:focus,
+.filter-form textarea:focus {
+    outline: none;
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+}
+
+/* Button styling */
+.thm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    background: #4e73df;
+    color: #fff;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.thm-btn:hover {
+    background: #2e59d9;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 0.75rem rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn:active {
+    transform: translateY(0);
+}
+
+/* Feature list */
+.feature-list {
+    margin: 0;
+    padding: 0;
+}
+
+.feature-list__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #f1f1f5;
+    font-size: 0.9rem;
+    color: #5a5c69;
+}
+
+.feature-list__item:last-child {
+    border-bottom: none;
+}
+
+.feature-list__icon {
+    width: 20px;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+/* Stat cards */
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    transition: all 0.3s ease;
+    border-left: 3px solid #4e73df;
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.25rem 2rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.stat-card--primary { border-left-color: #4e73df; }
+.stat-card--danger { border-left-color: #e74a3b; }
+.stat-card--success { border-left-color: #1cc88a; }
+.stat-card--info { border-left-color: #36b9cc; }
+.stat-card--warning { border-left-color: #f6c23e; }
+
+.stat-card__icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.1);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.stat-card--danger .stat-card__icon { 
+    background: rgba(231, 74, 59, 0.1);
+    color: #e74a3b;
+}
+.stat-card--success .stat-card__icon { 
+    background: rgba(28, 200, 138, 0.1);
+    color: #1cc88a;
+}
+.stat-card--info .stat-card__icon { 
+    background: rgba(54, 185, 204, 0.1);
+    color: #36b9cc;
+}
+.stat-card--warning .stat-card__icon { 
+    background: rgba(246, 194, 62, 0.1);
+    color: #f6c23e;
+}
+
+.stat-card__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-card__label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #858796;
+    font-weight: 600;
+}
+
+.stat-card__value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #212529;
+    line-height: 1.2;
+}
+
+.stat-card__sub {
+    display: block;
+    font-size: 0.7rem;
+    color: #858796;
+    margin-top: 0.15rem;
+}
+
+/* Chart body */
+.chart-card-body {
+    padding: 1.25rem !important;
+    min-height: 300px;
+}
+
+/* Recommendation list */
+.recommendation-list {
+    margin: 0;
+    padding: 0;
+}
+
+.recommendation-list__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid #f1f1f5;
+    font-size: 0.9rem;
+    color: #3a3b45;
+    line-height: 1.5;
+}
+
+.recommendation-list__item:last-child {
+    border-bottom: none;
+}
+
+.recommendation-list__icon {
+    color: #1cc88a;
+    font-size: 0.9rem;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+}
+
+/* Forecast table */
+.forecast-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.forecast-table thead {
+    background: #f8f9fc;
+}
+
+.forecast-table th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #5a5c69;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid #e3e6f0;
+}
+
+.forecast-table td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid #f1f1f5;
+    color: #3a3b45;
+}
+
+.forecast-table .forecast-row {
+    background: rgba(231, 74, 59, 0.03);
+}
+
+.forecast-table .forecast-row td:first-child {
+    font-weight: 600;
+}
+
+/* Alerts */
+.analytics-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.analytics-alert--warning {
+    background: rgba(246, 194, 62, 0.1);
+    color: #8a6d1a;
+    border: 1px solid rgba(246, 194, 62, 0.25);
+}
+
+.analytics-alert--danger {
+    background: rgba(231, 74, 59, 0.1);
+    color: #a5291d;
+    border: 1px solid rgba(231, 74, 59, 0.25);
+}
+
+/* Empty state */
+.analytics-empty-state {
+    text-align: center;
+    padding: 4rem 1.5rem;
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+}
+
+.analytics-empty-state__icon {
+    font-size: 2.5rem;
+    color: #c3c6d4;
+    margin-bottom: 1rem;
+}
+
+.analytics-empty-state__title {
+    font-weight: 700;
+    color: #3a3b45;
+    font-size: 1.15rem;
+}
+
+.analytics-empty-state__text {
+    color: #858796;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.analytics-empty-state__features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.feature-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    background: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: #5a5c69;
+}
+
+.feature-badge i {
+    color: #4e73df;
+}
+
+/* Badge */
+.badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+.badge-primary {
+    background: #4e73df;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .analytics-dashboard { padding: 30px 0 50px; }
+    .stat-card { padding: 1rem; }
+    .stat-card__value { font-size: 1.2rem; }
+}
+
+@media (max-width: 576px) {
+    .analytics-dashboard { padding: 20px 0 30px; }
+    .analytics-chart-card__body { padding: 1rem; }
+    .stat-card { flex-direction: column; text-align: center; }
+    .stat-card__icon { width: 36px; height: 36px; font-size: 0.9rem; }
+    .stat-card__value { font-size: 1.1rem; }
+    .chart-card-body { min-height: 200px; }
+    .forecast-table { font-size: 0.75rem; }
+    .forecast-table th, .forecast-table td { padding: 0.4rem 0.6rem; }
+}
+</style>
+
+{% endblock %}

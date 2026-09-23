@@ -1,0 +1,223 @@
+/*==============================================
+    FAQ One
+===============================================*/
+.faq-one {
+    position: relative;
+    display: block;
+    padding: 120px 0 120px;
+    z-index: 1;
+}
+
+.faq-one__left {
+    position: relative;
+    display: block;
+    margin-right: 20px;
+}
+
+.faq-one__img-box {
+    position: relative;
+    display: block;
+}
+
+.faq-one__img {
+    position: relative;
+    display: block;
+}
+
+.faq-one__img img {
+    width: 100%;
+    border-radius: var(--fixpro-bdr-radius);
+}
+
+.faq-one__ratting-box {
+    position: absolute;
+    left: 80px;
+    right: 80px;
+    bottom: 0;
+    background-color: var(--fixpro-black);
+    text-align: center;
+    border: 5px solid rgba(var(--fixpro-base-rgb), .70);
+    border-radius: var(--fixpro-bdr-radius);
+    padding: 30px 30px 30px;
+}
+
+.faq-one__ratting {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.faq-one__ratting span {
+    position: relative;
+    display: inline-block;
+    font-size: 16px;
+    color: var(--fixpro-base);
+}
+
+.faq-one__ratting-text {
+    margin-top: 17px;
+    font-weight: 500;
+    color: rgba(var(--fixpro-white-rgb), .80);
+}
+
+.faq-one__ratting-text span {
+    font-family: var(--fixpro-font) !important;
+    color: var(--fixpro-base);
+    font-weight: 700;
+}
+
+.faq-one__shape-1 {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 300px;
+    height: 300px;
+    background-color: rgba(var(--fixpro-base-rgb), .20);
+    border-radius: 25px;
+    animation: leftRight 4s ease-in-out infinite;
+    z-index: -1;
+}
+
+.faq-one__shape-2 {
+    position: absolute;
+    bottom: 0;
+    right: -30px;
+    width: 10px;
+    height: 200px;
+    background-color: var(--fixpro-black);
+    border-radius: 10px;
+}
+
+.faq-one__right {
+    position: relative;
+    display: block;
+    margin-left: 70px;
+}
+
+.faq-one__right .section-title {
+    margin-bottom: 40px;
+}
+
+.faq-one-accrodion .accrodion {
+    position: relative;
+    display: block;
+    background-color: var(--fixpro-primary);
+    border-radius: var(--fixpro-bdr-radius);
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+}
+
+.faq-one-accrodion .accrodion-title {
+    position: relative;
+    display: block;
+    cursor: pointer;
+    padding: 23px 30px 24px;
+    transition: all 200ms linear;
+    transition-delay: 0.1s;
+    padding-right: 25px;
+}
+
+.faq-one-accrodion .accrodion-title h4 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 20px;
+    color: var(--fixpro-black);
+    position: relative;
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+}
+
+.faq-one-accrodion .accrodion.active .accrodion-title h4 {
+    color: var(--fixpro-base);
+}
+
+.faq-one-accrodion .accrodion+.accrodion {
+    margin-top: 20px;
+}
+
+.faq-one-accrodion .accrodion-title h4::before {
+    content: "\e927";
+    font-family: 'icomoon' !important;
+    font-size: 15px;
+    color: var(--fixpro-black);
+    position: absolute;
+    top: 50%;
+    right: 0;
+    line-height: 15px;
+    border-radius: 50%;
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+    text-align: center;
+    width: 22px;
+    height: 22px;
+}
+
+.faq-one-accrodion .accrodion.active .accrodion-title h4::before {
+    content: "\e924";
+    color: var(--fixpro-base);
+}
+
+.faq-one-accrodion .accrodion-content {
+    position: relative;
+    padding-bottom: 23px;
+    padding-left: 30px;
+    padding-right: 35px;
+}
+
+.faq-one-accrodion .accrodion-content p {
+    margin: 0;
+}
+
+.faq-one__bottom {
+    position: relative;
+    display: block;
+    text-align: center;
+    margin-top: 63px;
+}
+
+.faq-one__bottom-text {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 28px;
+    color: var(--fixpro-black);
+    margin-bottom: 25px;
+}
+
+.faq-one__bottom-btn {
+    position: relative;
+    display: block;
+}
+
+/*--------------------------------------------------------------
+# Faq Page
+--------------------------------------------------------------*/
+.faq-page {
+    padding: 120px 0 100px;
+}
+
+.faq-page .faq-page__single {
+    margin-bottom: 20px;
+}
+
+
+
+
+
+
+
+
+
+
+/*--------------------------------------------------------------
+# End
+--------------------------------------------------------------*/

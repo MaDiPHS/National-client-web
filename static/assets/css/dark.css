@@ -1,0 +1,183 @@
+body,
+body.boxed-wrapper .page-wrapper,
+.main-slider__shape-3,
+.stricky-header.main-menu {
+    background-color: var(--fixpro-black);
+}
+
+
+
+.main-menu__wrapper {
+    border-bottom: 1px solid rgba(var(--fixpro-white-rgb), .10);
+}
+
+.about-one__experience-box,
+.services-one__single,
+.blog-one__content {
+    background-color: var(--fixpro-black);
+}
+
+
+.feature-one__single,
+.why-choose-one__list li,
+.video-one__contact-box,
+.pricing-one__single {
+    background-color: #002335;
+    box-shadow: none;
+}
+
+
+
+.main-menu .main-menu__list>li>a,
+.stricky-header .main-menu__list>li>a,
+.main-menu .main-menu__list>li.dropdown>a:after,
+.main-menu__call-number a,
+.main-menu__search,
+.main-menu__cart,
+.thm-btn,
+.main-slider__title,
+.section-title__title,
+.feature-one__title a,
+.feature-one__read-more a,
+.about-one__count-box h3,
+.about-one__count-box span,
+.about-one__points li .content h4,
+.about-one__video-text,
+.services-one__title a,
+.services-one__read-more,
+.why-choose-one__list li .content h3,
+.team-one__title a,
+.pricing-one__title,
+.blog-one__title a,
+.blog-one__read-more a {
+    color: var(--fixpro-white);
+}
+
+.main-menu .main-menu__list>li.current>a::after,
+.main-menu .main-menu__list>li:hover>a::after,
+.stricky-header .main-menu__list>li.current>a::after,
+.stricky-header .main-menu__list>li:hover>a::after {
+    color: var(--fixpro-base);
+}
+
+
+
+
+.main-slider__text,
+.main-menu__call-sub-title,
+.feature-one__text,
+.about-one__experience-text,
+.about-one__text,
+.about-one__points li .content p,
+.about-one__points-two li p,
+.services-one__text,
+.services-one__single-text,
+.why-choose-one__text,
+.why-choose-one__list li .content p,
+.team-one__sub-title,
+.pricing-one__price span,
+.pricing-one__price-list li p {
+    color: rgba(var(--fixpro-white-rgb), .70);
+}
+
+
+
+
+
+
+
+.thm-btn::before,
+.thm-btn::after {
+    background-color: var(--fixpro-white);
+}
+
+.thm-btn:hover {
+    color: var(--fixpro-black);
+}
+
+.main-menu__call-icon:hover {
+    background-color: var(--fixpro-white);
+    color: var(--fixpro-black);
+}
+
+
+.about-one__img-2>img {
+    border: 20px solid #002335;
+}
+
+.about-one__points li:hover .icon {
+    background-color: var(--fixpro-white);
+}
+
+.about-one__points li:hover .icon span {
+    color: var(--fixpro-black);
+}
+
+.about-one__video-icon:hover {
+    background-color: var(--fixpro-white);
+    color: var(--fixpro-black);
+}
+
+.services-one__carousel.owl-theme .owl-nav .owl-next:hover,
+.services-one__carousel.owl-theme .owl-nav .owl-prev:hover {
+    background-color: var(--fixpro-white);
+    color: var(--fixpro-black);
+}
+
+.services-one__single:hover .services-one__icon {
+    background-color: var(--fixpro-white);
+}
+
+.services-one__single:hover .services-one__icon span {
+    color: var(--fixpro-black);
+}
+
+.services-one__shape-1,
+.services-one__shape-2,
+.brand-one__img>img {
+    filter: invert(1);
+}
+
+.why-choose-one__video-icon {
+    color: var(--fixpro-white);
+    background-color: var(--fixpro-black);
+}
+
+.counter-one,
+.team-one__content,
+.blog-one {
+    background-color: #002335;
+}
+
+.video-one-contact__input-box input[type="text"],
+.video-one-contact__input-box input[type="email"],
+.video-one-contact__input-box .nice-select,
+.video-one-contact__input-box textarea {
+    border: 1px solid rgba(var(--fixpro-white-rgb), .10);
+}
+
+.brand-one {
+    border-top: 1px solid rgba(var(--fixpro-white-rgb), .10);
+}
+
+.pricing-one__title-box {
+    border-bottom: 1px solid rgba(var(--fixpro-white-rgb), .10);
+}
+
+
+.main-menu .mobile-nav__toggler:hover {
+    color: var(--fixpro-white);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* End */

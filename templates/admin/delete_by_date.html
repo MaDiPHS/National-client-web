@@ -1,0 +1,200 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .delete-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .delete-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .delete-header h1 {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #991b1b;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .warning-box {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            border-left: 4px solid #dc2626;
+            padding: 1.5rem;
+            border-radius: 0.375rem;
+            margin-bottom: 2rem;
+        }
+        
+        .warning-box h3 {
+            color: #991b1b;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .date-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .record-count {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <div class="delete-header">
+        <h1>🗑️ Delete Records by Date</h1>
+        <p>Select a date to delete all {{ opts.verbose_name_plural|lower }} records for that date.</p>
+        
+        <a href="{% url back_url %}" class="back-link">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Back to {{ opts.verbose_name_plural|lower }} list
+        </a>
+    </div>
+    
+    <div class="warning-box">
+        <h3>
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            Warning: This action cannot be undone!
+        </h3>
+        <p class="text-sm text-gray-700">
+            All {{ opts.verbose_name_plural|lower }} records for the selected date will be permanently deleted.
+            This action cannot be reversed.
+        </p>
+    </div>
+    
+    <form method="post" id="delete-form">
+        {% csrf_token %}
+        
+        <div class="mb-4">
+            <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
+                Select Date
+            </label>
+            <input type="date" id="date" name="date" class="date-input" required>
+            <p class="text-sm text-gray-500 mt-1">
+                Select the date for which you want to delete all records.
+            </p>
+        </div>
+        
+        <div class="record-count" id="record-count">
+            <p class="text-sm">
+                <span id="count-number">0</span> records found for selected date.
+            </p>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="{% url back_url %}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                Cancel
+            </a>
+            <button type="submit" id="delete-button" 
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    disabled>
+                Delete Records
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('date');
+        const recordCountDiv = document.getElementById('record-count');
+        const countNumber = document.getElementById('count-number');
+        const deleteButton = document.getElementById('delete-button');
+        
+        // Set today's date as default
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+        
+        // Fetch record count when date changes
+        dateInput.addEventListener('change', function() {
+            const selectedDate = this.value;
+            
+            if (!selectedDate) {
+                recordCountDiv.style.display = 'none';
+                deleteButton.disabled = true;
+                return;
+            }
+            
+            // Fetch record count via AJAX
+            fetch(`{% url 'admin:analytics_' %}{{ opts.model_name }}_count_by_date/?date=${selectedDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.count > 0) {
+                        countNumber.textContent = data.count;
+                        recordCountDiv.style.display = 'block';
+                        deleteButton.disabled = false;
+                    } else {
+                        countNumber.textContent = '0';
+                        recordCountDiv.style.display = 'block';
+                        deleteButton.disabled = true;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching record count:', error);
+                    recordCountDiv.style.display = 'none';
+                    deleteButton.disabled = true;
+                });
+        });
+        
+        // Trigger change event on load
+        dateInput.dispatchEvent(new Event('change'));
+        
+        // Add confirmation before submitting
+        const deleteForm = document.getElementById('delete-form');
+        deleteForm.addEventListener('submit', function(e) {
+            const selectedDate = dateInput.value;
+            const recordCount = parseInt(countNumber.textContent) || 0;
+            
+            if (recordCount === 0) {
+                e.preventDefault();
+                alert('No records to delete for selected date.');
+                return;
+            }
+            
+            const confirmation = confirm(
+                `Are you sure you want to delete ${recordCount} records for ${selectedDate}?\n\n` +
+                'This action cannot be undone!'
+            );
+            
+            if (!confirmation) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

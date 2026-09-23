@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+
+<h2 class="mb-4">Compare Disease Patterns Across Periods</h2>
+
+<form method="get" id="compare-form">
+
+<div class="row">
+
+    <!-- Period 1 -->
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Period 1</h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    {{ form1.district.label_tag }}
+                    {{ form1.district }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form1.start_date.label_tag }}
+                    {{ form1.start_date }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form1.end_date.label_tag }}
+                    {{ form1.end_date }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form1.disease.label_tag }}
+                    {{ form1.disease }}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Period 2 -->
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Period 2</h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    {{ form2.district.label_tag }}
+                    {{ form2.district }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form2.start_date.label_tag }}
+                    {{ form2.start_date }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form2.end_date.label_tag }}
+                    {{ form2.end_date }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form2.disease.label_tag }}
+                    {{ form2.disease }}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-12 text-center">
+        <button type="submit" class="btn btn-primary btn-lg">
+            Compare Periods
+        </button>
+    </div>
+</div>
+
+</form>
+ 
+    {% if period1_data and period2_data %}
+    <!-- Comparison Summary Cards -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Total Records</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <h3>{{ period1_data.summary.total_records }}</h3>
+                            <small>Period 1</small>
+                        </div>
+                        <div class="col-6">
+                            <h3>{{ period2_data.summary.total_records }}</h3>
+                            <small>Period 2</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <p class="{% if comparison_stats.record_difference > 0 %}text-success{% else %}text-danger{% endif %}">
+                        {% if comparison_stats.record_difference > 0 %}+{% endif %}{{ comparison_stats.record_difference }} 
+                        ({{ comparison_stats.record_percent_change|floatformat:1 }}%)
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Unique Diseases</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <h3>{{ period1_data.summary.unique_diseases }}</h3>
+                            <small>Period 1</small>
+                        </div>
+                        <div class="col-6">
+                            <h3>{{ period2_data.summary.unique_diseases }}</h3>
+                            <small>Period 2</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <p>Change: {{ comparison_stats.disease_difference }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Most Changed Disease</h5>
+                    <h4>{{ comparison_stats.most_changed_disease|default:"N/A" }}</h4>
+                    <p class="{% if comparison_stats.most_changed_value > 0 %}text-success{% else %}text-danger{% endif %}">
+                        Change: {{ comparison_stats.most_changed_value }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Period 1: Disease Distribution ({{ period1_data.district }})</h5>
+                    <small>{{ period1_data.start_date }} to {{ period1_data.end_date }}</small>
+                </div>
+                <div class="card-body">
+                    <canvas id="diseaseChart1"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Period 2: Disease Distribution ({{ period2_data.district }})</h5>
+                    <small>{{ period2_data.start_date }} to {{ period2_data.end_date }}</small>
+                </div>
+                <div class="card-body">
+                    <canvas id="diseaseChart2"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Comparison Chart -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Monthly Trends Comparison</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="comparisonTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+document.getElementById('compare-form').addEventListener('submit', function(e) {
+    console.log('Form submitted');
+    // You can add validation here if needed
+});
+</script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var period1Data = {{ period1_data|safe }};
+        var period2Data = {{ period2_data|safe }};
+        
+        // Chart 1 - Period 1 Disease Distribution
+        new Chart(document.getElementById('diseaseChart1'), {
+            type: 'pie',
+            data: {
+                labels: period1Data.disease_distribution.map(d => d.original_disease || 'Unknown'),
+                datasets: [{
+                    data: period1Data.disease_distribution.map(d => d.count),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                }]
+            }
+        });
+        
+        // Chart 2 - Period 2 Disease Distribution
+        new Chart(document.getElementById('diseaseChart2'), {
+            type: 'pie',
+            data: {
+                labels: period2Data.disease_distribution.map(d => d.original_disease || 'Unknown'),
+                datasets: [{
+                    data: period2Data.disease_distribution.map(d => d.count),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                }]
+            }
+        });
+        
+        // Comparison Trend Chart
+        new Chart(document.getElementById('comparisonTrendChart'), {
+            type: 'line',
+            data: {
+                labels: [...new Set([
+                    ...period1Data.monthly_trends.map(t => t.month),
+                    ...period2Data.monthly_trends.map(t => t.month)
+                ])].sort(),
+                datasets: [{
+                    label: 'Period 1',
+                    data: period1Data.monthly_trends.map(t => ({x: t.month, y: t.count})),
+                    borderColor: '#36A2EB',
+                    fill: false
+                }, {
+                    label: 'Period 2',
+                    data: period2Data.monthly_trends.map(t => ({x: t.month, y: t.count})),
+                    borderColor: '#FF6384',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Cases'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    {% endif %}
+</div>
+{% endblock %}

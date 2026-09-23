@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">AI Disease Reports</h1>
+        <a href="{% url 'analytics:analytics_dashboard' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Filter Reports</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    {{ filter.form.crop_name.label_tag }}
+                    {{ filter.form.crop_name }}
+                </div>
+                <div class="col-md-3">
+                    {{ filter.form.farm.label_tag }}
+                    {{ filter.form.farm }}
+                </div>
+                <div class="col-md-3">
+                    {{ filter.form.start_date.label_tag }}
+                    {{ filter.form.start_date }}
+                </div>
+                <div class="col-md-3">
+                    {{ filter.form.end_date.label_tag }}
+                    {{ filter.form.end_date }}
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{% url 'analytics:ai_disease_list' %}" class="btn btn-secondary">Clear Filters</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card shadow">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                Showing {{ page_obj.paginator.count }} reports
+                {% if filter.form.is_bound and filter.form.has_changed %}
+                    (filtered)
+                {% endif %}
+            </h6>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                        data-bs-toggle="dropdown">
+                    <i class="fas fa-download mr-2"></i>Export
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#" onclick="exportToCSV()">CSV</a>
+                    <a class="dropdown-item" href="#" onclick="exportToJSON()">JSON</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Crop</th>
+                            <th>Disease</th>
+                            <th>Farm</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for disease in page_obj %}
+                        <tr>
+                            <td>{{ disease.ai_disease_id }}</td>
+                            <td>
+                                <span class="badge bg-primary">{{ disease.crop_name }}</span>
+                            </td>
+                            <td>
+                                {% if disease.original_disease %}
+                                <span class="badge bg-danger">{{ disease.original_disease }}</span>
+                                {% endif %}
+                                {% if disease.changed_disease %}
+                                <br><small>Changed to: {{ disease.changed_disease }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if disease.farm %}
+                                {{ disease.farm.farm_name }}
+                                {% else %}
+                                <span class="text-muted">No farm</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if disease.location_name %}
+                                {{ disease.location_name }}
+                                {% elif disease.county %}
+                                {{ disease.county }}, {{ disease.state }}
+                                {% else %}
+                                <span class="text-muted">No location</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ disease.record_date|date:"M d, Y" }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" 
+                                        onclick="showDetails({{ disease.ai_disease_id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                No reports found with the current filters
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filter.form.is_bound %}{{ filter.form.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                            Previous
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filter.form.is_bound %}{{ filter.form.urlencode }}&{% endif %}page={{ num }}">
+                            {{ num }}
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filter.form.is_bound %}{{ filter.form.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">
+                            Next
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Report Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showDetails(diseaseId) {
+    // In a real implementation, you would fetch details via AJAX
+    // For now, we'll show a simple message
+    document.getElementById('modalBody').innerHTML = `
+        <div class="text-center">
+            <p>Loading details for report ID: ${diseaseId}</p>
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    
+    const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+    modal.show();
+    
+    // Simulate AJAX call
+    setTimeout(() => {
+        document.getElementById('modalBody').innerHTML = `
+            <p><strong>Report ID:</strong> ${diseaseId}</p>
+            <p><strong>Status:</strong> Details would be loaded via AJAX in production</p>
+            <p>This would include all fields from the model and possibly related data.</p>
+        `;
+    }, 500);
+}
+
+function exportToCSV() {
+    alert('CSV export functionality would be implemented here');
+    // Implement CSV export using the current filter parameters
+}
+
+function exportToJSON() {
+    alert('JSON export functionality would be implemented here');
+    // Implement JSON export using the current filter parameters
+}
+</script>
+
+{% endblock content %}

@@ -1,0 +1,123 @@
+{% load static %}
+
+     <footer class="site-footer">
+    <div class="site-footer__bg-color">
+        <div class="footer-widget__shape-1">
+            <img src="{% static 'assets/images/shapes/footer-widget-shape-1.png' %}" alt="">
+        </div>
+    </div>
+    <div class="container">
+        <div class="site-footer__top">
+            <div class="row">
+                <div class="col-xl-3 wow fadeInUp" data-wow-delay="100ms">
+                    <div class="footer-widget__column footer-widget__about">
+                        <div class="footer-widget__logo">
+                            <a href="{% url 'core:index' %}"><img src="{% static 'assets/images/resources/logo-white.png' %}" alt="MADIPHS"></a>
+                        </div>
+                        <p class="footer-widget__about-text">MADIPHS provides agricultural intelligence, pest and disease risk mapping, climate analytics, and data services for sustainable farming in Malawi.</p>
+                        
+                    </div>
+                </div>
+                <div class="col-xl-9">
+                    <div class="footer-widget__right">
+                        <!-- <div class="footer-widget__column footer-widget__newsletter">
+                            <div class="footer-widget__newsletter-bg" style="background-image: url({% static 'assets/images/backgrounds/footer-widget-newsletter-bg.jpg' %});">
+                            </div>
+                            <h3 class="footer-widget__newsletter-title">Subscribe To Our Agricultural Alerts<br>
+                                Get Latest Pest & Disease Updates</h3>
+                            <form class="footer-widget__newsletter-form mc-form" data-url="MC_FORM_URL" novalidate="novalidate">
+                                <div class="footer-widget__newsletter-form-input-box">
+                                    <input type="email" placeholder="Enter email for alerts" name="EMAIL">
+                                </div>
+                                <button type="submit" class="footer-widget__newsletter-btn thm-btn">Subscribe</button>
+                            </form>
+                        </div> -->
+                        <div class="footer-widget__right-bottom">
+                            <div class="row">
+                                <div class="col-xl-4 col-lg-4 col-md-4 wow fadeInUp" data-wow-delay="200ms">
+                                    <div class="footer-widget__column footer-widget__usefull-link">
+                                        <div class="footer-widget__title-box">
+                                            <h3 class="footer-widget__title">Quick Links</h3>
+                                        </div>
+                                        <div class="footer-widget__link-box">
+                                            <ul class="footer-widget__link list-unstyled">
+                                                <li><a href="{% url 'core:index' %}">About National Client</a></li>
+                                                <li><a href=" ">Analytics Dashboard</a></li>
+                                                <li><a href=" ">Risk Maps</a></li>
+                                                <li><a href=" ">Weather Forecasts</a></li>
+                                                <li><a href=" ">Contact Support</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 wow fadeInUp" data-wow-delay="300ms">
+                                    <div class="footer-widget__column footer-widget__services">
+                                        <div class="footer-widget__title-box">
+                                            <h3 class="footer-widget__title">Our Services</h3>
+                                        </div>
+                                        <ul class="footer-widget__link list-unstyled">
+                                            <li><a href=" ">Crop Analytics</a></li>
+                                            <li><a href=" ">Pest Risk Mapping</a></li>
+                                            <li><a href=" ">Disease Forecasting</a></li>
+                                            <li><a href=" ">Climate Data Services</a></li>
+                                            <li><a href=" ">CABI/PRISE Bulletins</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-lg-4 col-md-4 wow fadeInUp" data-wow-delay="400ms">
+                                    <div class="footer-widget__contact-box">
+                                        <div class="footer-widget__title-box">
+                                            <h3 class="footer-widget__title">Official Info</h3>
+                                        </div>
+                                        <ul class="footer-widget__contact list-unstyled">
+                                            <li>
+                                                <div class="icon">
+                                                    <span class="icon-phone-call"></span>
+                                                </div>
+                                                <div class="content">
+                                                    <p><a href="tel:N/A">N/A</a></p> 
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="icon">
+                                                    <span class="icon-envelope"></span>
+                                                </div>
+                                                <div class="content">
+                                                    <p><a href="mailto:info@madiphs.org">info@madiphs.org</a></p> 
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="icon">
+                                                    <span class="icon-location"></span>
+                                                </div>
+                                                <div class="content">
+                                                    <p>Lilongwe, Malawi<br>Southern Africa</p>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="site-footer__social">
+                                <a href="#"><i class="icon-facebook"></i></a>
+                                <a href="#"><i class="icon-xpa"></i></a>
+                                <a href="#"><i class="icon-link-in"></i></a>
+                                <a href="#"><i class="icon-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="site-footer__bottom">
+        <div class="container">
+            <div class="site-footer__bottom-inner">
+                <p class="site-footer__bottom-text">© 2026 by <a href="#">MADIPHS ICT Sub-committee</a> | All Rights Reserved.</p>
+                <ul class="list-unstyled site-footer__bottom-menu">
+                    <li><a href="#">Terms and Conditions</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>

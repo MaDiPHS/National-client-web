@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!--Page Header Start-->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+    </div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>Time Series Analytics</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'analytics:analytics_dashboard' %}">Analytics Dashboard</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>Time Series Analytics</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Page Header End-->
+
+<!--Analytics Dashboard Start -->
+<section class="analytics-dashboard">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12">
+                <div class="analytics-dashboard__content">
+                    <!-- Header with Filters -->
+                    <div class="analytics-dashboard__header d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <div class="analytics-dashboard__title-box">
+                            <h3 class="analytics-dashboard__title">Time Series Analytics</h3>
+                            <p class="analytics-dashboard__subtitle mb-0">Trends, seasonality, and anomalies across disease and crop reports over time</p>
+                        </div>
+                        <div class="analytics-dashboard__filter-box d-flex gap-2 flex-wrap">
+                            <select class="form-select" id="periodSelect" style="max-width: 150px;">
+                                <option value="daily" {% if request.GET.period == 'daily' %}selected{% endif %}>Daily</option>
+                                <option value="weekly" {% if request.GET.period == 'weekly' or not request.GET.period %}selected{% endif %}>Weekly</option>
+                                <option value="monthly" {% if request.GET.period == 'monthly' %}selected{% endif %}>Monthly</option>
+                                <option value="yearly" {% if request.GET.period == 'yearly' %}selected{% endif %}>Yearly</option>
+                            </select>
+                            <input type="text" class="form-control" id="cropFilter"
+                                   placeholder="Filter by crop (optional)"
+                                   value="{{ request.GET.crop_name|default:'' }}"
+                                   style="max-width: 200px;">
+                            <button class="thm-btn btn-sm" onclick="applyFilters()">Apply</button>
+                        </div>
+                    </div>
+
+                    <!-- Combined Chart -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="analytics-chart-card analytics-chart-card--tall shadow">
+                                <div class="analytics-chart-card__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Combined Time Series Analysis</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    {% if combined_time_series_chart %}
+                                        <div class="chart-container chart-container--tall">
+                                            {{ combined_time_series_chart|safe }}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-center text-muted">No data available for selected filters</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Individual Charts -->
+                    <div class="row mb-4 g-4">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="analytics-chart-card shadow h-100">
+                                <div class="analytics-chart-card__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">AI Disease Detections</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    {% if ai_time_series_chart %}
+                                        <div class="chart-container">
+                                            {{ ai_time_series_chart|safe }}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-center text-muted">No AI disease data available</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-12">
+                            <div class="analytics-chart-card shadow h-100">
+                                <div class="analytics-chart-card__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Human Detected Diseases Reports</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    {% if other_time_series_chart %}
+                                        <div class="chart-container">
+                                            {{ other_time_series_chart|safe }}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-center text-muted">No Human Detected Diseases data available</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Series Metrics -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="analytics-quick-links shadow">
+                                <div class="analytics-quick-links__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Time Series Metrics</h6>
+                                </div>
+                                <div class="analytics-quick-links__body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="metric-info-card">
+                                                <div class="metric-info-card__icon">
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                </div>
+                                                <h5 class="metric-info-card__title">Seasonal Patterns</h5>
+                                                <p class="metric-info-card__text">
+                                                    Analyze recurring patterns in disease outbreaks and crop reports
+                                                    across different seasons and time periods.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="metric-info-card">
+                                                <div class="metric-info-card__icon metric-info-card__icon--success">
+                                                    <i class="fas fa-chart-line"></i>
+                                                </div>
+                                                <h5 class="metric-info-card__title">Growth Trends</h5>
+                                                <p class="metric-info-card__text">
+                                                    Identify growth or decline trends in disease detection
+                                                    and Human Detected Diseases reporting over time.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="metric-info-card">
+                                                <div class="metric-info-card__icon metric-info-card__icon--warning">
+                                                    <i class="fas fa-triangle-exclamation"></i>
+                                                </div>
+                                                <h5 class="metric-info-card__title">Anomaly Detection</h5>
+                                                <p class="metric-info-card__text">
+                                                    Detect unusual spikes or drops in data that may indicate
+                                                    emerging threats or reporting changes.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Analytics Dashboard End-->
+
+<script>
+function applyFilters() {
+    const period = document.getElementById('periodSelect').value;
+    const crop = document.getElementById('cropFilter').value;
+    
+    const params = new URLSearchParams();
+    params.append('period', period);
+    if (crop) params.append('crop_name', crop);
+    
+    window.location.href = '?' + params.toString();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initChartResizing();
+});
+
+/**
+ * Makes Plotly charts genuinely responsive to their .chart-container,
+ * same approach used on the other analytics pages. Plotly.Plots.resize()
+ * recalculates axes/legends/margins to fit the container instead of just
+ * stretching the SVG with CSS, which avoids both overlap and cropping.
+ */
+function initChartResizing() {
+    const chartDivs = document.querySelectorAll('.chart-container .js-plotly-plot');
+
+    if (chartDivs.length === 0) {
+        return;
+    }
+
+    function resizeAllCharts() {
+        chartDivs.forEach(function (gd) {
+            if (window.Plotly) {
+                Plotly.Plots.resize(gd);
+            }
+        });
+    }
+
+    setTimeout(resizeAllCharts, 100);
+
+    let resizeTimer;
+    window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resizeAllCharts, 150);
+    });
+
+    if (window.ResizeObserver) {
+        const ro = new ResizeObserver(function () {
+            resizeAllCharts();
+        });
+        document.querySelectorAll('.chart-container').forEach(function (el) {
+            ro.observe(el);
+        });
+    }
+}
+</script>
+
+<style>
+/* Analytics Dashboard Custom Styles (shared with the other analytics pages) */
+.analytics-dashboard {
+    padding: 60px 0 80px;
+}
+
+.analytics-dashboard__header {
+    margin-bottom: 30px;
+    row-gap: 15px;
+}
+
+.analytics-dashboard__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.analytics-dashboard__subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+    max-width: 560px;
+}
+
+.analytics-dashboard__filter-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.analytics-chart-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 0.35rem;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.analytics-chart-card__header {
+    flex: 0 0 auto;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+.analytics-chart-card__body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    overflow: hidden;
+}
+
+.chart-container--tall {
+    height: 55vh;
+    min-height: 360px;
+    max-height: 480px;
+}
+
+.chart-container .js-plotly-plot,
+.chart-container .plot-container,
+.chart-container .svg-container {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.analytics-quick-links {
+    background: #fff;
+    border-radius: 0.35rem;
+    overflow: hidden;
+}
+
+.analytics-quick-links__header {
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+.analytics-quick-links__body {
+    padding: 1.25rem;
+}
+
+/* Time Series Metrics info cards */
+.metric-info-card {
+    height: 100%;
+    background: #f8f9fc;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-info-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.metric-info-card__icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(78, 115, 223, 0.12);
+    color: #4e73df;
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+}
+
+.metric-info-card__icon--success {
+    background: rgba(28, 200, 138, 0.12);
+    color: #1cc88a;
+}
+
+.metric-info-card__icon--warning {
+    background: rgba(246, 194, 62, 0.15);
+    color: #dfa312;
+}
+
+.metric-info-card__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.metric-info-card__text {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.text-primary { color: #4e73df !important; }
+.font-weight-bold { font-weight: 700 !important; }
+.shadow { box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .analytics-dashboard__header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .analytics-dashboard__filter-box {
+        margin-top: 15px;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .analytics-dashboard__filter-box select,
+    .analytics-dashboard__filter-box input {
+        max-width: 100% !important;
+        flex: 1 1 100%;
+    }
+
+    .analytics-dashboard__filter-box .thm-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .chart-container {
+        height: 260px;
+    }
+
+    .chart-container--tall {
+        height: 45vh;
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .analytics-dashboard {
+        padding: 30px 0 40px;
+    }
+
+    .chart-container {
+        height: 220px;
+    }
+
+    .chart-container--tall {
+        height: 35vh;
+        min-height: 260px;
+    }
+
+    .metric-info-card {
+        padding: 1.25rem;
+    }
+}
+</style>
+
+{% endblock content %}

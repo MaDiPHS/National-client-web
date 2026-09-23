@@ -1,0 +1,2305 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- ============================================================
+     PAGE HEADER
+============================================================ -->
+
+<section class="page-header">
+
+
+<div class="page-header__bg"
+     style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+</div>
+
+<div class="container">
+
+    <div class="page-header__inner">
+
+        <h3>About MaDiPHS</h3>
+
+        <div class="thm-breadcrumb__inner">
+
+            <ul class="thm-breadcrumb list-unstyled">
+
+                <li>
+                    <a href="{% url 'core:index' %}">
+                        Home
+                    </a>
+                </li>
+
+                <li>
+                    <span class="icon-angle-right"></span>
+                </li>
+
+                <li>
+                    About Us
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</section>
+
+<!-- ============================================================
+     ABOUT MADIPHS
+============================================================ -->
+
+<section class="madiphs-about">
+
+
+<div class="container">
+
+    <!-- INTRODUCTION -->
+
+    <div class="madiphs-intro">
+
+        <div class="madiphs-intro__content">
+
+            <span class="madiphs-label">
+                Malawi Digital Plant Health Service
+            </span>
+
+            <h3 class="madiphs-intro__title">
+                A National Digital Platform for
+                <span>Plant Health and Agriculture</span>
+            </h3>
+
+            <p class="madiphs-intro__text">
+
+                The Malawi Digital Plant Health Service
+                <strong>(MaDiPHS)</strong> is a national digital
+                agricultural plant health service designed to bring
+                together data, knowledge, analytical tools and digital
+                services to support better plant health and agricultural
+                decision-making in Malawi.
+
+            </p>
+
+            <p class="madiphs-intro__text">
+
+                The MaDiPHS National Client provides a locally adapted
+                interface through which farmers, extension workers,
+                researchers, agricultural professionals and decision
+                makers can access agricultural information, monitor
+                plant-health risks and use digital tools to support
+                informed decisions.
+
+            </p>
+
+            <div class="madiphs-intro__buttons">
+
+                <a href="{% url 'core:viamo' %}"
+                   class="thm-btn">
+
+                    <i class="fas fa-phone-alt"></i>
+
+                    Viamo 321
+
+                </a>
+
+                <a href="{% url 'madiphs_ckan:ckan' %}"
+                   class="thm-btn thm-btn--outline">
+
+                    <i class="fas fa-database"></i>
+
+                    Explore Knowledge Base
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="madiphs-intro__visual">
+
+            <div class="intro-visual-card">
+
+                <div class="intro-visual-card__icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+
+                <h5>
+                    Digital Plant Health
+                </h5>
+
+                <p>
+                    Connecting agricultural knowledge,
+                    data and digital services for Malawi.
+                </p>
+
+                <div class="intro-visual-card__stats">
+
+                    <div>
+                        <strong>National</strong>
+                        <span>Focus</span>
+                    </div>
+
+                    <div>
+                        <strong>Digital</strong>
+                        <span>Services</span>
+                    </div>
+
+                    <div>
+                        <strong>Data</strong>
+                        <span>Driven</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         WHAT IS MADIPHS
+    ===================================================== -->
+
+    <div class="madiphs-card mb-4">
+
+        <div class="madiphs-card__header">
+
+            <i class="fas fa-info-circle"></i>
+
+            <h5>
+                What is MaDiPHS?
+            </h5>
+
+        </div>
+
+        <div class="madiphs-card__body">
+
+            <p>
+
+                MaDiPHS is designed to establish a national digital
+                agricultural plant health service for Malawi. It brings
+                together information and digital systems that can help
+                identify, monitor, manage and predict agricultural pests
+                and diseases.
+
+            </p>
+
+            <p>
+
+                Rather than operating agricultural information systems
+                independently, MaDiPHS provides an environment where
+                relevant national, regional and international data,
+                knowledge and digital tools can contribute to a common
+                national service.
+
+            </p>
+
+            <p>
+
+                The National Client is intended to translate this
+                information into services that are useful to Malawian
+                farmers, extension personnel, researchers and
+                agricultural decision makers.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         OUR PURPOSE
+    ===================================================== -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-6">
+
+            <div class="purpose-card purpose-card--primary">
+
+                <div class="purpose-card__icon">
+
+                    <i class="fas fa-bullseye"></i>
+
+                </div>
+
+                <div>
+
+                    <h5>
+                        Our Goal
+                    </h5>
+
+                    <p>
+
+                        To provide a digital service that supports
+                        targeted and efficient management of pests
+                        and diseases affecting important crops in
+                        Malawi.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-6">
+
+            <div class="purpose-card purpose-card--success">
+
+                <div class="purpose-card__icon">
+
+                    <i class="fas fa-lightbulb"></i>
+
+                </div>
+
+                <div>
+
+                    <h5>
+                        Our Approach
+                    </h5>
+
+                    <p>
+
+                        To connect agricultural data, scientific
+                        knowledge and digital technologies and
+                        translate them into practical information
+                        for agricultural decision-making.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         NATIONAL CLIENT ECOSYSTEM
+    ===================================================== -->
+
+    <div class="section-heading">
+
+        <span>
+            THE NATIONAL CLIENT
+        </span>
+
+        <h3>
+            One Platform, Multiple Digital Services
+        </h3>
+
+        <p>
+            The MaDiPHS National Client brings together several
+            complementary services designed to support agricultural
+            information, plant health surveillance and decision-making.
+        </p>
+
+    </div>
+
+
+    <div class="row g-4 mb-5">
+
+
+        <!-- ANALYTICS -->
+
+        <div class="col-lg-4 col-md-6">
+
+            <a href="{% url 'analytics:analytics_dashboard' %}"
+               class="ecosystem-card">
+
+                <div class="ecosystem-card__icon">
+
+                    <i class="fas fa-chart-line"></i>
+
+                </div>
+
+                <div class="ecosystem-card__content">
+
+                    <h5>
+                        Analytics & Insights
+                    </h5>
+
+                    <p>
+
+                        Explore agricultural and plant-health
+                        information through dashboards,
+                        visualisations, crop analytics,
+                        time-series analysis and disease
+                        intelligence.
+
+                    </p>
+
+                    <span class="ecosystem-card__link">
+
+                        Explore Analytics
+                        <i class="fas fa-arrow-right"></i>
+
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- WEATHER -->
+
+        <div class="col-lg-4 col-md-6">
+
+            <a href="{% url 'forecasts:forecasting_temperature' %}"
+               class="ecosystem-card">
+
+                <div class="ecosystem-card__icon ecosystem-card__icon--weather">
+
+                    <i class="fas fa-cloud-sun"></i>
+
+                </div>
+
+                <div class="ecosystem-card__content">
+
+                    <h5>
+                        Weather & Climate
+                    </h5>
+
+                    <p>
+
+                        Access temperature and rainfall forecasts
+                        that can support agricultural planning,
+                        crop management and plant-health decisions.
+
+                    </p>
+
+                    <span class="ecosystem-card__link">
+
+                        View Forecasts
+                        <i class="fas fa-arrow-right"></i>
+
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- RISK MAPS -->
+
+        <div class="col-lg-4 col-md-6">
+
+            <a href="{% url 'gridmap:gridmap_example' %}"
+               class="ecosystem-card">
+
+                <div class="ecosystem-card__icon ecosystem-card__icon--danger">
+
+                    <i class="fas fa-map-marked-alt"></i>
+
+                </div>
+
+                <div class="ecosystem-card__content">
+
+                    <h5>
+                        Pest & Disease Risk Maps
+                    </h5>
+
+                    <p>
+
+                        Visualise spatial risks associated with
+                        important agricultural pests and diseases
+                        affecting crops across Malawi.
+
+                    </p>
+
+                    <span class="ecosystem-card__link">
+
+                        Explore Risk Maps
+                        <i class="fas fa-arrow-right"></i>
+
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- VIAMO -->
+
+        <div class="col-lg-4 col-md-6">
+
+            <a href="{% url 'core:viamo' %}"
+               class="ecosystem-card">
+
+                <div class="ecosystem-card__icon ecosystem-card__icon--phone">
+
+                    <i class="fas fa-phone-volume"></i>
+
+                </div>
+
+                <div class="ecosystem-card__content">
+
+                    <h5>
+                        Viamo 321
+                    </h5>
+
+                    <p>
+
+                        Deliver agricultural information through
+                        an accessible mobile voice service,
+                        helping extend plant-health knowledge to
+                        farmers and communities.
+
+                    </p>
+
+                    <span class="ecosystem-card__link">
+
+                        Learn About Viamo 321
+                        <i class="fas fa-arrow-right"></i>
+
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- KNOWLEDGE BASE -->
+
+        <div class="col-lg-4 col-md-6">
+
+            <a href="{% url 'madiphs_ckan:ckan' %}"
+               class="ecosystem-card">
+
+                <div class="ecosystem-card__icon ecosystem-card__icon--database">
+
+                    <i class="fas fa-database"></i>
+
+                </div>
+
+                <div class="ecosystem-card__content">
+
+                    <h5>
+                        Knowledge & Data
+                    </h5>
+
+                    <p>
+
+                        Discover agricultural datasets,
+                        plant-health resources, publications,
+                        factsheets and other knowledge assets
+                        through the MaDiPHS Knowledge Base.
+
+                    </p>
+
+                    <span class="ecosystem-card__link">
+
+                        Explore Knowledge Base
+                        <i class="fas fa-arrow-right"></i>
+
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <!-- BULLETINS -->
+
+        <div class="col-lg-4 col-md-6">
+
+            <a href="{% url 'madiphs_prise_bulletin:bulletin_intro' %}"
+               class="ecosystem-card">
+
+                <div class="ecosystem-card__icon ecosystem-card__icon--bulletin">
+
+                    <i class="fas fa-newspaper"></i>
+
+                </div>
+
+                <div class="ecosystem-card__content">
+
+                    <h5>
+                        Pest & Disease Bulletins
+                    </h5>
+
+                    <p>
+
+                        Access pest and disease information and
+                        bulletins that can support timely awareness,
+                        preparedness and agricultural action.
+
+                    </p>
+
+                    <span class="ecosystem-card__link">
+
+                        View Bulletins
+                        <i class="fas fa-arrow-right"></i>
+
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         WHO WE SERVE
+    ===================================================== -->
+
+    <div class="madiphs-card madiphs-card--audience mb-5">
+
+        <div class="madiphs-card__header">
+
+            <i class="fas fa-users"></i>
+
+            <h5>
+                Who We Serve
+            </h5>
+
+        </div>
+
+        <div class="madiphs-card__body">
+
+            <div class="row g-4">
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="audience-card">
+
+                        <div class="audience-card__icon">
+                            <i class="fas fa-tractor"></i>
+                        </div>
+
+                        <h6>
+                            Farmers
+                        </h6>
+
+                        <p>
+                            Practical information to support
+                            crop production and plant-health
+                            decisions.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="audience-card">
+
+                        <div class="audience-card__icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+
+                        <h6>
+                            Extension Workers
+                        </h6>
+
+                        <p>
+                            Digital resources to complement
+                            agricultural extension and advisory
+                            services.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="audience-card">
+
+                        <div class="audience-card__icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+
+                        <h6>
+                            Researchers
+                        </h6>
+
+                        <p>
+                            Data and knowledge resources to support
+                            research, analysis and innovation.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="audience-card">
+
+                        <div class="audience-card__icon">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+
+                        <h6>
+                            Decision Makers
+                        </h6>
+
+                        <p>
+                            Evidence and analytical information
+                            for agricultural planning and policy.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="audience-card">
+
+                        <div class="audience-card__icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+
+                        <h6>
+                            Agricultural Organisations
+                        </h6>
+
+                        <p>
+                            Shared knowledge and digital resources
+                            for programmes and agricultural
+                            interventions.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-lg-4 col-md-6">
+
+                    <div class="audience-card">
+
+                        <div class="audience-card__icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+
+                        <h6>
+                            Communities
+                        </h6>
+
+                        <p>
+                            Accessible agricultural information
+                            through digital and mobile channels.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         HOW THE ECOSYSTEM WORKS
+    ===================================================== -->
+
+    <div class="section-heading">
+
+        <span>
+            THE MADIPHS APPROACH
+        </span>
+
+        <h3>
+            From Data to Agricultural Action
+        </h3>
+
+        <p>
+            MaDiPHS connects information, analysis and communication
+            so that agricultural knowledge can move from data sources
+            to the people who need it.
+        </p>
+
+    </div>
+
+
+    <div class="workflow">
+
+        <div class="workflow-step">
+
+            <div class="workflow-step__number">
+                01
+            </div>
+
+            <div class="workflow-step__icon">
+                <i class="fas fa-database"></i>
+            </div>
+
+            <h6>
+                Data
+            </h6>
+
+            <p>
+                Agricultural, plant-health, weather and other
+                relevant datasets provide the foundation.
+            </p>
+
+        </div>
+
+
+        <div class="workflow-arrow">
+            <i class="fas fa-arrow-right"></i>
+        </div>
+
+
+        <div class="workflow-step">
+
+            <div class="workflow-step__number">
+                02
+            </div>
+
+            <div class="workflow-step__icon workflow-step__icon--analysis">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+
+            <h6>
+                Analysis
+            </h6>
+
+            <p>
+                Digital tools analyse information to identify
+                patterns, trends and potential risks.
+            </p>
+
+        </div>
+
+
+        <div class="workflow-arrow">
+            <i class="fas fa-arrow-right"></i>
+        </div>
+
+
+        <div class="workflow-step">
+
+            <div class="workflow-step__number">
+                03
+            </div>
+
+            <div class="workflow-step__icon workflow-step__icon--risk">
+                <i class="fas fa-map-marked-alt"></i>
+            </div>
+
+            <h6>
+                Intelligence
+            </h6>
+
+            <p>
+                Risk maps, forecasts and analytical outputs help
+                turn information into useful intelligence.
+            </p>
+
+        </div>
+
+
+        <div class="workflow-arrow">
+            <i class="fas fa-arrow-right"></i>
+        </div>
+
+
+        <div class="workflow-step">
+
+            <div class="workflow-step__number">
+                04
+            </div>
+
+            <div class="workflow-step__icon workflow-step__icon--action">
+                <i class="fas fa-bullhorn"></i>
+            </div>
+
+            <h6>
+                Information
+            </h6>
+
+            <p>
+                Information is communicated through digital
+                platforms, knowledge resources and mobile services.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         DIGITAL INCLUSION
+    ===================================================== -->
+
+    <div class="madiphs-feature mb-5">
+
+        <div class="madiphs-feature__icon">
+
+            <i class="fas fa-mobile-alt"></i>
+
+        </div>
+
+        <div class="madiphs-feature__content">
+
+            <span>
+                DIGITAL INCLUSION
+            </span>
+
+            <h4>
+                Making Agricultural Information More Accessible
+            </h4>
+
+            <p>
+
+                Digital agriculture should not depend entirely on
+                smartphones or reliable internet access. MaDiPHS
+                therefore supports multiple channels for reaching
+                agricultural users.
+
+            </p>
+
+            <p>
+
+                Through services such as <strong>Viamo 321</strong>,
+                farmers can access agricultural information using
+                basic mobile phones and voice technology.
+
+            </p>
+
+            <a href="{% url 'core:viamo' %}"
+               class="feature-link">
+
+                Discover Viamo 321
+
+                <i class="fas fa-arrow-right"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         KNOWLEDGE AND DATA
+    ===================================================== -->
+
+    <div class="madiphs-data-section mb-5">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-6">
+
+                <span class="madiphs-label">
+                    KNOWLEDGE & DATA
+                </span>
+
+                <h3>
+                    Building a Shared Agricultural
+                    Knowledge Environment
+                </h3>
+
+                <p>
+
+                    Data is an important foundation of the MaDiPHS
+                    ecosystem. The Knowledge Base provides a central
+                    environment for discovering agricultural datasets
+                    and plant-health knowledge resources.
+
+                </p>
+
+                <p>
+
+                    These resources can support research, surveillance,
+                    analysis, extension and evidence-based agricultural
+                    decision-making.
+
+                </p>
+
+                <a href="{% url 'madiphs_ckan:ckan' %}"
+                   class="thm-btn">
+
+                    <i class="fas fa-database"></i>
+
+                    Explore Knowledge Base
+
+                </a>
+
+            </div>
+
+
+            <div class="col-lg-6">
+
+                <div class="data-stat-grid">
+
+                    <div class="data-stat">
+
+                        <i class="fas fa-table"></i>
+
+                        <strong>
+                            Agricultural Data
+                        </strong>
+
+                        <span>
+                            Structured information
+                            for analysis
+                        </span>
+
+                    </div>
+
+
+                    <div class="data-stat">
+
+                        <i class="fas fa-bug"></i>
+
+                        <strong>
+                            Pest & Disease
+                        </strong>
+
+                        <span>
+                            Plant-health information
+                            and surveillance
+                        </span>
+
+                    </div>
+
+
+                    <div class="data-stat">
+
+                        <i class="fas fa-cloud-sun"></i>
+
+                        <strong>
+                            Weather Data
+                        </strong>
+
+                        <span>
+                            Climate and weather
+                            information
+                        </span>
+
+                    </div>
+
+
+                    <div class="data-stat">
+
+                        <i class="fas fa-book-open"></i>
+
+                        <strong>
+                            Knowledge Resources
+                        </strong>
+
+                        <span>
+                            Factsheets, publications
+                            and guidance
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         NATIONAL OWNERSHIP / COLLABORATION
+    ===================================================== -->
+
+    <div class="madiphs-card madiphs-card--collaboration mb-5">
+
+        <div class="madiphs-card__header">
+
+            <i class="fas fa-handshake"></i>
+
+            <h5>
+                A Collaborative National Service
+            </h5>
+
+        </div>
+
+        <div class="madiphs-card__body">
+
+            <p>
+
+                MaDiPHS is built around collaboration between
+                Malawian institutions and national and international
+                partners. The service brings together existing
+                digital plant-health systems, data assets and
+                agricultural knowledge rather than treating each
+                system as an isolated source of information.
+
+            </p>
+
+            <p>
+
+                The approach supports local adaptation and
+                co-production so that digital services respond to
+                the needs of Malawian farmers, extension workers,
+                researchers and agricultural decision makers.
+
+            </p>
+
+            <div class="collaboration-tags">
+
+                <span>
+                    <i class="fas fa-landmark"></i>
+                    Government
+                </span>
+
+                <span>
+                    <i class="fas fa-university"></i>
+                    Research & Academia
+                </span>
+
+                <span>
+                    <i class="fas fa-users"></i>
+                    Farmers & Communities
+                </span>
+
+                <span>
+                    <i class="fas fa-globe-africa"></i>
+                    International Partners
+                </span>
+
+                <span>
+                    <i class="fas fa-database"></i>
+                    Data Providers
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         FEATURED SERVICES
+    ===================================================== -->
+
+    <div class="section-heading">
+
+        <span>
+            EXPLORE THE PLATFORM
+        </span>
+
+        <h3>
+            Explore MaDiPHS Services
+        </h3>
+
+        <p>
+            Access the different components of the National Client
+            according to your information needs.
+        </p>
+
+    </div>
+
+
+    <div class="service-links">
+
+        <a href="{% url 'analytics:analytics_dashboard' %}"
+           class="service-link">
+
+            <div class="service-link__icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+
+            <div>
+                <strong>
+                    Analytics Dashboard
+                </strong>
+
+                <span>
+                    Agricultural and plant-health insights
+                </span>
+            </div>
+
+            <i class="fas fa-chevron-right"></i>
+
+        </a>
+
+
+        <a href="{% url 'analytics:disease_map' %}"
+           class="service-link">
+
+            <div class="service-link__icon">
+                <i class="fas fa-map"></i>
+            </div>
+
+            <div>
+                <strong>
+                    Disease Maps
+                </strong>
+
+                <span>
+                    Explore plant-health information spatially
+                </span>
+            </div>
+
+            <i class="fas fa-chevron-right"></i>
+
+        </a>
+
+
+        <a href="{% url 'forecasts:forecasting_rainfall' %}"
+           class="service-link">
+
+            <div class="service-link__icon">
+                <i class="fas fa-cloud-rain"></i>
+            </div>
+
+            <div>
+                <strong>
+                    Rainfall Forecasts
+                </strong>
+
+                <span>
+                    Weather information for agriculture
+                </span>
+            </div>
+
+            <i class="fas fa-chevron-right"></i>
+
+        </a>
+
+
+        <a href="{% url 'gridmap:gridmap_example2' %}"
+           class="service-link">
+
+            <div class="service-link__icon">
+                <i class="fas fa-bug"></i>
+            </div>
+
+            <div>
+                <strong>
+                    Pest Risk Maps
+                </strong>
+
+                <span>
+                    Explore selected pest risk information
+                </span>
+            </div>
+
+            <i class="fas fa-chevron-right"></i>
+
+        </a>
+
+
+        <a href="{% url 'core:viamo' %}"
+           class="service-link">
+
+            <div class="service-link__icon">
+                <i class="fas fa-phone"></i>
+            </div>
+
+            <div>
+                <strong>
+                    Viamo 321
+                </strong>
+
+                <span>
+                    Agricultural information by mobile voice
+                </span>
+            </div>
+
+            <i class="fas fa-chevron-right"></i>
+
+        </a>
+
+
+        <a href="{% url 'madiphs_ckan:ckan' %}"
+           class="service-link">
+
+            <div class="service-link__icon">
+                <i class="fas fa-database"></i>
+            </div>
+
+            <div>
+                <strong>
+                    Knowledge Library
+                </strong>
+
+                <span>
+                    Agricultural data and knowledge resources
+                </span>
+            </div>
+
+            <i class="fas fa-chevron-right"></i>
+
+        </a>
+
+    </div>
+
+
+    <!-- ====================================================
+         VISION
+    ===================================================== -->
+
+    <div class="madiphs-vision">
+
+        <div class="madiphs-vision__icon">
+
+            <i class="fas fa-seedling"></i>
+
+        </div>
+
+        <div>
+
+            <span>
+                OUR VISION
+            </span>
+
+            <h3>
+                A digitally connected plant-health
+                system for Malawi
+            </h3>
+
+            <p>
+
+                MaDiPHS aims to strengthen the way agricultural
+                plant-health information is generated, managed,
+                analysed and communicated — helping connect
+                knowledge with action from the field to the
+                national level.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================
+         CALL TO ACTION
+    ===================================================== -->
+
+    <div class="madiphs-cta">
+
+        <div class="madiphs-cta__icon">
+
+            <i class="fas fa-leaf"></i>
+
+        </div>
+
+        <div class="madiphs-cta__content">
+
+            <h4>
+                Explore the MaDiPHS National Client
+            </h4>
+
+            <p>
+
+                Discover agricultural data, plant-health intelligence,
+                weather information, risk maps, knowledge resources
+                and mobile agricultural services.
+
+            </p>
+
+        </div>
+
+        <div class="madiphs-cta__buttons">
+
+            <a href="{% url 'analytics:analytics_dashboard' %}"
+               class="thm-btn">
+
+                Explore Platform
+
+            </a>
+
+            <a href="{% url 'core:viamo' %}"
+               class="thm-btn thm-btn--light">
+
+                Dial 321
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</section>
+
+<!-- ============================================================
+     STYLES
+============================================================ -->
+
+<style>
+
+/* ============================================================
+   MAIN
+============================================================ */
+
+.madiphs-about {
+    padding: 60px 0 90px;
+    background: #f8f9fc;
+}
+
+
+/* ============================================================
+   INTRO
+============================================================ */
+
+.madiphs-intro {
+    display: grid;
+    grid-template-columns: 1.35fr .65fr;
+    gap: 50px;
+    align-items: center;
+    margin-bottom: 45px;
+}
+
+.madiphs-label {
+    display: inline-block;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #4e73df;
+    margin-bottom: 12px;
+}
+
+.madiphs-intro__title {
+    font-size: 38px;
+    line-height: 1.25;
+    font-weight: 600;
+    color: #212529;
+    margin: 0 0 20px;
+}
+
+.madiphs-intro__title span {
+    color: #4e73df;
+}
+
+.madiphs-intro__text {
+    color: #5a5c69;
+    font-size: .98rem;
+    line-height: 1.8;
+    margin-bottom: 14px;
+}
+
+.madiphs-intro__buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+
+/* ============================================================
+   INTRO VISUAL
+============================================================ */
+
+.intro-visual-card {
+    background: linear-gradient(145deg, #4e73df, #224abe);
+    padding: 40px 30px;
+    border-radius: 18px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 15px 40px rgba(78,115,223,.25);
+}
+
+.intro-visual-card__icon {
+    width: 85px;
+    height: 85px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+}
+
+.intro-visual-card h5 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+.intro-visual-card p {
+    color: rgba(255,255,255,.85);
+    line-height: 1.6;
+}
+
+.intro-visual-card__stats {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,.2);
+}
+
+.intro-visual-card__stats div {
+    display: flex;
+    flex-direction: column;
+}
+
+.intro-visual-card__stats strong {
+    font-size: .9rem;
+}
+
+.intro-visual-card__stats span {
+    font-size: .7rem;
+    opacity: .75;
+}
+
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+
+.thm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 24px;
+    border-radius: 8px;
+    background: #4e73df;
+    color: #fff;
+    font-size: .88rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid #4e73df;
+    transition: all .3s ease;
+}
+
+.thm-btn:hover {
+    color: #fff;
+    background: #2e59d9;
+    transform: translateY(-2px);
+}
+
+.thm-btn--outline {
+    background: transparent;
+    color: #4e73df;
+}
+
+.thm-btn--outline:hover {
+    background: #4e73df;
+    color: #fff;
+}
+
+.thm-btn--light {
+    background: #fff;
+    color: #4e73df;
+    border-color: #fff;
+}
+
+.thm-btn--light:hover {
+    background: #f8f9fc;
+    color: #224abe;
+}
+
+
+/* ============================================================
+   CARDS
+============================================================ */
+
+.madiphs-card {
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 14px;
+    box-shadow: 0 5px 25px rgba(58,59,69,.07);
+    overflow: hidden;
+}
+
+.madiphs-card__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 25px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.madiphs-card__header i {
+    color: #4e73df;
+    font-size: 1.2rem;
+}
+
+.madiphs-card__header h5 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.madiphs-card__body {
+    padding: 25px;
+}
+
+.madiphs-card__body p {
+    color: #5a5c69;
+    line-height: 1.8;
+    font-size: .94rem;
+    margin-bottom: 15px;
+}
+
+.madiphs-card__body p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* ============================================================
+   PURPOSE
+============================================================ */
+
+.purpose-card {
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 25px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 5px 20px rgba(58,59,69,.06);
+}
+
+.purpose-card__icon {
+    min-width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78,115,223,.1);
+    color: #4e73df;
+    font-size: 1.25rem;
+}
+
+.purpose-card--success .purpose-card__icon {
+    background: rgba(28,200,138,.1);
+    color: #1cc88a;
+}
+
+.purpose-card h5 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+}
+
+.purpose-card p {
+    color: #6c757d;
+    font-size: .88rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+
+/* ============================================================
+   SECTION HEADING
+============================================================ */
+
+.section-heading {
+    text-align: center;
+    max-width: 750px;
+    margin: 65px auto 35px;
+}
+
+.section-heading span {
+    color: #4e73df;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.section-heading h3 {
+    margin: 8px 0 12px;
+    font-size: 28px;
+    font-weight: 600;
+    color: #212529;
+}
+
+.section-heading p {
+    color: #6c757d;
+    font-size: .92rem;
+    line-height: 1.7;
+}
+
+
+/* ============================================================
+   ECOSYSTEM CARDS
+============================================================ */
+
+.ecosystem-card {
+    height: 100%;
+    display: flex;
+    gap: 18px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 14px;
+    text-decoration: none;
+    box-shadow: 0 5px 20px rgba(58,59,69,.06);
+    transition: all .3s ease;
+}
+
+.ecosystem-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(58,59,69,.12);
+}
+
+.ecosystem-card__icon {
+    min-width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(78,115,223,.1);
+    color: #4e73df;
+    font-size: 1.25rem;
+}
+
+.ecosystem-card__icon--weather {
+    color: #36b9cc;
+    background: rgba(54,185,204,.1);
+}
+
+.ecosystem-card__icon--danger {
+    color: #e74a3b;
+    background: rgba(231,74,59,.1);
+}
+
+.ecosystem-card__icon--phone {
+    color: #1cc88a;
+    background: rgba(28,200,138,.1);
+}
+
+.ecosystem-card__icon--database {
+    color: #6f42c1;
+    background: rgba(111,66,193,.1);
+}
+
+.ecosystem-card__icon--bulletin {
+    color: #f6c23e;
+    background: rgba(246,194,62,.1);
+}
+
+.ecosystem-card__content h5 {
+    color: #212529;
+    font-size: .98rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+}
+
+.ecosystem-card__content p {
+    color: #6c757d;
+    font-size: .82rem;
+    line-height: 1.55;
+    margin: 0 0 12px;
+}
+
+.ecosystem-card__link {
+    color: #4e73df;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.ecosystem-card__link i {
+    margin-left: 5px;
+}
+
+
+/* ============================================================
+   AUDIENCE
+============================================================ */
+
+.audience-card {
+    text-align: center;
+    height: 100%;
+    padding: 22px 16px;
+    background: #f8f9fc;
+    border-radius: 12px;
+    transition: all .3s ease;
+}
+
+.audience-card:hover {
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(58,59,69,.08);
+    transform: translateY(-3px);
+}
+
+.audience-card__icon {
+    width: 55px;
+    height: 55px;
+    margin: 0 auto 14px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78,115,223,.1);
+    color: #4e73df;
+    font-size: 1.25rem;
+}
+
+.audience-card h6 {
+    font-size: .9rem;
+    font-weight: 700;
+    margin-bottom: 7px;
+    color: #212529;
+}
+
+.audience-card p {
+    font-size: .78rem;
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   WORKFLOW
+============================================================ */
+
+.workflow {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 60px;
+}
+
+.workflow-step {
+    flex: 1;
+    text-align: center;
+    padding: 25px 15px;
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 14px;
+    position: relative;
+}
+
+.workflow-step__number {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: .65rem;
+    font-weight: 700;
+    color: #adb5bd;
+}
+
+.workflow-step__icon {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(78,115,223,.1);
+    color: #4e73df;
+    font-size: 1.3rem;
+}
+
+.workflow-step__icon--analysis {
+    color: #36b9cc;
+    background: rgba(54,185,204,.1);
+}
+
+.workflow-step__icon--risk {
+    color: #e74a3b;
+    background: rgba(231,74,59,.1);
+}
+
+.workflow-step__icon--action {
+    color: #1cc88a;
+    background: rgba(28,200,138,.1);
+}
+
+.workflow-step h6 {
+    font-weight: 700;
+    color: #212529;
+    font-size: .9rem;
+}
+
+.workflow-step p {
+    color: #6c757d;
+    font-size: .76rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.workflow-arrow {
+    display: flex;
+    align-items: center;
+    color: #adb5bd;
+}
+
+
+/* ============================================================
+   FEATURE
+============================================================ */
+
+.madiphs-feature {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding: 35px;
+    border-radius: 16px;
+    background: linear-gradient(135deg,#eef3ff,#f8f9fc);
+    border-left: 5px solid #4e73df;
+}
+
+.madiphs-feature__icon {
+    min-width: 75px;
+    height: 75px;
+    border-radius: 18px;
+    background: #4e73df;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.madiphs-feature__content span {
+    color: #4e73df;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+}
+
+.madiphs-feature__content h4 {
+    margin: 6px 0 10px;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.madiphs-feature__content p {
+    color: #5a5c69;
+    font-size: .9rem;
+    line-height: 1.7;
+    margin-bottom: 8px;
+}
+
+.feature-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #4e73df;
+    font-size: .82rem;
+    font-weight: 700;
+    text-decoration: none;
+    margin-top: 8px;
+}
+
+
+/* ============================================================
+   DATA SECTION
+============================================================ */
+
+.madiphs-data-section {
+    padding: 35px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e3e6f0;
+}
+
+.madiphs-data-section h3 {
+    font-size: 27px;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 15px;
+}
+
+.madiphs-data-section p {
+    color: #6c757d;
+    font-size: .9rem;
+    line-height: 1.7;
+}
+
+.data-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 15px;
+}
+
+.data-stat {
+    padding: 22px;
+    background: #f8f9fc;
+    border-radius: 12px;
+}
+
+.data-stat i {
+    color: #4e73df;
+    font-size: 1.3rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.data-stat strong {
+    display: block;
+    color: #212529;
+    font-size: .86rem;
+    margin-bottom: 5px;
+}
+
+.data-stat span {
+    display: block;
+    color: #6c757d;
+    font-size: .73rem;
+    line-height: 1.4;
+}
+
+
+/* ============================================================
+   COLLABORATION
+============================================================ */
+
+.collaboration-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.collaboration-tags span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    background: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 20px;
+    color: #5a5c69;
+    font-size: .76rem;
+}
+
+.collaboration-tags i {
+    color: #4e73df;
+}
+
+
+/* ============================================================
+   SERVICE LINKS
+============================================================ */
+
+.service-links {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 12px;
+    margin-bottom: 55px;
+}
+
+.service-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 17px;
+    border-radius: 11px;
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    text-decoration: none;
+    transition: all .3s ease;
+}
+
+.service-link:hover {
+    border-color: #4e73df;
+    transform: translateX(3px);
+    box-shadow: 0 5px 18px rgba(58,59,69,.08);
+}
+
+.service-link__icon {
+    min-width: 42px;
+    height: 42px;
+    border-radius: 9px;
+    background: rgba(78,115,223,.1);
+    color: #4e73df;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.service-link div:nth-child(2) {
+    flex: 1;
+}
+
+.service-link strong {
+    display: block;
+    color: #212529;
+    font-size: .84rem;
+}
+
+.service-link span {
+    display: block;
+    color: #6c757d;
+    font-size: .7rem;
+    margin-top: 3px;
+}
+
+.service-link > i {
+    color: #adb5bd;
+    font-size: .75rem;
+}
+
+
+/* ============================================================
+   VISION
+============================================================ */
+
+.madiphs-vision {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding: 35px;
+    margin-bottom: 35px;
+    background: linear-gradient(135deg,#263238,#37474f);
+    border-radius: 16px;
+    color: #fff;
+}
+
+.madiphs-vision__icon {
+    min-width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8bc34a;
+    font-size: 1.8rem;
+}
+
+.madiphs-vision span {
+    font-size: .7rem;
+    letter-spacing: 1.4px;
+    font-weight: 700;
+    color: #8bc34a;
+}
+
+.madiphs-vision h3 {
+    margin: 5px 0 10px;
+    font-size: 1.45rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+.madiphs-vision p {
+    margin: 0;
+    color: rgba(255,255,255,.75);
+    line-height: 1.7;
+    font-size: .88rem;
+}
+
+
+/* ============================================================
+   CTA
+============================================================ */
+
+.madiphs-cta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 28px 30px;
+    border-radius: 14px;
+    background: linear-gradient(135deg,#4e73df,#224abe);
+    color: #fff;
+}
+
+.madiphs-cta__icon {
+    min-width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.13);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.madiphs-cta__content {
+    flex: 1;
+}
+
+.madiphs-cta__content h4 {
+    color: #fff;
+    font-size: 1.15rem;
+    margin: 0 0 6px;
+    font-weight: 700;
+}
+
+.madiphs-cta__content p {
+    color: rgba(255,255,255,.8);
+    margin: 0;
+    font-size: .82rem;
+    line-height: 1.5;
+}
+
+.madiphs-cta__buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 991px) {
+
+    .madiphs-intro {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .madiphs-intro__title {
+        font-size: 32px;
+    }
+
+    .workflow {
+        flex-wrap: wrap;
+    }
+
+    .workflow-step {
+        flex: 0 0 calc(50% - 20px);
+    }
+
+    .workflow-arrow {
+        display: none;
+    }
+
+}
+
+
+@media (max-width: 767px) {
+
+    .madiphs-about {
+        padding: 35px 0 60px;
+    }
+
+    .madiphs-intro__title {
+        font-size: 27px;
+    }
+
+    .madiphs-intro__buttons {
+        flex-direction: column;
+    }
+
+    .madiphs-intro__buttons .thm-btn {
+        width: 100%;
+    }
+
+    .workflow-step {
+        flex: 0 0 100%;
+    }
+
+    .madiphs-feature {
+        flex-direction: column;
+        text-align: center;
+        padding: 25px 20px;
+    }
+
+    .madiphs-feature__icon {
+        min-width: 65px;
+        width: 65px;
+    }
+
+    .madiphs-data-section {
+        padding: 25px 18px;
+    }
+
+    .data-stat-grid {
+        margin-top: 25px;
+    }
+
+    .service-links {
+        grid-template-columns: 1fr;
+    }
+
+    .madiphs-vision {
+        flex-direction: column;
+        text-align: center;
+        padding: 28px 20px;
+    }
+
+    .madiphs-cta {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .madiphs-cta__buttons {
+        width: 100%;
+        justify-content: center;
+    }
+
+}
+
+
+@media (max-width: 576px) {
+
+    .madiphs-intro__title {
+        font-size: 24px;
+    }
+
+    .intro-visual-card {
+        padding: 30px 20px;
+    }
+
+    .intro-visual-card__stats {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .purpose-card {
+        padding: 20px;
+    }
+
+    .madiphs-card__body {
+        padding: 20px 16px;
+    }
+
+    .section-heading h3 {
+        font-size: 23px;
+    }
+
+    .data-stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .madiphs-vision h3 {
+        font-size: 1.3rem;
+    }
+
+}
+
+</style>
+
+{% endblock %}

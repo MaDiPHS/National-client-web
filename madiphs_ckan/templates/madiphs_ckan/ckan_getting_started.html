@@ -1,0 +1,877 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!--Page Header Start-->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+    </div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>CKAN Organizations</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'analytics:analytics_dashboard' %}">Analytics Dashboard</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'madiphs_ckan:ckan' %}">CKAN Documentation</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>Organizations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Page Header End-->
+
+<!--CKAN Organizations Start-->
+<section class="ckan-organizations">
+    <div class="container">
+        <div class="ckan-organizations__content">
+            <!-- Header -->
+            <div class="ckan-organizations__header mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="ckan-organizations__title">
+                            <i class="fas fa-building text-primary"></i> CKAN Organizations
+                        </h3>
+                        <p class="ckan-organizations__subtitle mb-0">
+                            Browse organizations publishing datasets on the MaDiPHS CKAN platform
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="https://ckan.madiphs.org/" target="_blank" class="thm-btn thm-btn--external">
+                            <i class="fas fa-external-link-alt"></i> Visit CKAN
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Audience -->
+            <div class="ckan-section ckan-section--highlight mb-4">
+                <div class="ckan-section__icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="ckan-section__content">
+                    <h5 class="ckan-section__title">Target Audience</h5>
+                    <p class="ckan-section__text">Researchers, Developers, and Policymakers interested in accessing structured datasets related to Malawi's development and public health from the MaDiPHS CKAN data catalog.</p>
+                    <div class="audience-tags">
+                        <span class="audience-tag"><i class="fas fa-flask"></i> Researchers</span>
+                        <span class="audience-tag"><i class="fas fa-code"></i> Developers</span>
+                        <span class="audience-tag"><i class="fas fa-landmark"></i> Policymakers</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Getting Started -->
+            <div class="ckan-card ckan-card--primary mb-4">
+                <div class="ckan-card__header">
+                    <i class="fas fa-rocket ckan-card__icon"></i>
+                    <h5 class="ckan-card__title">Getting Started</h5>
+                </div>
+                <div class="ckan-card__body">
+                    <p class="ckan-card__text">
+                        The MaDiPHS CKAN catalog provides access to datasets shared by various organizations. Below is a list of organizations that publish datasets on the platform.
+                    </p>
+                    
+                    <div class="ckan-catalog-link">
+                        <div class="ckan-catalog-link__icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="ckan-catalog-link__content">
+                            <span class="ckan-catalog-link__label">Explore the data catalog here:</span>
+                            <a href="https://ckan.madiphs.org/" target="_blank" class="ckan-catalog-link__url">
+                                https://ckan.madiphs.org/
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organizations Table -->
+            <div class="ckan-card ckan-card--table mb-4">
+                <div class="ckan-card__header">
+                    <i class="fas fa-list ckan-card__icon"></i>
+                    <h5 class="ckan-card__title">List of Organizations on MaDiPHS CKAN</h5>
+                    <span class="ckan-card__badge">{{ organizations|length }} Organizations</span>
+                </div>
+                <div class="ckan-card__body ckan-card__body--table">
+                    <div class="table-responsive">
+                        <table class="ckan-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Organization</th>
+                                    <th>Description</th>
+                                    <th>Datasets</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for org in organizations %}
+                                <tr>
+                                    <td>
+                                        <span class="ckan-table__badge">{{ forloop.counter }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="ckan-table__org-name">
+                                            <i class="fas fa-building"></i>
+                                            {{ org.name }}
+                                        </span>
+                                    </td>
+                                    <td class="ckan-table__description">
+                                        {{ org.description|default:"No description available" | truncatewords:15 }}
+                                    </td>
+                                    <td>
+                                        <span class="ckan-table__count">{{ org.package_count }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="https://ckan.madiphs.org/organization/{{ org.name }}" 
+                                           target="_blank" 
+                                           class="ckan-table__action">
+                                            <i class="fas fa-external-link-alt"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5">
+                                        <div class="empty-state">
+                                            <i class="fas fa-database"></i>
+                                            <p>No organizations found.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Organizations -->
+            <div class="ckan-card ckan-card--info mb-4">
+                <div class="ckan-card__header">
+                    <i class="fas fa-info-circle ckan-card__icon"></i>
+                    <h5 class="ckan-card__title">About Organizations</h5>
+                </div>
+                <div class="ckan-card__body">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <div class="info-item__icon">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+                                <div class="info-item__content">
+                                    <h6 class="info-item__title">Organization Name</h6>
+                                    <p class="info-item__text">The unique identifier of the organization on the CKAN platform.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <div class="info-item__icon info-item__icon--accent">
+                                    <i class="fas fa-align-left"></i>
+                                </div>
+                                <div class="info-item__content">
+                                    <h6 class="info-item__title">Description</h6>
+                                    <p class="info-item__text">A brief description about the organization and its purpose.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-item">
+                                <div class="info-item__icon info-item__icon--success">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <div class="info-item__content">
+                                    <h6 class="info-item__title">Dataset Count</h6>
+                                    <p class="info-item__text">The total number of datasets published by this organization.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Note -->
+            <div class="ckan-api-note">
+                <div class="ckan-api-note__icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="ckan-api-note__content">
+                    <p class="ckan-api-note__text">
+                        Data extracted from 
+                        <a href="https://ckan.madiphs.org/api/3/action/organization_list" target="_blank" class="ckan-api-note__link">
+                            CKAN API
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="ckan-navigation">
+                <a href="{% url 'madiphs_ckan:ckan' %}" class="thm-btn thm-btn--back">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+                <a href="{% url 'madiphs_ckan:ckan_getting_started2' %}" class="thm-btn thm-btn--next">
+                    Next <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!--CKAN Organizations End-->
+
+<style>
+/* ============================================
+   CKAN Organizations Section
+   ============================================ */
+.ckan-organizations {
+    padding: 50px 0 80px;
+    background: #f8f9fc;
+}
+
+.ckan-organizations__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.ckan-organizations__title i {
+    margin-right: 10px;
+}
+
+.ckan-organizations__subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* ============================================
+   Sections
+   ============================================ */
+.ckan-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 24px 28px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+}
+
+.ckan-section--highlight {
+    background: linear-gradient(135deg, #f8f9fc 0%, #e9ecf2 100%);
+    border-left: 4px solid #f6c23e;
+}
+
+.ckan-section__icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.1);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1.2rem;
+}
+
+.ckan-section__content {
+    flex: 1;
+}
+
+.ckan-section__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 8px 0;
+}
+
+.ckan-section__text {
+    font-size: 0.95rem;
+    color: #5a5c69;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ============================================
+   Audience Tags
+   ============================================ */
+.audience-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.audience-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5a5c69;
+    transition: all 0.3s ease;
+}
+
+.audience-tag i {
+    color: #4e73df;
+}
+
+.audience-tag:hover {
+    background: #4e73df;
+    color: #ffffff;
+    border-color: #4e73df;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.audience-tag:hover i {
+    color: #ffffff;
+}
+
+/* ============================================
+   CKAN Cards
+   ============================================ */
+.ckan-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    overflow: hidden;
+}
+
+.ckan-card__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    flex-wrap: wrap;
+}
+
+.ckan-card__icon {
+    font-size: 1.2rem;
+    color: #4e73df;
+    width: 24px;
+    text-align: center;
+}
+
+.ckan-card__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0;
+    flex: 1;
+}
+
+.ckan-card__badge {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.ckan-card__body {
+    padding: 24px;
+}
+
+.ckan-card__body--table {
+    padding: 0;
+}
+
+.ckan-card__text {
+    font-size: 0.95rem;
+    color: #5a5c69;
+    line-height: 1.7;
+    margin: 0 0 16px 0;
+}
+
+.ckan-card--primary .ckan-card__icon {
+    color: #4e73df;
+}
+
+.ckan-card--table .ckan-card__icon {
+    color: #36b9cc;
+}
+
+.ckan-card--info .ckan-card__icon {
+    color: #f6c23e;
+}
+
+/* ============================================
+   Catalog Link
+   ============================================ */
+.ckan-catalog-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #2c3e50, #1a252f);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.ckan-catalog-link:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 24px rgba(44, 62, 80, 0.3);
+}
+
+.ckan-catalog-link__icon {
+    font-size: 1.5rem;
+    color: #f6c23e;
+}
+
+.ckan-catalog-link__content {
+    flex: 1;
+}
+
+.ckan-catalog-link__label {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 2px;
+}
+
+.ckan-catalog-link__url {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f6c23e;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.ckan-catalog-link__url:hover {
+    color: #ffd700;
+    text-decoration: underline;
+}
+
+.ckan-catalog-link__url i {
+    font-size: 0.8rem;
+    margin-left: 4px;
+}
+
+/* ============================================
+   Table
+   ============================================ */
+.ckan-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.9rem;
+}
+
+.ckan-table thead th {
+    background: #f8f9fc;
+    color: #5a5c69;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 14px 16px;
+    border-bottom: 2px solid #e3e6f0;
+    text-align: left;
+}
+
+.ckan-table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f1f5;
+    vertical-align: middle;
+    color: #3a3b45;
+}
+
+.ckan-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ckan-table tbody tr:hover {
+    background: #f8f9fc;
+}
+
+.ckan-table__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(78, 115, 223, 0.1);
+    color: #2eb135;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.ckan-table__org-name {
+    font-weight: 600;
+    color: #212529;
+}
+
+.ckan-table__org-name i {
+    color: #4e73df;
+    margin-right: 6px;
+}
+
+.ckan-table__description {
+    color: #6c757d;
+    max-width: 300px;
+}
+
+.ckan-table__count {
+    display: inline-block;
+    padding: 2px 12px;
+    background: rgba(222, 216, 199, 0.1);
+    color: #265bbd;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.ckan-table__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: #4e73df;
+    color: #ffffff;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.ckan-table__action:hover {
+    background: #2e59d9;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+/* ============================================
+   Info Items
+   ============================================ */
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.info-item:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.info-item__icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.1);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1rem;
+}
+
+.info-item__icon--accent {
+    background: rgba(246, 194, 62, 0.1);
+    color: #f6c23e;
+}
+
+.info-item__icon--success {
+    background: rgba(28, 200, 138, 0.1);
+    color: #1cc88a;
+}
+
+.info-item__content {
+    flex: 1;
+}
+
+.info-item__title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 4px 0;
+}
+
+.info-item__text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ============================================
+   API Note
+   ============================================ */
+.ckan-api-note {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f1f9ff, #e3f2fd);
+    border-radius: 10px;
+    border: 1px solid rgba(78, 115, 223, 0.15);
+}
+
+.ckan-api-note__icon {
+    font-size: 1.5rem;
+    color: #4e73df;
+}
+
+.ckan-api-note__content {
+    flex: 1;
+}
+
+.ckan-api-note__text {
+    font-size: 0.95rem;
+    color: #212529;
+    margin: 0;
+}
+
+.ckan-api-note__link {
+    color: #f6c23e;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.ckan-api-note__link:hover {
+    color: #4e73df;
+    text-decoration: underline;
+}
+
+.ckan-api-note__link i {
+    font-size: 0.8rem;
+    margin-left: 4px;
+}
+
+/* ============================================
+   Navigation
+   ============================================ */
+.ckan-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #e3e6f0;
+}
+
+/* ============================================
+   Empty State
+   ============================================ */
+.empty-state {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #c3c6d4;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    color: #858796;
+    margin: 0;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+.thm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+}
+
+.thm-btn:hover {
+    transform: translateY(-2px);
+}
+
+.thm-btn--external {
+    background: #ffffff;
+    color: #4e73df;
+    border: 2px solid #4e73df;
+}
+
+.thm-btn--external:hover {
+    background: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn--back {
+    background: #ffffff;
+    color: #4e73df;
+    border: 2px solid #4e73df;
+}
+
+.thm-btn--back:hover {
+    background: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn--next {
+    background: #4e73df;
+    color: #ffffff;
+}
+
+.thm-btn--next:hover {
+    background: #2e59d9;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 991px) {
+    .ckan-organizations {
+        padding: 30px 0 50px;
+    }
+    
+    .ckan-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .audience-tags {
+        justify-content: center;
+    }
+    
+    .ckan-table__description {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 767px) {
+    .ckan-organizations__title {
+        font-size: 20px;
+    }
+    
+    .ckan-section__text {
+        font-size: 0.9rem;
+    }
+    
+    .ckan-card__header {
+        padding: 12px 16px;
+    }
+    
+    .ckan-card__body {
+        padding: 16px;
+    }
+    
+    .ckan-table thead th {
+        padding: 10px 12px;
+        font-size: 0.7rem;
+    }
+    
+    .ckan-table tbody td {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .ckan-table__description {
+        max-width: 120px;
+    }
+    
+    .ckan-table__action {
+        padding: 4px 12px;
+        font-size: 0.75rem;
+    }
+    
+    .ckan-catalog-link {
+        flex-direction: column;
+        text-align: center;
+        padding: 16px;
+    }
+    
+    .ckan-api-note {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .ckan-navigation {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .thm-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .ckan-organizations {
+        padding: 20px 0 30px;
+    }
+    
+    .ckan-card__title {
+        font-size: 0.95rem;
+    }
+    
+    .ckan-table__description {
+        max-width: 80px;
+    }
+    
+    .ckan-table tbody td,
+    .ckan-table thead th {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+    
+    .ckan-table__badge {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
+    }
+}
+</style>
+
+{% endblock %}

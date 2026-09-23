@@ -1,0 +1,101 @@
+/*==============================================
+    Brand One
+===============================================*/
+.brand-one {
+    position: relative;
+    display: block;
+    padding: 60px 0 51px;
+    border-top: 1px solid rgba(var(--fixpro-black-rgb), .10);
+    z-index: 1;
+}
+
+.brand-one__carousel {
+    position: relative;
+    display: block;
+}
+
+.brand-one__single {
+    position: relative;
+    display: block;
+    text-align: center;
+    z-index: 1;
+}
+
+.brand-one__img {
+    position: relative;
+    display: inline-block;
+    z-index: 10;
+}
+
+.brand-one__img>img {
+    position: relative;
+    -webkit-transition: 500ms;
+    transition: 500ms;
+    opacity: 0.30;
+}
+
+.brand-one__single:hover .brand-one__img img {
+    opacity: 0.50;
+}
+
+/*--------------------------------------------------------------
+# Brand Two
+--------------------------------------------------------------*/
+.brand-two {
+    position: relative;
+    display: block;
+    padding: 120px 0 0;
+    z-index: 1;
+}
+
+.brand-two__inner {
+    position: relative;
+    display: block;
+    background-color: rgba(var(--fixpro-base-rgb), .30);
+    border-radius: 20px;
+    padding: 53px 65px 53px;
+}
+
+.brand-two__carousel {
+    position: relative;
+    display: block;
+}
+
+.brand-two__single {
+    position: relative;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-two__img {
+    position: relative;
+    z-index: 10;
+}
+
+.brand-two__img>img {
+    position: relative;
+    -webkit-transition: 500ms;
+    transition: 500ms;
+    width: auto !important;
+    -webkit-transition: 500ms;
+    transition: 500ms;
+    opacity: 1;
+}
+
+.brand-two__single:hover .brand-two__img>img {
+    opacity: 0.70;
+}
+
+
+
+
+
+
+
+
+
+/*--------------------------------------------------------------
+# End
+--------------------------------------------------------------*/

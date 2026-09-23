@@ -1,0 +1,927 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-0">Farm Directory</h1>
+            <p class="text-muted mb-0">Manage and analyze farm information</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'analytics:analytics_dashboard' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+            <button class="btn btn-primary" onclick="showAddFarmModal()">
+                <i class="fas fa-plus me-2"></i>Add Farm
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Farms
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ page_obj.paginator.count|intcomma }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tractor fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Active Farms
+                            </div> 
+                            
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                              {{ active_farms_count|intcomma }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Avg. Reports/Farm
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% with total_reports=filter.qs.count %}
+                                {% if total_reports > 0 %}
+                                {{ avg_reports_per_farm|floatformat:1 }}
+                                {% else %}
+                                0.0
+                                {% endif %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-bar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Recently Added
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ recent_farms_count|intcomma }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-plus fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Filter Farms</h6>
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
+                <i class="fas fa-filter me-1"></i>Toggle Filters
+            </button>
+        </div>
+        <div class="card-body collapse show" id="filterCollapse">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">{{ filter.form.farm_name.label }}</label>
+                    {{ filter.form.farm_name }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ filter.form.farm_id.label }}</label>
+                    {{ filter.form.farm_id }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ filter.form.county.label }}</label>
+                    {{ filter.form.county }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ filter.form.region.label }}</label>
+                    {{ filter.form.region }}
+                </div>
+                
+                <div class="col-12">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Apply Filters
+                        </button>
+                        <a href="{% url 'analytics:farm_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Clear Filters
+                        </a>
+                        <button type="button" class="btn btn-outline-info" onclick="saveFilterPreset()">
+                            <i class="fas fa-save me-2"></i>Save Preset
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Map View Toggle -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary active" id="tableViewBtn">
+                        <i class="fas fa-table me-2"></i>Table View
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="mapViewBtn">
+                        <i class="fas fa-map me-2"></i>Map View
+                    </button>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown">
+                        <i class="fas fa-cog me-2"></i>Settings
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#" onclick="exportFarms()">
+                            <i class="fas fa-download me-2"></i>Export Farms
+                        </a>
+                        <a class="dropdown-item" href="#" onclick="importFarms()">
+                            <i class="fas fa-upload me-2"></i>Import Farms
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="refreshData()">
+                            <i class="fas fa-sync me-2"></i>Refresh Data
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table View -->
+    <div class="card shadow" id="tableView">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count|intcomma }} farms
+                {% if filter.form.is_bound and filter.form.has_changed %}
+                    <span class="badge bg-info ms-2">Filtered</span>
+                {% endif %}
+            </h6>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" 
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-columns me-1"></i>Columns
+                </button>
+                <div class="dropdown-menu" id="columnToggle">
+                    <div class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input column-toggle" type="checkbox" data-column="1" checked>
+                            <label class="form-check-label">Farm Name</label>
+                        </div>
+                    </div>
+                    <div class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input column-toggle" type="checkbox" data-column="2" checked>
+                            <label class="form-check-label">Location</label>
+                        </div>
+                    </div>
+                    <div class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input column-toggle" type="checkbox" data-column="3" checked>
+                            <label class="form-check-label">Coordinates</label>
+                        </div>
+                    </div>
+                    <div class="form-check dropdown-item">
+                        <input class="form-check-input column-toggle" type="checkbox" data-column="4" checked>
+                        <label class="form-check-label">Reports</label>
+                    </div>
+                    <div class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input column-toggle" type="checkbox" data-column="5" checked>
+                            <label class="form-check-label">Status</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped" id="farmsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Farm Name</th>
+                            <th>Location</th>
+                            <th>Coordinates</th>
+                            <th>Reports</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for farm in page_obj %}
+                        <tr>
+                            <td>
+                                <span class="badge bg-secondary">#{{ farm.farm_id }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="symbol symbol-circle symbol-40 me-3">
+                                        <div class="symbol-label bg-light-primary">
+                                            <i class="fas fa-tractor text-primary"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <strong>{{ farm.farm_name }}</strong>
+                                        {% if farm.location_name %}
+                                        <br><small class="text-muted">{{ farm.location_name }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if farm.county or farm.region %}
+                                <div>
+                                    {% if farm.county %}
+                                    <i class="fas fa-map-pin text-danger me-1"></i>
+                                    {{ farm.county }}
+                                    {% endif %}
+                                    {% if farm.region %}
+                                    <br><small class="text-muted">{{ farm.region }}</small>
+                                    {% endif %}
+                                    {% if farm.state %}
+                                    <br><small class="text-muted">{{ farm.state }}</small>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <span class="text-muted">No location set</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if farm.lat and farm.lng %}
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-globe-africa text-success me-2"></i>
+                                    <div>
+                                        <span class="d-block">{{ farm.lat|floatformat:6 }}</span>
+                                        <span class="d-block">{{ farm.lng|floatformat:6 }}</span>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">No coordinates</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <div class="mb-1">
+                                        <span class="badge bg-info">{{ farm.aidisease_set.count }}</span>
+                                        <small class="text-muted ms-1">AI Diseases</small>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-warning">{{ farm.othercrop_set.count }}</span>
+                                        <small class="text-muted ms-1">Human Detected Diseases Reports</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if farm.deleted_at %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% else %}
+                                <span class="badge bg-success">Active</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold">{{ farm.created_date|date:"M d, Y" }}</span>
+                                    <small class="text-muted">{{ farm.created_date|timesince }} ago</small>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                            onclick="showFarmDetails({{ farm.farm_id }})"
+                                            data-bs-toggle="tooltip" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning"
+                                            onclick="editFarm({{ farm.farm_id }})"
+                                            data-bs-toggle="tooltip" title="Edit Farm">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-success"
+                                            onclick="showOnMap({{ farm.lat|default:0 }}, {{ farm.lng|default:0 }}, '{{ farm.farm_name }}')"
+                                            data-bs-toggle="tooltip" title="View on Map">
+                                        <i class="fas fa-map"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            onclick="viewFarmReports({{ farm.farm_id }})"
+                                            data-bs-toggle="tooltip" title="View Reports">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-tractor fa-3x mb-3"></i>
+                                    <h5>No farms found</h5>
+                                    <p>Try adjusting your filters or add a new farm.</p>
+                                    <button class="btn btn-primary" onclick="showAddFarmModal()">
+                                        <i class="fas fa-plus me-2"></i>Add New Farm
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filter.form.is_bound %}{{ filter.form.urlencode }}&{% endif %}page=1">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filter.form.is_bound %}{{ filter.form.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filter.form.is_bound %}{{ filter.form.urlencode }}&{% endif %}page={{ num }}">
+                            {{ num }}
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filter.form.is_bound %}{{ filter.form.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filter.form.is_bound %}{{ filter.form.urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div class="text-center text-muted mt-2">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </div>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Map View (Hidden by Default) -->
+    <div class="card shadow d-none" id="mapView">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Farm Map View</h6>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary" onclick="refreshMap()">
+                    <i class="fas fa-sync me-1"></i>Refresh
+                </button>
+                <button class="btn btn-sm btn-outline-primary" onclick="downloadMap()">
+                    <i class="fas fa-download me-1"></i>Download
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="farmMap" style="height: 500px; border-radius: 8px; overflow: hidden;">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading map...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Farm Analytics -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Farm Distribution by Region</h6>
+                </div>
+                <div class="card-body">
+                    <div id="regionChart" style="height: 250px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Farms by Activity</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for farm in top_active_farms %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-tractor text-success me-2"></i>
+                                {{ farm.farm_name }}
+                                <br>
+                                <small class="text-muted">{{ farm.total_reports }} reports</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewFarmReports({{ farm.farm_id }})">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                        </div>
+                        {% empty %}
+                        <div class="text-center text-muted py-3">
+                            No farm activity data available
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Farm Details Modal -->
+<div class="modal fade" id="farmDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Farm Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="farmModalBody">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" onclick="editFarmFromModal()">
+                    <i class="fas fa-edit me-2"></i>Edit
+                </button>
+                <button type="button" class="btn btn-primary" onclick="generateFarmReport()">
+                    <i class="fas fa-file-pdf me-2"></i>Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Farm Modal -->
+<div class="modal fade" id="addFarmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Farm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addFarmForm">
+                    <div class="mb-3">
+                        <label class="form-label">Farm Name *</label>
+                        <input type="text" class="form-control" name="farm_name" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Farm ID *</label>
+                            <input type="number" class="form-control" name="farm_id" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Region</label>
+                            <input type="text" class="form-control" name="region">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">County</label>
+                            <input type="text" class="form-control" name="county">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">State</label>
+                            <input type="text" class="form-control" name="state">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location Name</label>
+                        <input type="text" class="form-control" name="location_name">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Latitude</label>
+                            <input type="number" step="any" class="form-control" name="lat">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Longitude</label>
+                            <input type="number" step="any" class="form-control" name="lng">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="getCurrentLocation()">
+                            <i class="fas fa-location-crosshairs me-1"></i>Use Current Location
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitFarmForm()">
+                    <i class="fas fa-save me-2"></i>Save Farm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.progress {
+    min-width: 80px;
+}
+.symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+.symbol-40 {
+    width: 40px;
+    height: 40px;
+}
+.symbol-label {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.badge {
+    font-weight: 500;
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(46, 134, 171, 0.05) !important;
+}
+#farmMap {
+    background: #f8f9fa;
+}
+</style>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!-- Leaflet for maps (optional) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Load charts
+    loadRegionChart();
+    
+    // Initialize column toggles
+    initColumnToggles();
+    
+    // Setup view toggle
+    setupViewToggle();
+});
+
+function loadRegionChart() {
+    // This would be populated with actual data from the backend
+    const data = [{
+        values: [25, 30, 20, 15, 10],
+        labels: ['Central', 'Northern', 'Southern', 'Eastern', 'Western'],
+        type: 'pie',
+        hole: 0.4,
+        marker: {
+            colors: ['#2E86AB', '#A23B72', '#F18F01', '#C73E1D', '#6B2737']
+        }
+    }];
+    
+    const layout = {
+        margin: { t: 20, r: 20, b: 20, l: 20 },
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white',
+        showlegend: true,
+        legend: {
+            orientation: 'h',
+            y: -0.1
+        },
+        height: 250
+    };
+    
+    Plotly.newPlot('regionChart', data, layout);
+}
+
+function initColumnToggles() {
+    const checkboxes = document.querySelectorAll('.column-toggle');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const colIndex = this.dataset.column;
+            const table = document.getElementById('farmsTable');
+            const rows = table.querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const cell = row.cells[colIndex];
+                if (cell) {
+                    cell.style.display = this.checked ? '' : 'none';
+                }
+            });
+        });
+    });
+}
+
+function setupViewToggle() {
+    const tableViewBtn = document.getElementById('tableViewBtn');
+    const mapViewBtn = document.getElementById('mapViewBtn');
+    const tableView = document.getElementById('tableView');
+    const mapView = document.getElementById('mapView');
+    
+    tableViewBtn.addEventListener('click', function() {
+        this.classList.add('active');
+        mapViewBtn.classList.remove('active');
+        tableView.classList.remove('d-none');
+        mapView.classList.add('d-none');
+    });
+    
+    mapViewBtn.addEventListener('click', function() {
+        this.classList.add('active');
+        tableViewBtn.classList.remove('active');
+        mapView.classList.remove('d-none');
+        tableView.classList.add('d-none');
+        loadFarmMap();
+    });
+}
+
+function loadFarmMap() {
+    const mapContainer = document.getElementById('farmMap');
+    mapContainer.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Loading map...</p></div>';
+    
+    // Simulate map loading
+    setTimeout(() => {
+        mapContainer.innerHTML = `
+            <div class="h-100 d-flex align-items-center justify-content-center">
+                <div class="text-center">
+                    <i class="fas fa-map-marked-alt fa-4x text-muted mb-3"></i>
+                    <h5>Interactive Farm Map</h5>
+                    <p class="text-muted">Farm locations would be displayed here</p>
+                    <p><small>In production, this would show an interactive map with farm markers</small></p>
+                </div>
+            </div>
+        `;
+    }, 1000);
+}
+
+function showFarmDetails(farmId) {
+    // In production, fetch details via AJAX
+    const modalBody = document.getElementById('farmModalBody');
+    modalBody.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading farm details...</p>
+        </div>
+    `;
+    
+    // Simulate AJAX call
+    setTimeout(() => {
+        modalBody.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-primary">Farm Information</h6>
+                    <dl class="row">
+                        <dt class="col-sm-4">Farm Name</dt>
+                        <dd class="col-sm-8">Green Valley Farm</dd>
+                        
+                        <dt class="col-sm-4">Farm ID</dt>
+                        <dd class="col-sm-8">123</dd>
+                        
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8"><span class="badge bg-success">Active</span></dd>
+                        
+                        <dt class="col-sm-4">Created Date</dt>
+                        <dd class="col-sm-8">January 15, 2023</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-primary">Location Details</h6>
+                    <dl class="row">
+                        <dt class="col-sm-4">Coordinates</dt>
+                        <dd class="col-sm-8">-13.9626, 33.7741</dd>
+                        
+                        <dt class="col-sm-4">Region</dt>
+                        <dd class="col-sm-8">Central Region</dd>
+                        
+                        <dt class="col-sm-4">County</dt>
+                        <dd class="col-sm-8">Lilongwe</dd>
+                        
+                        <dt class="col-sm-4">Location</dt>
+                        <dd class="col-sm-8">Near Bunda College</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6 class="text-primary">Farm Statistics</h6>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h3 class="text-primary">15</h3>
+                                    <p class="text-muted mb-0">AI Reports</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h3 class="text-success">8</h3>
+                                    <p class="text-muted mb-0">Human Detected Disease Reports</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h3 class="text-warning">23</h3>
+                                    <p class="text-muted mb-0">Total Reports</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h3 class="text-danger">42%</h3>
+                                    <p class="text-muted mb-0">Avg. Infection</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6 class="text-primary">Recent Activity</h6>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Maize disease report</span>
+                            <small class="text-muted">2 days ago</small>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Tomato threat assessment</span>
+                            <small class="text-muted">1 week ago</small>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Farm inspection</span>
+                            <small class="text-muted">2 weeks ago</small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }, 500);
+    
+    const modal = new bootstrap.Modal(document.getElementById('farmDetailsModal'));
+    modal.show();
+}
+
+function editFarm(farmId) {
+    alert(`Edit farm with ID: ${farmId}\n\nThis would open an edit form.`);
+}
+
+function editFarmFromModal() {
+    alert('Opening edit form...');
+    const modal = bootstrap.Modal.getInstance(document.getElementById('farmDetailsModal'));
+    modal.hide();
+}
+
+function showOnMap(lat, lng, farmName) {
+    if (lat && lng && lat != 0 && lng != 0) {
+        const url = `https://www.google.com/maps?q=${lat},${lng}`;
+        window.open(url, '_blank');
+    } else {
+        alert(`No geographic coordinates available for ${farmName}.`);
+    }
+}
+
+function viewFarmReports(farmId) {
+    window.location.href = `{% url 'analytics:ai_disease_list' %}?farm=${farmId}`;
+}
+
+function generateFarmReport() {
+    alert('Generating farm report PDF...\n\nThis would create a comprehensive report with all farm data.');
+}
+
+function showAddFarmModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addFarmModal'));
+    modal.show();
+}
+
+function getCurrentLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const latInput = document.querySelector('input[name="lat"]');
+                const lngInput = document.querySelector('input[name="lng"]');
+                latInput.value = position.coords.latitude.toFixed(6);
+                lngInput.value = position.coords.longitude.toFixed(6);
+            },
+            function(error) {
+                alert('Unable to retrieve your location. Please enter coordinates manually.');
+            }
+        );
+    } else {
+        alert('Geolocation is not supported by your browser.');
+    }
+}
+
+function submitFarmForm() {
+    const form = document.getElementById('addFarmForm');
+    if (form.checkValidity()) {
+        alert('Farm saved successfully!\n\nIn production, this would submit to the server.');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addFarmModal'));
+        modal.hide();
+        // Refresh page or update table
+        setTimeout(() => location.reload(), 1000);
+    } else {
+        form.reportValidity();
+    }
+}
+
+function exportFarms() {
+    alert('Exporting farm data...\n\nThis would generate a CSV/Excel file with all farm information.');
+}
+
+function importFarms() {
+    alert('Import farm data from file...\n\nThis would open a file upload dialog for CSV/Excel import.');
+}
+
+function refreshData() {
+    location.reload();
+}
+
+function refreshMap() {
+    loadFarmMap();
+}
+
+function downloadMap() {
+    alert('Downloading map image...\n\nThis would save the current map view as an image.');
+}
+
+function saveFilterPreset() {
+    const presetName = prompt('Enter a name for this filter preset:');
+    if (presetName) {
+        alert(`Filter preset "${presetName}" saved!`);
+    }
+}
+</script>
+
+{% endblock content %}

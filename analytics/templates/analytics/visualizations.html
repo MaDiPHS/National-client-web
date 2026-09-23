@@ -1,0 +1,689 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!--Page Header Start-->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+    </div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>Data Visualizations</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>Data Visualizations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Page Header End-->
+
+<!--Analytics Dashboard Start -->
+<section class="analytics-dashboard">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12">
+                <div class="analytics-dashboard__content">
+                    <!-- Header -->
+                    <div class="analytics-dashboard__header d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <div class="analytics-dashboard__title-box">
+                            <h3 class="analytics-dashboard__title">Data Visualizations</h3>
+                            <p class="analytics-dashboard__subtitle mb-0">Interactive charts and graphical representations of farm and disease data</p>
+                        </div>
+                        <div class="analytics-dashboard__filter-box d-flex gap-2 flex-wrap">
+                            <a href="{% url 'analytics:analytics_dashboard' %}" class="thm-btn btn-sm">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Visualization Controls -->
+                    <div class="analytics-chart-card shadow mb-4">
+                        <div class="analytics-chart-card__body">
+                            <div class="row g-3">
+                                <div class="col-md-3 col-sm-6">
+                                    <label class="form-label">Chart Type</label>
+                                    <select class="form-select" id="chartTypeSelect" onchange="changeChartType(this.value)">
+                                        <option value="line">Line Chart</option>
+                                        <option value="bar">Bar Chart</option>
+                                        <option value="scatter">Scatter Plot</option>
+                                        <option value="area">Area Chart</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-sm-6">
+                                    <label class="form-label">Aggregation</label>
+                                    <select class="form-select" id="aggregationSelect" onchange="updateVisualization()">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="quarterly">Quarterly</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-sm-6">
+                                    <label class="form-label">Data Type</label>
+                                    <select class="form-select" id="dataTypeSelect" onchange="updateVisualization()">
+                                        <option value="all">All Data</option>
+                                        <option value="ai_diseases">AI Diseases Only</option>
+                                        <option value="other_crops">Human Detected Diseases Only</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-sm-6">
+                                    <label class="form-label">Color Theme</label>
+                                    <select class="form-select" id="colorThemeSelect" onchange="updateVisualization()">
+                                        <option value="default">Default</option>
+                                        <option value="pastel">Pastel</option>
+                                        <option value="dark">Dark</option>
+                                        <option value="bright">Bright</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Visualization Chart -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="analytics-chart-card analytics-chart-card--tall shadow">
+                                <div class="analytics-chart-card__header py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <h6 class="m-0 font-weight-bold text-primary">Disease and Crop Reports Over Time (Last 30 Days)</h6>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="resetZoom()">
+                                        <i class="fas fa-search-minus"></i> Reset Zoom
+                                    </button>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    <div class="chart-container chart-container--tall">
+                                        <canvas id="mainChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multiple Charts Grid -->
+                    <div class="row mb-4 g-4">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="analytics-chart-card shadow h-100">
+                                <div class="analytics-chart-card__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Top Regions by Reports</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    <div class="chart-container">
+                                        <canvas id="regionalChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="analytics-chart-card shadow h-100">
+                                <div class="analytics-chart-card__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Top Crops by Reports</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    <div class="chart-container">
+                                        <canvas id="categoryChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary Statistics -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="analytics-quick-links shadow">
+                                <div class="analytics-quick-links__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Summary Statistics</h6>
+                                </div>
+                                <div class="analytics-quick-links__body">
+                                    <div class="row g-3">
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="analytics-card border-left-primary shadow h-100 py-2">
+                                                <div class="analytics-card__body">
+                                                    <div class="analytics-card__label text-primary text-uppercase mb-1">
+                                                        Total Reports
+                                                    </div>
+                                                    <div class="analytics-card__value h5 mb-0 font-weight-bold text-gray-800">{{ summary_stats.total }}</div>
+                                                    <small class="text-muted d-block mt-1">AI: {{ summary_stats.total_ai_diseases }} | Human Detected: {{ summary_stats.total_other_crops }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="analytics-card border-left-success shadow h-100 py-2">
+                                                <div class="analytics-card__body">
+                                                    <div class="analytics-card__label text-success text-uppercase mb-1">
+                                                        Avg Infection %
+                                                    </div>
+                                                    <div class="analytics-card__value h5 mb-0 font-weight-bold text-gray-800">{{ summary_stats.average|floatformat:2 }}%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="analytics-card border-left-info shadow h-100 py-2">
+                                                <div class="analytics-card__body">
+                                                    <div class="analytics-card__label text-info text-uppercase mb-1">
+                                                        Total Farms
+                                                    </div>
+                                                    <div class="analytics-card__value h5 mb-0 font-weight-bold text-gray-800">{{ summary_stats.total_farms }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="analytics-card border-left-warning shadow h-100 py-2">
+                                                <div class="analytics-card__body">
+                                                    <div class="analytics-card__label text-warning text-uppercase mb-1">
+                                                        Date Range
+                                                    </div>
+                                                    <div class="analytics-card__value h5 mb-0 font-weight-bold text-gray-800">{{ summary_stats.date_range_days }} days</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Analytics Dashboard End-->
+
+<!-- Chart.js and additional plugins -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js not loaded');
+        return;
+    }
+
+    try {
+        if (Chart.register) {
+            if (typeof window['chartJsZoom'] !== 'undefined') {
+                Chart.register(window['chartJsZoom']);
+            }
+            if (typeof window['ChartDataLabels'] !== 'undefined') {
+                Chart.register(window['ChartDataLabels']);
+            }
+        }
+    } catch (e) {
+        console.warn('Plugin registration failed:', e);
+    }
+
+    initializeAllCharts();
+});
+
+let mainChart, regionalChart, categoryChart;
+
+function initializeAllCharts() {
+    const chartData = {% if chart_data %}{{ chart_data|safe }}{% else %}{ labels: [], datasets: [] }{% endif %};
+
+    initializeMainChart(chartData);
+    initializeRegionalChart();
+    initializeCategoryChart();
+
+    fetchRegionalData();
+    fetchCategoryData();
+}
+
+function initializeMainChart(chartData) {
+    const mainCtx = document.getElementById('mainChart');
+    if (!mainCtx) {
+        console.error('Main chart canvas not found');
+        return;
+    }
+
+    if (!chartData || !chartData.labels) {
+        chartData = {
+            labels: ['No Data'],
+            datasets: [
+                {
+                    label: 'AI Diseases',
+                    data: [0],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                },
+                {
+                    label: 'Human Detected Diseases',
+                    data: [0],
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                }
+            ]
+        };
+    }
+
+    mainChart = new Chart(mainCtx.getContext('2d'), {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            // Required so the canvas fills the fixed-height .chart-container
+            // (from CSS) instead of computing its own aspect ratio and
+            // overflowing into the card below.
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { mode: 'index', intersect: false },
+                zoom: {
+                    pan: { enabled: true, mode: 'xy' },
+                    zoom: {
+                        wheel: { enabled: true },
+                        pinch: { enabled: true },
+                        mode: 'xy',
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Number of Reports' }
+                },
+                x: {
+                    title: { display: true, text: 'Time Period' }
+                }
+            }
+        }
+    });
+}
+
+function initializeRegionalChart() {
+    const regionalCtx = document.getElementById('regionalChart');
+    if (!regionalCtx) {
+        console.error('Regional chart canvas not found');
+        return;
+    }
+
+    regionalChart = new Chart(regionalCtx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Loading...'],
+            datasets: [{
+                label: 'Number of Reports',
+                data: [0],
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            // Was `true` before, which locks the canvas to Chart.js's
+            // default aspect ratio and ignores the container's fixed
+            // height -- that's what let this chart grow into the card
+            // below it. `false` + the .chart-container CSS height keeps
+            // it correctly boxed in, matching the dashboard page.
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Number of Reports' }
+                }
+            }
+        }
+    });
+}
+
+function initializeCategoryChart() {
+    const categoryCtx = document.getElementById('categoryChart');
+    if (!categoryCtx) {
+        console.error('Category chart canvas not found');
+        return;
+    }
+
+    categoryChart = new Chart(categoryCtx.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Loading...'],
+            datasets: [{
+                data: [1],
+                backgroundColor: ['rgba(200, 200, 200, 0.8)'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            // Same fix as the regional chart above.
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function fetchRegionalData() {
+    fetch('/analytics/api/analytics/visualization-data/?type=regional')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (regionalChart) {
+                const labels = data.labels || [];
+                const values = data.data || [];
+
+                if (labels.length === 0) {
+                    regionalChart.data.labels = ['No Data Available'];
+                    regionalChart.data.datasets[0].data = [1];
+                } else {
+                    regionalChart.data.labels = labels;
+                    regionalChart.data.datasets[0].data = values;
+                }
+                regionalChart.update();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching regional data:', error);
+            if (regionalChart) {
+                regionalChart.data.labels = ['Error Loading Data'];
+                regionalChart.data.datasets[0].data = [1];
+                regionalChart.update();
+            }
+        });
+}
+
+function fetchCategoryData() {
+    fetch('/analytics/api/analytics/visualization-data/?type=category')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (categoryChart) {
+                const labels = data.labels || [];
+                const values = data.data || [];
+
+                if (labels.length === 0) {
+                    categoryChart.data.labels = ['No Data Available'];
+                    categoryChart.data.datasets[0].data = [1];
+                    categoryChart.data.datasets[0].backgroundColor = ['rgba(200, 200, 200, 0.8)'];
+                } else {
+                    categoryChart.data.labels = labels;
+                    categoryChart.data.datasets[0].data = values;
+                    const colors = [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)',
+                        'rgba(255, 159, 64, 0.8)',
+                    ];
+                    categoryChart.data.datasets[0].backgroundColor = colors.slice(0, labels.length);
+                }
+                categoryChart.update();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching category data:', error);
+            if (categoryChart) {
+                categoryChart.data.labels = ['Error Loading Data'];
+                categoryChart.data.datasets[0].data = [1];
+                categoryChart.data.datasets[0].backgroundColor = ['rgba(200, 200, 200, 0.8)'];
+                categoryChart.update();
+            }
+        });
+}
+
+function changeChartType(type) {
+    if (mainChart) {
+        mainChart.config.type = type;
+        mainChart.update();
+    }
+}
+
+function updateVisualization() {
+    const aggregation = document.getElementById('aggregationSelect').value;
+    const dataType = document.getElementById('dataTypeSelect').value;
+    const colorTheme = document.getElementById('colorThemeSelect').value;
+
+    fetch(`/analytics/api/analytics/visualization-data/?aggregation=${aggregation}&data_type=${dataType}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (mainChart) {
+                mainChart.data = data;
+                updateChartColors(colorTheme);
+                mainChart.update();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching main chart data:', error);
+            alert('Failed to load chart data. Please try again.');
+        });
+}
+
+function updateChartColors(theme) {
+    const colors = {
+        'default': ['rgba(54, 162, 235, 0.8)', 'rgba(255, 99, 132, 0.8)', 'rgba(255, 206, 86, 0.8)'],
+        'pastel': ['rgba(173, 216, 230, 0.8)', 'rgba(255, 182, 193, 0.8)', 'rgba(255, 255, 204, 0.8)'],
+        'dark': ['rgba(0, 0, 139, 0.8)', 'rgba(139, 0, 0, 0.8)', 'rgba(139, 69, 19, 0.8)'],
+        'bright': ['rgba(255, 0, 0, 0.8)', 'rgba(0, 255, 0, 0.8)', 'rgba(0, 0, 255, 0.8)']
+    };
+
+    if (mainChart && mainChart.data.datasets) {
+        mainChart.data.datasets.forEach((dataset, index) => {
+            if (colors[theme] && colors[theme][index % colors[theme].length]) {
+                dataset.backgroundColor = colors[theme][index % colors[theme].length].replace('0.8', '0.2');
+                dataset.borderColor = colors[theme][index % colors[theme].length];
+            }
+        });
+    }
+}
+
+function resetZoom() {
+    if (mainChart) {
+        mainChart.resetZoom();
+    }
+}
+
+function exportChart() {
+    if (mainChart) {
+        const link = document.createElement('a');
+        link.download = 'chart.png';
+        link.href = mainChart.toBase64Image();
+        link.click();
+    }
+}
+</script>
+
+<style>
+/* Analytics Dashboard Custom Styles (shared with the main dashboard page) */
+.analytics-dashboard {
+    padding: 60px 0 80px;
+}
+
+.analytics-dashboard__header {
+    margin-bottom: 30px;
+    row-gap: 15px;
+}
+
+.analytics-dashboard__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.analytics-dashboard__subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.analytics-dashboard__filter-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.analytics-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.35rem;
+    border-left: 0.25rem solid #4e73df;
+    padding: 15px 20px;
+    background: #fff;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.analytics-card.border-left-success { border-left-color: #1cc88a; }
+.analytics-card.border-left-info { border-left-color: #36b9cc; }
+.analytics-card.border-left-warning { border-left-color: #f6c23e; }
+
+.analytics-card__body { width: 100%; }
+
+.analytics-card__label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.analytics-card__value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #5a5c69;
+}
+
+.analytics-chart-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 0.35rem;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.analytics-chart-card__header {
+    flex: 0 0 auto;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+.analytics-chart-card__body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Fixed-height, clipped box so Chart.js (responsive:true,
+   maintainAspectRatio:false) always renders inside its own card and
+   never grows into the row below it. */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    overflow: hidden;
+}
+
+/* The main chart gets a taller box since it's a full-width feature chart */
+.chart-container--tall {
+    height: 60vh;
+    min-height: 380px;
+    max-height: 520px;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.analytics-quick-links {
+    background: #fff;
+    border-radius: 0.35rem;
+    overflow: hidden;
+}
+
+.analytics-quick-links__header {
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+.analytics-quick-links__body {
+    padding: 1.25rem;
+}
+
+.text-primary { color: #4e73df !important; }
+.text-success { color: #1cc88a !important; }
+.text-info { color: #36b9cc !important; }
+.text-warning { color: #f6c23e !important; }
+.text-gray-800 { color: #5a5c69 !important; }
+.text-uppercase { text-transform: uppercase !important; }
+.font-weight-bold { font-weight: 700 !important; }
+.shadow { box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .analytics-dashboard__header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .chart-container {
+        height: 260px;
+    }
+
+    .chart-container--tall {
+        height: 50vh;
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .analytics-dashboard {
+        padding: 30px 0 40px;
+    }
+
+    .analytics-card {
+        padding: 10px 15px;
+    }
+
+    .analytics-card__value {
+        font-size: 1rem;
+    }
+
+    .chart-container {
+        height: 220px;
+    }
+
+    .chart-container--tall {
+        height: 40vh;
+        min-height: 260px;
+    }
+}
+</style>
+
+{% endblock content %}

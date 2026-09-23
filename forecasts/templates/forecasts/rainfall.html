@@ -1,0 +1,1130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!--Page Header Start-->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+    </div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>Malawi Rainfall Forecast</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'analytics:analytics_dashboard' %}">Analytics Dashboard</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>Rainfall Forecast</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Page Header End-->
+
+<!--Rainfall Forecast Start-->
+<section class="rainfall-forecast">
+    <div class="container-fluid px-4">
+        <div class="rainfall-forecast__content">
+            <!-- Header with date and refresh -->
+            <div class="rainfall-forecast__header mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="rainfall-forecast__title">
+                            <i class="fas fa-cloud-rain text-primary"></i> Malawi Rainfall Forecast
+                        </h3>
+                        <p class="rainfall-forecast__subtitle mb-0">
+                            <i class="far fa-calendar-alt"></i> {{ current_date }} | Real-time precipitation data from DCCMS
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <button class="thm-btn thm-btn--refresh" onclick="location.reload()">
+                            <i class="fas fa-sync-alt"></i> Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Rainfall Cards -->
+            <div class="row g-4 mb-4">
+                {% for city, data in current_date_weather.items %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="rainfall-card" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
+                        <div class="rainfall-card__header">
+                            <div class="rainfall-card__city">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ city }}</span>
+                            </div>
+                            <div class="rainfall-card__badge">
+                                <i class="fas fa-clock"></i> Now
+                            </div>
+                        </div>
+                        
+                        {% if data.error %}
+                        <div class="rainfall-card__error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>{{ data.error }}</span>
+                        </div>
+                        {% else %}
+                        <div class="rainfall-card__body text-center">
+                            <div class="rainfall-card__icon">
+                                {% if data.weather_condition == 'heavy_rain' %}
+                                <i class="fas fa-cloud-showers-heavy rainfall-icon--heavy"></i>
+                                {% elif data.weather_condition == 'moderate_rain' %}
+                                <i class="fas fa-cloud-rain rainfall-icon--moderate"></i>
+                                {% elif data.weather_condition == 'light_rain' %}
+                                <i class="fas fa-cloud-rain rainfall-icon--light"></i>
+                                {% elif data.weather_condition == 'drizzle' %}
+                                <i class="fas fa-cloud-rain rainfall-icon--drizzle"></i>
+                                {% else %}
+                                <i class="fas fa-cloud-sun rainfall-icon--default"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="rainfall-card__precipitation">
+                                {{ data.total_precip_today|floatformat:1 }}<span class="rainfall-card__unit">mm</span>
+                            </div>
+                            
+                            <div class="rainfall-card__label">Total Today</div>
+                            
+                            <div class="rainfall-card__condition">
+                                {% if data.weather_condition == 'heavy_rain' %}
+                                    Heavy Rain
+                                {% elif data.weather_condition == 'moderate_rain' %}
+                                    Moderate Rain
+                                {% elif data.weather_condition == 'light_rain' %}
+                                    Light Rain
+                                {% elif data.weather_condition == 'drizzle' %}
+                                    Drizzle
+                                {% else %}
+                                    {{ data.weather_condition|title }}
+                                {% endif %}
+                            </div>
+                            
+                            <div class="rainfall-card__intensity">
+                                <div class="rainfall-card__intensity-bar">
+                                    <div class="rainfall-card__intensity-fill" 
+                                         style="width: {% widthratio data.total_precip_today 20 100 %}%;">
+                                    </div>
+                                </div>
+                                <span class="rainfall-card__intensity-label">
+                                    {% if data.total_precip_today > 10 %}
+                                        Heavy
+                                    {% elif data.total_precip_today > 5 %}
+                                        Moderate
+                                    {% elif data.total_precip_today > 0.1 %}
+                                        Light
+                                    {% else %}
+                                        No Rain
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Flood Risk Alert - Only show if heavy rain detected -->
+            {% for city, data in current_date_weather.items %}
+                {% if data.weather_condition == 'heavy_rain' %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="rainfall-alert rainfall-alert--danger">
+                            <div class="rainfall-alert__icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="rainfall-alert__content">
+                                <h5 class="rainfall-alert__title">Flood Risk Alert - {{ city }}</h5>
+                                <p class="rainfall-alert__text mb-0">Heavy rainfall detected in {{ city }}. Please take necessary precautions and stay safe. Avoid low-lying areas and flooded roads.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Charts Section -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="analytics-chart-card shadow">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-chart-bar text-primary"></i>
+                            <h6 class="m-0 font-weight-bold text-primary">Hourly Precipitation - Today</h6>
+                        </div>
+                        <div class="analytics-chart-card__body chart-body">
+                            <canvas id="currentRainfallChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="analytics-chart-card shadow">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-chart-bar text-success"></i>
+                            <h6 class="m-0 font-weight-bold text-success">Next 48-Hour Precipitation Forecast</h6>
+                        </div>
+                        <div class="analytics-chart-card__body chart-body">
+                            <canvas id="forecastRainfallChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Totals -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="analytics-chart-card shadow">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-calendar-alt text-info"></i>
+                            <h6 class="m-0 font-weight-bold text-info">Daily Rainfall Totals</h6>
+                        </div>
+                        <div class="analytics-chart-card__body">
+                            <div class="daily-forecast" id="dailyTotals">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rainfall Tips -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="analytics-chart-card shadow">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-info-circle text-warning"></i>
+                            <h6 class="m-0 font-weight-bold text-warning">Rainfall Advisory</h6>
+                        </div>
+                        <div class="analytics-chart-card__body">
+                            <div class="row g-4">
+                                <div class="col-md-4">
+                                    <div class="tip-card">
+                                        <div class="tip-card__icon tip-card__icon--primary">
+                                            <i class="fas fa-umbrella"></i>
+                                        </div>
+                                        <div class="tip-card__content">
+                                            <h6 class="tip-card__title">Rain Protection</h6>
+                                            <p class="tip-card__text">Carry umbrellas and raincoats during rainy periods. Seek shelter during heavy downpours.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="tip-card">
+                                        <div class="tip-card__icon tip-card__icon--success">
+                                            <i class="fas fa-tint"></i>
+                                        </div>
+                                        <div class="tip-card__content">
+                                            <h6 class="tip-card__title">Water Harvesting</h6>
+                                            <p class="tip-card__text">Good opportunity for rainwater collection. Ensure containers are clean and covered.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="tip-card">
+                                        <div class="tip-card__icon tip-card__icon--danger">
+                                            <i class="fas fa-car"></i>
+                                        </div>
+                                        <div class="tip-card__content">
+                                            <h6 class="tip-card__title">Driving Caution</h6>
+                                            <p class="tip-card__text">Drive carefully on wet roads, maintain safe distance, and avoid flooded areas.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Rainfall Forecast End-->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cityColors = {
+        "Lilongwe": "#00BCD4",
+        "Blantyre": "#2196F3",
+        "Zomba": "#4CAF50",
+        "Mzuzu": "#9C27B0",
+    };
+
+    const cityBackgroundColors = {
+        "Lilongwe": "rgba(0, 188, 212, 0.2)",
+        "Blantyre": "rgba(33, 150, 243, 0.2)",
+        "Zomba": "rgba(76, 175, 80, 0.2)",
+        "Mzuzu": "rgba(156, 39, 176, 0.2)",
+    };
+
+    // Current Rainfall Chart
+    const currentWeatherData = {{ current_date_weather|safe }};
+    const currentCities = Object.keys(currentWeatherData).filter(city => !currentWeatherData[city].error);
+    
+    if (currentCities.length > 0) {
+        new Chart(document.getElementById('currentRainfallChart'), {
+            type: 'bar',
+            data: {
+                labels: currentWeatherData[currentCities[0]].dates,
+                datasets: currentCities.map(city => ({
+                    label: city,
+                    data: currentWeatherData[city].precipitations,
+                    backgroundColor: cityColors[city],
+                    borderColor: cityColors[city],
+                    borderWidth: 1,
+                    borderRadius: 4,
+                })),
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: {
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255,255,255,0.95)',
+                        titleColor: '#212529',
+                        bodyColor: '#5a5c69',
+                        borderColor: '#e3e6f0',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw.toFixed(1) + ' mm';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: {
+                                size: 10
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time (UTC)',
+                            color: '#5a5c69',
+                            font: {
+                                size: 11,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.06)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Precipitation (mm)',
+                            color: '#5a5c69',
+                            font: {
+                                size: 11,
+                                weight: '600'
+                            }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + ' mm';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Forecast Rainfall Chart
+    const forecastWeatherData = {{ forecast_weather|safe }};
+    const forecastCities = Object.keys(forecastWeatherData).filter(city => !forecastWeatherData[city].error);
+    
+    if (forecastCities.length > 0) {
+        new Chart(document.getElementById('forecastRainfallChart'), {
+            type: 'bar',
+            data: {
+                labels: forecastWeatherData[forecastCities[0]].dates,
+                datasets: forecastCities.map(city => ({
+                    label: city,
+                    data: forecastWeatherData[city].precipitations,
+                    backgroundColor: cityColors[city],
+                    borderColor: cityColors[city],
+                    borderWidth: 1,
+                    borderRadius: 4,
+                })),
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: {
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255,255,255,0.95)',
+                        titleColor: '#212529',
+                        bodyColor: '#5a5c69',
+                        borderColor: '#e3e6f0',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw.toFixed(1) + ' mm';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: {
+                                size: 10
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date/Time (UTC)',
+                            color: '#5a5c69',
+                            font: {
+                                size: 11,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.06)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Precipitation (mm)',
+                            color: '#5a5c69',
+                            font: {
+                                size: 11,
+                                weight: '600'
+                            }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + ' mm';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Populate Daily Totals
+    function populateDailyTotals() {
+        const dailyTotalsDiv = document.getElementById('dailyTotals');
+        if (!dailyTotalsDiv) return;
+        
+        dailyTotalsDiv.innerHTML = '';
+        
+        forecastCities.forEach(city => {
+            const data = forecastWeatherData[city];
+            if (data && data.daily_totals) {
+                const days = Object.keys(data.daily_totals).slice(0, 3);
+                
+                days.forEach((day, index) => {
+                    const total = data.daily_totals[day];
+                    const date = new Date(day);
+                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    // Calculate intensity percentage (max 100% for 20mm or more)
+                    const intensity = Math.min((total / 20) * 100, 100);
+                    
+                    // Determine rain level
+                    let rainLevel, rainClass;
+                    if (total > 10) {
+                        rainLevel = 'Heavy';
+                        rainClass = 'daily-item--heavy';
+                    } else if (total > 5) {
+                        rainLevel = 'Moderate';
+                        rainClass = 'daily-item--moderate';
+                    } else if (total > 0.1) {
+                        rainLevel = 'Light';
+                        rainClass = 'daily-item--light';
+                    } else {
+                        rainLevel = 'No Rain';
+                        rainClass = 'daily-item--dry';
+                    }
+                    
+                    const col = document.createElement('div');
+                    col.className = `daily-item ${rainClass}`;
+                    col.innerHTML = `
+                        <div class="daily-item__date">${dayName}, ${monthDay}</div>
+                        <div class="daily-item__city">${city}</div>
+                        <div class="daily-item__total">${total.toFixed(1)} <span class="daily-item__unit">mm</span></div>
+                        <div class="daily-item__bar">
+                            <div class="daily-item__bar-fill" style="width: ${intensity}%;"></div>
+                        </div>
+                        <div class="daily-item__level">${rainLevel}</div>
+                    `;
+                    dailyTotalsDiv.appendChild(col);
+                });
+            }
+        });
+    }
+
+    populateDailyTotals();
+});
+</script>
+
+<style>
+/* ============================================
+   Rainfall Forecast Section
+   ============================================ */
+.rainfall-forecast {
+    padding: 50px 0 80px;
+    background: #f8f9fc;
+}
+
+.rainfall-forecast__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.rainfall-forecast__title i {
+    margin-right: 10px;
+}
+
+.rainfall-forecast__subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* ============================================
+   Rainfall Cards
+   ============================================ */
+.rainfall-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid #e3e6f0;
+    animation: fadeInUp 0.6s ease-out both;
+}
+
+.rainfall-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rainfall-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.rainfall-card__city {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.rainfall-card__city i {
+    color: #4e73df;
+    margin-right: 8px;
+}
+
+.rainfall-card__badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    background: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.rainfall-card__badge i {
+    margin-right: 4px;
+}
+
+.rainfall-card__error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(231, 74, 59, 0.08);
+    border-radius: 8px;
+    color: #e74a3b;
+    font-size: 0.85rem;
+}
+
+.rainfall-card__body {
+    padding: 5px 0;
+}
+
+.rainfall-card__icon {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+}
+
+.rainfall-icon--heavy {
+    color: #0d47a1;
+    animation: float 3s ease-in-out infinite;
+}
+
+.rainfall-icon--moderate {
+    color: #1976d2;
+    animation: float 3s ease-in-out infinite;
+}
+
+.rainfall-icon--light {
+    color: #42a5f5;
+    animation: float 3s ease-in-out infinite;
+}
+
+.rainfall-icon--drizzle {
+    color: #90caf9;
+    animation: float 3s ease-in-out infinite;
+}
+
+.rainfall-icon--default {
+    color: #ffa726;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.rainfall-card__precipitation {
+    font-size: 3rem;
+    font-weight: 300;
+    color: #212529;
+    line-height: 1;
+}
+
+.rainfall-card__unit {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #858796;
+}
+
+.rainfall-card__label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.rainfall-card__condition {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4e73df;
+    text-transform: capitalize;
+    margin-bottom: 12px;
+}
+
+.rainfall-card__intensity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rainfall-card__intensity-bar {
+    flex: 1;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.rainfall-card__intensity-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4e73df, #0d47a1);
+    border-radius: 3px;
+    transition: width 1s ease;
+}
+
+.rainfall-card__intensity-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+    white-space: nowrap;
+}
+
+/* ============================================
+   Alert
+   ============================================ */
+.rainfall-alert {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    border-radius: 12px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.rainfall-alert--danger {
+    background: linear-gradient(135deg, #e74a3b, #c0392b);
+    color: #ffffff;
+}
+
+.rainfall-alert__icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.rainfall-alert__content {
+    flex: 1;
+}
+
+.rainfall-alert__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #ffffff;
+}
+
+.rainfall-alert__text {
+    font-size: 0.9rem;
+    opacity: 0.95;
+    margin: 0;
+}
+
+/* ============================================
+   Chart Cards
+   ============================================ */
+.analytics-chart-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e3e6f0;
+}
+
+.analytics-chart-card__header {
+    flex: 0 0 auto;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.9rem 1.25rem;
+}
+
+.analytics-chart-card__body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.chart-body {
+    min-height: 320px;
+    position: relative;
+}
+
+.chart-body canvas {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 350px;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1) !important;
+}
+
+.text-primary { color: #4e73df !important; }
+.text-success { color: #1cc88a !important; }
+.text-info { color: #36b9cc !important; }
+.text-warning { color: #f6c23e !important; }
+.font-weight-bold { font-weight: 700 !important; }
+
+/* ============================================
+   Daily Forecast Items
+   ============================================ */
+.daily-forecast {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px 5px;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: #4e73df #e9ecef;
+}
+
+.daily-forecast::-webkit-scrollbar {
+    height: 6px;
+}
+
+.daily-forecast::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 10px;
+}
+
+.daily-forecast::-webkit-scrollbar-thumb {
+    background: #4e73df;
+    border-radius: 10px;
+}
+
+.daily-item {
+    min-width: 160px;
+    text-align: center;
+    padding: 16px 12px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    border: 1px solid #e3e6f0;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.daily-item:hover {
+    transform: scale(1.03);
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.daily-item--heavy {
+    border-left: 3px solid #0d47a1;
+}
+
+.daily-item--moderate {
+    border-left: 3px solid #1976d2;
+}
+
+.daily-item--light {
+    border-left: 3px solid #42a5f5;
+}
+
+.daily-item--dry {
+    border-left: 3px solid #ffa726;
+}
+
+.daily-item__date {
+    font-weight: 700;
+    color: #212529;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.daily-item__city {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 6px;
+}
+
+.daily-item__total {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: #212529;
+    line-height: 1;
+}
+
+.daily-item__unit {
+    font-size: 0.9rem;
+    color: #858796;
+}
+
+.daily-item__bar {
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 8px 0 6px 0;
+}
+
+.daily-item__bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4e73df, #0d47a1);
+    border-radius: 3px;
+    transition: width 1s ease;
+}
+
+.daily-item__level {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+/* ============================================
+   Tip Cards
+   ============================================ */
+.tip-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.tip-card:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.tip-card__icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.1);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.tip-card__icon--primary {
+    background: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+}
+
+.tip-card__icon--success {
+    background: rgba(28, 200, 138, 0.1);
+    color: #1cc88a;
+}
+
+.tip-card__icon--danger {
+    background: rgba(231, 74, 59, 0.1);
+    color: #e74a3b;
+}
+
+.tip-card:hover .tip-card__icon {
+    transform: scale(1.05);
+}
+
+.tip-card__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.tip-card__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 4px 0;
+}
+
+.tip-card__text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ============================================
+   Refresh Button
+   ============================================ */
+.thm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: #4e73df;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.thm-btn:hover {
+    background: #2e59d9;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn:active {
+    transform: translateY(0);
+}
+
+.thm-btn--refresh {
+    background: #ffffff;
+    color: #4e73df;
+    border: 2px solid #4e73df;
+}
+
+.thm-btn--refresh:hover {
+    background: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 1199px) {
+    .rainfall-card__precipitation {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 991px) {
+    .rainfall-forecast {
+        padding: 30px 0 50px;
+    }
+    
+    .rainfall-card__precipitation {
+        font-size: 2.2rem;
+    }
+    
+    .chart-body {
+        min-height: 260px;
+    }
+}
+
+@media (max-width: 767px) {
+    .rainfall-forecast__title {
+        font-size: 20px;
+    }
+    
+    .rainfall-card__precipitation {
+        font-size: 2rem;
+    }
+    
+    .rainfall-card__icon {
+        font-size: 2.8rem;
+    }
+    
+    .rainfall-alert {
+        flex-direction: column;
+        text-align: center;
+        padding: 16px;
+    }
+    
+    .tip-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .tip-card__icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        font-size: 1rem;
+    }
+    
+    .daily-item {
+        min-width: 140px;
+        padding: 12px 10px;
+    }
+    
+    .daily-item__total {
+        font-size: 1.5rem;
+    }
+    
+    .chart-body {
+        min-height: 220px;
+    }
+    
+    .thm-btn {
+        width: 100%;
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .rainfall-forecast {
+        padding: 20px 0 30px;
+    }
+    
+    .rainfall-card {
+        padding: 15px;
+    }
+    
+    .rainfall-card__precipitation {
+        font-size: 1.8rem;
+    }
+    
+    .rainfall-card__unit {
+        font-size: 1.1rem;
+    }
+    
+    .analytics-chart-card__body {
+        padding: 0.75rem;
+    }
+    
+    .chart-body {
+        min-height: 180px;
+    }
+    
+    .daily-item {
+        min-width: 120px;
+        padding: 10px 8px;
+    }
+    
+    .daily-item__total {
+        font-size: 1.3rem;
+    }
+}
+</style>
+
+{% endblock %}

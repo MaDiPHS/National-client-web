@@ -1,0 +1,49 @@
+{% extends 'page.html' %}
+
+{% load static %}
+
+{% block customCSS %}
+	<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css"> -->
+    <link rel="stylesheet" href="{% static 'gridmap/ol/ol.css' %}">
+	<style  type="text/css">
+		html, body {
+		  height: 100%;
+		  width: 100%;
+		  margin: 0px;
+		  padding: 0px;
+		}
+
+		.map {
+		  height: 100%;
+		}
+	</style>
+{% endblock %}
+
+{% block customJS %}
+	<script src="{% static 'gridmap/ol/dist/ol.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+	<div class="container"></div>
+		<div id="ol-map" class="map"></div>
+
+
+	<script>
+		function init(){
+			var map = new ol.Map({
+			  target: 'ol-map',
+			  layers: [
+				new ol.layer.Tile({
+				  source: new ol.source.OSM()
+				})
+			  ],
+			  view: new ol.View({
+				center: ol.proj.fromLonLat([33.82, -13.91]),
+				zoom: 5
+			  })
+    		});
+		}
+
+		init()
+	</script>
+{% endblock %}

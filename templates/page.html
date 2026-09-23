@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        <meta charset="utf-8" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>MaDiPHS Integration</title>
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/images/logo.png' %} " />
+
+        {% block customJS %}{% endblock %}
+
+        <!-- ========================= CSS here ========================= -->
+        {% block customCSS %}{% endblock %}
+        {% include "styles.html" %}
+
+    </head>
+
+    <body class="position-relative" data-bs-spy="scroll" data-bs-target="#navbar-example2" tabindex="0">
+		<header class="header navbar-area others-pages">
+			{% include "header.html" %}
+		</header>
+		
+        {% block "content" %}{% endblock %}
+
+        <!-- ========================= scroll-top ========================= -->
+        <a href="#" class="scroll-top">
+            <i class="lni lni-chevron-up"></i><span class="d-none">scroll-top</span>
+        </a>
+
+        <!-- ========================= JS here ========================= -->
+        {% include "scripts.html" %}
+    
+    </body>
+</html>

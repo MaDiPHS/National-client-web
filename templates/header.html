@@ -1,0 +1,150 @@
+<!-- header.html -->
+{% load static %}
+<header class="main-header">
+    <div class="main-menu__top">
+        <div class="main-menu__top-inner">
+            <ul class="list-unstyled main-menu__contact-list">
+                <li>
+                    <div class="text">
+                        <p>MaDiphs National Client</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">
+                        <i class="icon-envelope"></i>
+                    </div>
+                    <div class="text">
+                        <p><a href="mailto:madiphs@gmail.com">madiphs@gmail.com</a></p>
+                    </div>
+                </li>
+            </ul> 
+            <div class="main-menu__top-right">
+                <div class="main-menu__social">
+                    <a href="https://twitter.com/madiphs" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://facebook.com/madiphs" target="_blank"><i class="fab fa-facebook"></i></a>
+                    <a href="https://pinterest.com/madiphs" target="_blank"><i class="fab fa-pinterest-p"></i></a>
+                    <a href="https://instagram.com/madiphs" target="_blank"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="main-menu">
+        <div class="main-menu__wrapper">
+            <div class="main-menu__wrapper-inner">
+                <div class="main-menu__left">
+                    <div class="main-menu__logo">
+                        <a href="{% url 'core:index' %}"><img src="{% static 'assets/images/resources/logo.png' %}" alt="National Client"></a>
+                    </div>
+                </div>
+                <div class="main-menu__main-menu-box">
+                    <a href="#" class="mobile-nav__toggler"><i class="fa fa-bars"></i></a>
+                    <ul class="main-menu__list">
+                  
+                        <!-- ANALYTICS & INSIGHTS -->
+                         <li>
+                            <a href="{% url 'core:about'%}">About Us</a>
+                            
+                        </li>
+                        <li class="dropdown">
+                            <a href="#">Analytics</a>
+                            <ul class="shadow-box">
+                                <li><a href="{% url 'analytics:analytics_dashboard' %}">Dashboard Overview</a></li>
+                                <li><a href="{% url 'analytics:visualizations' %}">Visualizations</a></li>
+                                <li><a href="{% url 'analytics:crop_analytics' %}">Crop Analytics</a></li>
+                                <li><a href="{% url 'analytics:time_series_analytics' %}">Time Series Analysis</a></li>
+                                <li class="dropdown">
+                                    <a href="#">Disease Analytics by District</a>
+                                    <ul class="shadow-box">
+                                        <li><a href="{% url 'analytics:disease_dashboard' %}">Disease Report</a></li>
+                                        <li><a href="{% url 'analytics:disease_map' %}">Disease Maps</a></li>
+                                        <li><a href="{% url 'analytics:forecasting' %}">Disease Forecasting</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- WEATHER & CLIMATE -->
+                        <li class="dropdown">
+                            <a href="#">Weather</a>
+                            <ul class="shadow-box">
+                                <li><a href="{% url 'forecasts:forecasting_temperature' %}">Temperature Forecasts</a></li>
+                                <li><a href="{% url 'forecasts:forecasting_rainfall' %}">Rainfall Forecasts</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- PEST & DISEASE RISK MAPS -->
+                        <li class="dropdown">
+                            <a href="#">Risk Maps</a>
+                            <ul class="shadow-box">
+                                <li><a href="{% url 'gridmap:gridmap_example' %}">Tuta Absoluta</a></li>
+                                <li><a href="{% url 'gridmap:gridmap_example2' %}">Fall Armyworm</a></li>
+                                <li><a href="{% url 'gridmap:gridmap_example4' %}">African Armyworm</a></li>
+                                <li><a href="{% url 'gridmap:gridmap_example5' %}">Striga</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- VIAMO 321 -->
+                        <li>
+                            <a href="{% url 'core:viamo' %}">Viamo 321</a>
+                            
+                        </li>
+
+                        <!-- KNOWLEDGE & DATA SERVICES -->
+                        <li class="dropdown">
+                            <a href="#">Knowledge Base</a>
+                            <ul class="shadow-box">
+                                <li><a href="{% url 'madiphs_ckan:ckan' %}">CKAN Introduction</a></li>
+                                <li><a href="{% url 'madiphs_ckan:ckan_getting_started' %}">Getting Started</a></li>
+                                <li><a href="{% url 'madiphs_ckan:ckan_getting_started2' %}">Dataset Discovery</a></li>
+                                <li><a href="https://ckan.madiphs.org/" target="_blank">Knowledge Library</a></li>
+                                <li class="dropdown">
+                                    <a href="#">CABI/PRISE bulletins</a>
+                                    <ul class="shadow-box">
+                                        <li><a href="{% url 'madiphs_prise_bulletin:bulletin_intro' %}">Getting Started</a></li>
+                                        <li><a href="{% url 'madiphs_prise_bulletin:bulletin_example' %}">Bulletin Example</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="main-menu__right">
+                    <div class="main-menu__call">
+                        <div class="main-menu__call-icon">
+                            <i class="icon-call"></i>
+                        </div>
+                        <div class="main-menu__call-content">
+                            <p class="main-menu__call-sub-title">Call Anytime</p>
+                            <h5 class="main-menu__call-number"><a href="tel:+9288006780">+92 ( 8800 ) - 6780</a></h5>
+                        </div>
+                    </div>
+                    <!-- <div class="main-menu__search-cart-box">
+                        <div class="main-menu__search-cart-box">
+                            <div class="main-menu__search-box">
+                                <a href="#" class="main-menu__search searcher-toggler-box icon-search-interface-symbol"></a>
+                            </div>
+                            <div class="main-menu__cart-box">
+                                <a href="#" class="main-menu__cart">
+                                    <span class="far fa-shopping-cart"></span>
+                                    <span class="main-menu__cart-count">02</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="main-menu__nav-sidebar-icon">
+                        <a class="navSidebar-button" href="#">
+                            <span class="icon-dots-menu-one"></span>
+                            <span class="icon-dots-menu-two"></span>
+                            <span class="icon-dots-menu-three"></span>
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="stricky-header stricked-menu main-menu">
+    <div class="sticky-header__content"></div><!-- /.sticky-header__content -->
+</div><!-- /.stricky-header -->

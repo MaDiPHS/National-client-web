@@ -1,0 +1,1412 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!--Page Header Start-->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+    </div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>CKAN Dataset Search</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'analytics:analytics_dashboard' %}">Analytics Dashboard</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'madiphs_ckan:ckan' %}">CKAN Documentation</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>Dataset Search</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Page Header End-->
+
+<!--CKAN Search Start-->
+<section class="ckan-search">
+    <div class="container">
+        <div class="ckan-search__content">
+            <!-- Progress Steps -->
+            <div class="ckan-progress mb-4">
+                <div class="ckan-progress__steps">
+                    <div class="ckan-progress__step">
+                        <div class="ckan-progress__circle completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="ckan-progress__label">Getting Started</span>
+                    </div>
+                    <div class="ckan-progress__connector"></div>
+                    <div class="ckan-progress__step">
+                        <div class="ckan-progress__circle completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="ckan-progress__label">Browse Tags</span>
+                    </div>
+                    <div class="ckan-progress__connector"></div>
+                    <div class="ckan-progress__step">
+                        <div class="ckan-progress__circle active">3</div>
+                        <span class="ckan-progress__label active">Search Datasets</span>
+                    </div>
+                    <div class="ckan-progress__connector"></div>
+                    <div class="ckan-progress__step">
+                        <div class="ckan-progress__circle">4</div>
+                        <span class="ckan-progress__label">Advanced Filters</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Audience -->
+            <div class="ckan-section ckan-section--highlight mb-4">
+                <div class="ckan-section__icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="ckan-section__content">
+                    <h5 class="ckan-section__title">Target Audience</h5>
+                    <p class="ckan-section__text">
+                        This page allows users to search for datasets from the 
+                        <a href="https://ckan.madiphs.org/" target="_blank" class="ckan-link">MADIPHS CKAN Catalogue</a> 
+                        by entering relevant keywords (e.g., topic, author, or title).
+                    </p>
+                    <div class="audience-tags">
+                        <span class="audience-tag"><i class="fas fa-flask"></i> Researchers</span>
+                        <span class="audience-tag"><i class="fas fa-chart-bar"></i> Data Analysts</span>
+                        <span class="audience-tag"><i class="fas fa-landmark"></i> Policymakers</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Card -->
+            <div class="ckan-card ckan-card--search mb-4">
+                <div class="ckan-card__header">
+                    <i class="fas fa-search ckan-card__icon"></i>
+                    <h5 class="ckan-card__title">Search for Datasets by Keyword or Author</h5>
+                </div>
+                <form method="POST" id="searchForm" class="ckan-search-form">
+                    {% csrf_token %}
+                    <div class="ckan-card__body">
+                        <div class="row align-items-end">
+                            <div class="col-md-8">
+                                <label for="query" class="ckan-search-form__label">
+                                    <i class="fas fa-keyboard"></i> Enter Keyword or Author
+                                    <small class="text-muted">(Ctrl+K to focus)</small>
+                                </label>
+                                <div class="ckan-search-form__wrapper">
+                                    <i class="fas fa-tag ckan-search-form__icon"></i>
+                                    <input 
+                                        type="text" 
+                                        name="query" 
+                                        id="query" 
+                                        value="{{ form_data.query|default:'' }}"
+                                        class="ckan-search-form__input {% if errors.query %}is-invalid{% endif %}" 
+                                        placeholder="e.g., fall army worm, DARS, agriculture..."
+                                        required
+                                    >
+                                </div>
+                                {% if errors.query %}
+                                <div class="ckan-search-form__error">{{ errors.query }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mt-3 mt-md-0">
+                                <div class="ckan-search-form__actions">
+                                    <button type="submit" name="search" value="search" class="thm-btn thm-btn--search">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                    <button type="submit" name="download" value="download" class="thm-btn thm-btn--download">
+                                        <i class="fas fa-download"></i> CSV
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Search Results -->
+            {% if datasets %}
+            <div class="ckan-card ckan-card--results mb-4">
+                <div class="ckan-card__header">
+                    <div class="ckan-card__header-left">
+                        <i class="fas fa-database ckan-card__icon"></i>
+                        <h5 class="ckan-card__title">Search Results for: "{{ search_term }}"</h5>
+                    </div>
+                    <span class="ckan-card__badge ckan-card__badge--large">
+                        <i class="fas fa-list"></i> {{ datasets|length }} datasets found
+                    </span>
+                </div>
+                <div class="ckan-card__body ckan-card__body--table">
+                    <div class="table-responsive">
+                        <table class="ckan-table">
+                            <thead>
+                                <tr>
+                                    <th>Author</th>
+                                    <th>Organization</th>
+                                    <th>Title / Name</th>
+                                    <th>URL</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in datasets %}
+                                <tr>
+                                    <td class="ckan-table__author">{{ row.0 }}</td>
+                                    <td>
+                                        <span class="ckan-table__org-badge">{{ row.1 }}</span>
+                                    </td>
+                                    <td class="ckan-table__title">{{ row.2 }}</td>
+                                    <td>
+                                        {% if row.3 and row.3 != 'No URL provided' %}
+                                        <a href="{{ row.3 }}" target="_blank" class="ckan-table__link">
+                                            <i class="fas fa-external-link-alt"></i> View
+                                        </a>
+                                        {% else %}
+                                        <span class="ckan-table__no-url">
+                                            <i class="fas fa-times-circle"></i> No URL
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="ckan-table__description">
+                                        <span class="description-text" data-full="{{ row.4 }}">
+                                            {{ row.4|truncatechars:100 }}
+                                            {% if row.4|length > 100 %}
+                                            <a href="#" class="ckan-table__read-more">...more</a>
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                {% if search_term %}
+                <div class="ckan-empty-state ckan-empty-state--search">
+                    <i class="fas fa-database ckan-empty-state__icon"></i>
+                    <h5 class="ckan-empty-state__title">No datasets found for "{{ search_term }}"</h5>
+                    <p class="ckan-empty-state__text">Try using different keywords or check the example below.</p>
+                </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Example Search Section -->
+            <div class="ckan-card ckan-card--example mb-4">
+                <div class="ckan-card__header">
+                    <i class="fas fa-lightbulb ckan-card__icon ckan-card__icon--warning"></i>
+                    <h5 class="ckan-card__title">Example Search: <span class="text-primary">"fall army worm"</span></h5>
+                </div>
+                <div class="ckan-card__body">
+                    <p class="ckan-card__text">
+                        For example, if you are interested in datasets related to "<strong>fall army worm</strong>", you
+                        can type that phrase into the search bar above and click the "Search" button. The system will
+                        return matching datasets from the MADIPHS CKAN data catalogue.
+                    </p>
+
+                    <div class="ckan-endpoint">
+                        <div class="ckan-endpoint__left">
+                            <strong><i class="fas fa-cloud"></i> API Endpoint:</strong>
+                            <code class="ckan-endpoint__code">https://ckan.madiphs.org/api/3/action/package_search?q=fall%20army%20worm</code>
+                        </div>
+                        <button class="ckan-endpoint__copy" onclick="copyToClipboard('https://ckan.madiphs.org/api/3/action/package_search?q=fall%20army%20worm')">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+
+                    <h6 class="ckan-card__subtitle">Sample Results:</h6>
+                    <div class="table-responsive">
+                        <table class="ckan-table ckan-table--example">
+                            <thead>
+                                <tr>
+                                    <th>Author</th>
+                                    <th>Organization</th>
+                                    <th>Title / Name</th>
+                                    <th>URL</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ckan-table__author">H. Dambolachepa</td>
+                                    <td><span class="ckan-table__org-badge">DARS</span></td>
+                                    <td class="ckan-table__title">Sustainable Fall Army Management in Malawi</td>
+                                    <td>
+                                        <a href="https://ckan.madiphs.org/dataset/sustainable-fall-army-management-in-malawi" 
+                                           target="_blank" class="ckan-table__link">
+                                            <i class="fas fa-external-link-alt"></i> View
+                                        </a>
+                                    </td>
+                                    <td class="ckan-table__description">Demonstrations were carried out at Chitedze Research Station on sustainable management...</td>
+                                </tr>
+                                <tr>
+                                    <td class="ckan-table__author">Ministry of Agriculture</td>
+                                    <td><span class="ckan-table__org-badge">DAES</span></td>
+                                    <td class="ckan-table__title">FALL ARMYWORM JINGLE - CHICHEWA</td>
+                                    <td><span class="ckan-table__no-url"><i class="fas fa-times-circle"></i> No URL</span></td>
+                                    <td class="ckan-table__description">Audio jingle that contains information on the outbreak, prevention, and control...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="ckan-card ckan-card--tips mb-4">
+                <div class="ckan-card__header">
+                    <i class="fas fa-lightbulb ckan-card__icon ckan-card__icon--warning"></i>
+                    <h5 class="ckan-card__title">Tips for Better Search Results</h5>
+                </div>
+                <div class="ckan-card__body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="tip-item">
+                                <div class="tip-item__icon">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div class="tip-item__content">
+                                    <strong class="tip-item__title">Use Specific Keywords</strong>
+                                    <p class="tip-item__text">Try searching for specific topics like:</p>
+                                    <div class="tip-item__tags">
+                                        <span class="tip-item__tag">Tuta Absoluta</span>
+                                        <span class="tip-item__tag">Striga</span>
+                                        <span class="tip-item__tag">Fall Army Worm</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="tip-item">
+                                <div class="tip-item__icon tip-item__icon--accent">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="tip-item__content">
+                                    <strong class="tip-item__title">Search by Organization</strong>
+                                    <p class="tip-item__text">Find datasets from specific institutions:</p>
+                                    <div class="tip-item__tags">
+                                        <span class="tip-item__tag">DARS</span>
+                                        <span class="tip-item__tag">DCCMS</span>
+                                        <span class="tip-item__tag">LUANAR</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="tip-item">
+                                <div class="tip-item__icon tip-item__icon--success">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="tip-item__content">
+                                    <strong class="tip-item__title">Search by Author</strong>
+                                    <p class="tip-item__text">Look for datasets by specific researchers:</p>
+                                    <div class="tip-item__tags">
+                                        <span class="tip-item__tag">H. Dambolachepa</span>
+                                        <span class="tip-item__tag">Ministry of Agriculture</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="tip-item">
+                                <div class="tip-item__icon tip-item__icon--warning">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div class="tip-item__content">
+                                    <strong class="tip-item__title">Use Year Filters</strong>
+                                    <p class="tip-item__text">Add years to narrow down results:</p>
+                                    <div class="tip-item__tags">
+                                        <span class="tip-item__tag">2023</span>
+                                        <span class="tip-item__tag">2022</span>
+                                        <span class="tip-item__tag">2021</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="ckan-navigation">
+                <a href="{% url 'madiphs_ckan:ckan_getting_started2' %}" class="thm-btn thm-btn--back">
+                    <i class="fas fa-arrow-left"></i> Back to Tags
+                </a>
+                <a href="{% url 'madiphs_ckan:advanced_filter' %}" class="thm-btn thm-btn--next">
+                    Advanced Filters <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!--CKAN Search End-->
+
+<!-- Loading Spinner -->
+<div class="ckan-spinner" id="loadingSpinner">
+    <div class="ckan-spinner__container">
+        <div class="ckan-spinner__ring"></div>
+        <p class="ckan-spinner__text">Searching datasets...</p>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="ckan-toast" id="liveToast">
+    <div class="ckan-toast__header">
+        <i class="fas fa-info-circle ckan-toast__icon"></i>
+        <strong class="ckan-toast__title">Notification</strong>
+        <button class="ckan-toast__close" onclick="hideToast()">&times;</button>
+    </div>
+    <div class="ckan-toast__body" id="toastMessage">Copied to clipboard!</div>
+</div>
+
+<script>
+// Show loading spinner on form submit
+document.getElementById('searchForm').addEventListener('submit', function() {
+    document.getElementById('loadingSpinner').style.display = 'flex';
+});
+
+// Hide spinner when page loads
+window.addEventListener('load', function() {
+    document.getElementById('loadingSpinner').style.display = 'none';
+});
+
+// Copy to clipboard function
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('API endpoint copied to clipboard!');
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+    });
+}
+
+// Toast functions
+function showToast(message) {
+    const toast = document.getElementById('liveToast');
+    document.getElementById('toastMessage').textContent = message;
+    toast.classList.add('show');
+    setTimeout(function() {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+function hideToast() {
+    document.getElementById('liveToast').classList.remove('show');
+}
+
+// Read more functionality
+document.querySelectorAll('.ckan-table__read-more').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const span = this.closest('.description-text');
+        const fullText = span.dataset.full;
+        span.innerHTML = fullText;
+    });
+});
+
+// Keyboard shortcut: Ctrl/Cmd + K to focus search
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('query').focus();
+    }
+});
+
+// Add smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+</script>
+
+<style>
+/* ============================================
+   CKAN Search Section
+   ============================================ */
+.ckan-search {
+    padding: 50px 0 80px;
+    background: #f8f9fc;
+}
+
+.ckan-search__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.ckan-search__title i {
+    margin-right: 10px;
+}
+
+.ckan-search__subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* ============================================
+   Progress Steps
+   ============================================ */
+.ckan-progress__steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    background: #ffffff;
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+}
+
+.ckan-progress__step {
+    display: flex;
+    align-items: center;
+}
+
+.ckan-progress__circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #e3e6f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #858796;
+    transition: all 0.3s ease;
+}
+
+.ckan-progress__circle.active {
+    background: #4e73df;
+    border-color: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 0.25rem 0.75rem rgba(78, 115, 223, 0.3);
+}
+
+.ckan-progress__circle.completed {
+    background: #1cc88a;
+    border-color: #1cc88a;
+    color: #ffffff;
+}
+
+.ckan-progress__label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #858796;
+    margin: 0 8px;
+}
+
+.ckan-progress__label.active {
+    color: #4e73df;
+}
+
+.ckan-progress__connector {
+    width: 40px;
+    height: 2px;
+    background: #e3e6f0;
+    margin: 0 4px;
+}
+
+/* ============================================
+   Sections
+   ============================================ */
+.ckan-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 24px 28px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+}
+
+.ckan-section--highlight {
+    background: linear-gradient(135deg, #f8f9fc 0%, #e9ecf2 100%);
+    border-left: 4px solid #f6c23e;
+}
+
+.ckan-section__icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.1);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1.2rem;
+}
+
+.ckan-section__content {
+    flex: 1;
+}
+
+.ckan-section__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 8px 0;
+}
+
+.ckan-section__text {
+    font-size: 0.95rem;
+    color: #5a5c69;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.ckan-link {
+    color: #4e73df;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ckan-link:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   Audience Tags
+   ============================================ */
+.audience-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.audience-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5a5c69;
+    transition: all 0.3s ease;
+}
+
+.audience-tag i {
+    color: #4e73df;
+}
+
+.audience-tag:hover {
+    background: #4e73df;
+    color: #ffffff;
+    border-color: #4e73df;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.audience-tag:hover i {
+    color: #ffffff;
+}
+
+/* ============================================
+   CKAN Cards
+   ============================================ */
+.ckan-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    overflow: hidden;
+}
+
+.ckan-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 24px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    flex-wrap: wrap;
+}
+
+.ckan-card__header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ckan-card__icon {
+    font-size: 1.2rem;
+    color: #4e73df;
+    width: 24px;
+    text-align: center;
+}
+
+.ckan-card__icon--warning {
+    color: #f6c23e;
+}
+
+.ckan-card__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0;
+}
+
+.ckan-card__badge {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.ckan-card__badge--large {
+    padding: 6px 18px;
+    font-size: 0.85rem;
+}
+
+.ckan-card__badge i {
+    margin-right: 6px;
+}
+
+.ckan-card__body {
+    padding: 24px;
+}
+
+.ckan-card__body--table {
+    padding: 0;
+}
+
+.ckan-card__text {
+    font-size: 0.95rem;
+    color: #5a5c69;
+    line-height: 1.7;
+    margin: 0 0 16px 0;
+}
+
+.ckan-card__subtitle {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #212529;
+    margin: 20px 0 12px 0;
+}
+
+.ckan-card--search .ckan-card__icon {
+    color: #4e73df;
+}
+
+.ckan-card--results .ckan-card__icon {
+    color: #36b9cc;
+}
+
+.ckan-card--example .ckan-card__icon {
+    color: #f6c23e;
+}
+
+.ckan-card--tips .ckan-card__icon {
+    color: #1cc88a;
+}
+
+/* ============================================
+   Search Form
+   ============================================ */
+.ckan-search-form__label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #212529;
+    margin-bottom: 8px;
+}
+
+.ckan-search-form__label small {
+    font-weight: 400;
+    color: #858796;
+}
+
+.ckan-search-form__wrapper {
+    position: relative;
+}
+
+.ckan-search-form__icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #858796;
+    z-index: 10;
+}
+
+.ckan-search-form__input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border: 2px solid #e3e6f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    color: #212529;
+}
+
+.ckan-search-form__input:focus {
+    outline: none;
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+}
+
+.ckan-search-form__input.is-invalid {
+    border-color: #e74a3b;
+}
+
+.ckan-search-form__error {
+    color: #e74a3b;
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
+.ckan-search-form__actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* ============================================
+   Table
+   ============================================ */
+.ckan-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+}
+
+.ckan-table thead th {
+    background: #f8f9fc;
+    color: #5a5c69;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 12px 16px;
+    border-bottom: 2px solid #e3e6f0;
+    text-align: left;
+}
+
+.ckan-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f1f5;
+    vertical-align: middle;
+    color: #3a3b45;
+}
+
+.ckan-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ckan-table tbody tr:hover {
+    background: #f8f9fc;
+}
+
+.ckan-table__author {
+    font-weight: 600;
+    color: #212529;
+}
+
+.ckan-table__org-badge {
+    display: inline-block;
+    padding: 2px 12px;
+    background: #e9ecef;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.ckan-table__title {
+    font-weight: 500;
+    color: #212529;
+}
+
+.ckan-table__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    background: #4e73df;
+    color: #ffffff;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.ckan-table__link:hover {
+    background: #2e59d9;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.ckan-table__no-url {
+    color: #858796;
+    font-style: italic;
+    font-size: 0.8rem;
+}
+
+.ckan-table__no-url i {
+    margin-right: 4px;
+}
+
+.ckan-table__description {
+    color: #6c757d;
+    max-width: 250px;
+}
+
+.ckan-table__read-more {
+    color: #4e73df;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.ckan-table__read-more:hover {
+    text-decoration: underline;
+}
+
+.ckan-table--example .ckan-table__description {
+    max-width: 200px;
+}
+
+/* ============================================
+   Endpoint
+   ============================================ */
+.ckan-endpoint {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    border-left: 4px solid #4e73df;
+    margin: 16px 0;
+    flex-wrap: wrap;
+}
+
+.ckan-endpoint__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ckan-endpoint__left strong {
+    color: #212529;
+    font-size: 0.9rem;
+}
+
+.ckan-endpoint__code {
+    padding: 6px 14px;
+    background: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #212529;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    word-break: break-all;
+}
+
+.ckan-endpoint__copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #4e73df;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.ckan-endpoint__copy:hover {
+    background: #4e73df;
+    color: #ffffff;
+    border-color: #4e73df;
+}
+
+/* ============================================
+   Tip Items
+   ============================================ */
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.tip-item:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.tip-item__icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.1);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1rem;
+}
+
+.tip-item__icon--accent {
+    background: rgba(246, 194, 62, 0.1);
+    color: #f6c23e;
+}
+
+.tip-item__icon--success {
+    background: rgba(28, 200, 138, 0.1);
+    color: #1cc88a;
+}
+
+.tip-item__icon--warning {
+    background: rgba(231, 74, 59, 0.1);
+    color: #e74a3b;
+}
+
+.tip-item__content {
+    flex: 1;
+}
+
+.tip-item__title {
+    display: block;
+    font-size: 0.9rem;
+    color: #212529;
+    margin-bottom: 2px;
+}
+
+.tip-item__text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0 0 8px 0;
+}
+
+.tip-item__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tip-item__tag {
+    padding: 2px 12px;
+    background: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #5a5c69;
+}
+
+/* ============================================
+   Empty State
+   ============================================ */
+.ckan-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+}
+
+.ckan-empty-state--search {
+    padding: 40px 20px;
+}
+
+.ckan-empty-state__icon {
+    font-size: 3rem;
+    color: #c3c6d4;
+    margin-bottom: 12px;
+}
+
+.ckan-empty-state__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 8px 0;
+}
+
+.ckan-empty-state__text {
+    font-size: 0.9rem;
+    color: #858796;
+    margin: 0;
+}
+
+/* ============================================
+   Spinner
+   ============================================ */
+.ckan-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.ckan-spinner__container {
+    text-align: center;
+}
+
+.ckan-spinner__ring {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e3e6f0;
+    border-top: 4px solid #4e73df;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.ckan-spinner__text {
+    color: #858796;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* ============================================
+   Toast
+   ============================================ */
+.ckan-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0.5rem 2rem rgba(0,0,0,0.15);
+    min-width: 300px;
+    max-width: 400px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 10000;
+    border: 1px solid #e3e6f0;
+}
+
+.ckan-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.ckan-toast__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.ckan-toast__icon {
+    color: #4e73df;
+    font-size: 1.1rem;
+}
+
+.ckan-toast__title {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #212529;
+}
+
+.ckan-toast__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #858796;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.ckan-toast__close:hover {
+    color: #212529;
+}
+
+.ckan-toast__body {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    color: #5a5c69;
+}
+
+/* ============================================
+   Navigation
+   ============================================ */
+.ckan-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #e3e6f0;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+.thm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+}
+
+.thm-btn:hover {
+    transform: translateY(-2px);
+}
+
+.thm-btn--search {
+    background: #4e73df;
+    color: #ffffff;
+    flex: 1;
+}
+
+.thm-btn--search:hover {
+    background: #2e59d9;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn--download {
+    background: #ffffff;
+    color: #4e73df;
+    border: 2px solid #4e73df;
+    flex: 1;
+}
+
+.thm-btn--download:hover {
+    background: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn--back {
+    background: #ffffff;
+    color: #4e73df;
+    border: 2px solid #4e73df;
+}
+
+.thm-btn--back:hover {
+    background: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn--next {
+    background: #4e73df;
+    color: #ffffff;
+}
+
+.thm-btn--next:hover {
+    background: #2e59d9;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 991px) {
+    .ckan-search {
+        padding: 30px 0 50px;
+    }
+    
+    .ckan-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .audience-tags {
+        justify-content: center;
+    }
+    
+    .ckan-progress__steps {
+        padding: 12px 16px;
+    }
+    
+    .ckan-progress__label {
+        font-size: 0.7rem;
+        margin: 0 4px;
+    }
+    
+    .ckan-progress__connector {
+        width: 20px;
+    }
+    
+    .ckan-search-form__actions {
+        flex-direction: column;
+    }
+    
+    .ckan-endpoint {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .ckan-endpoint__copy {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 767px) {
+    .ckan-search__title {
+        font-size: 20px;
+    }
+    
+    .ckan-section__text {
+        font-size: 0.9rem;
+    }
+    
+    .ckan-card__header {
+        padding: 12px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .ckan-card__body {
+        padding: 16px;
+    }
+    
+    .ckan-table thead th,
+    .ckan-table tbody td {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+    
+    .ckan-table__description {
+        max-width: 120px;
+    }
+    
+    .ckan-table--example .ckan-table__description {
+        max-width: 100px;
+    }
+    
+    .ckan-navigation {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .thm-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .ckan-progress__steps {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .ckan-progress__connector {
+        display: none;
+    }
+    
+    .ckan-toast {
+        min-width: auto;
+        max-width: calc(100% - 32px);
+        right: 16px;
+        bottom: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .ckan-search {
+        padding: 20px 0 30px;
+    }
+    
+    .ckan-card__title {
+        font-size: 0.95rem;
+    }
+    
+    .ckan-endpoint__code {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+    
+    .ckan-table thead th,
+    .ckan-table tbody td {
+        padding: 6px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .ckan-table__org-badge {
+        font-size: 0.65rem;
+        padding: 1px 8px;
+    }
+    
+    .ckan-table__link {
+        font-size: 0.65rem;
+        padding: 2px 8px;
+    }
+    
+    .ckan-table__description {
+        max-width: 80px;
+    }
+    
+    .ckan-table--example .ckan-table__description {
+        max-width: 60px;
+    }
+    
+    .tip-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .tip-item__tags {
+        justify-content: center;
+    }
+}
+</style>
+
+{% endblock %}

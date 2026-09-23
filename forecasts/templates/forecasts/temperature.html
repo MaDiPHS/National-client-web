@@ -1,0 +1,868 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!--Page Header Start-->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+    </div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>Malawi Temperature Forecast</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'analytics:analytics_dashboard' %}">Analytics Dashboard</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>Temperature Forecast</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Page Header End-->
+
+<!--Weather Forecast Start-->
+<section class="weather-forecast">
+    <div class="container-fluid px-4">
+        <div class="weather-forecast__content">
+            <!-- Header with date and refresh -->
+            <div class="weather-forecast__header mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="weather-forecast__title">
+                            <i class="fas fa-sun text-warning"></i> Malawi Temperature Forecast
+                        </h3>
+                        <p class="weather-forecast__subtitle mb-0">
+                            <i class="far fa-calendar-alt"></i> {{ current_date }} | Real-time weather data from DCCMS
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <button class="thm-btn thm-btn--refresh" onclick="location.reload()">
+                            <i class="fas fa-sync-alt"></i> Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Weather Cards -->
+            <div class="row g-4 mb-4">
+                {% for city, data in current_date_weather.items %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="weather-card" style="animation-delay: {{ forloop.counter0|add:1 }}00ms;">
+                        <div class="weather-card__header">
+                            <div class="weather-card__city">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ city }}</span>
+                            </div>
+                            <div class="weather-card__badge">
+                                <i class="fas fa-clock"></i> Now
+                            </div>
+                        </div>
+                        
+                        {% if data.error %}
+                        <div class="weather-card__error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>{{ data.error }}</span>
+                        </div>
+                        {% else %}
+                        <div class="weather-card__body text-center">
+                            <div class="weather-card__icon">
+                                {% if data.weather_condition == 'sunny' %}
+                                <i class="fas fa-sun weather-icon--sunny"></i>
+                                {% elif data.weather_condition == 'partly_cloudy' %}
+                                <i class="fas fa-cloud-sun weather-icon--cloudy"></i>
+                                {% elif data.weather_condition == 'cloudy' %}
+                                <i class="fas fa-cloud weather-icon--cloudy"></i>
+                                {% elif data.weather_condition == 'heavy_rain' %}
+                                <i class="fas fa-cloud-showers-heavy weather-icon--rainy"></i>
+                                {% elif data.weather_condition == 'light_rain' %}
+                                <i class="fas fa-cloud-rain weather-icon--rainy"></i>
+                                {% else %}
+                                <i class="fas fa-cloud-sun weather-icon--default"></i>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="weather-card__temperature">
+                                {{ data.current_temp }}<span class="weather-card__degree">°C</span>
+                            </div>
+                            
+                            <div class="weather-card__condition">
+                                {% if data.weather_condition == 'partly_cloudy' %}
+                                    Partly Cloudy
+                                {% elif data.weather_condition == 'heavy_rain' %}
+                                    Heavy Rain
+                                {% elif data.weather_condition == 'light_rain' %}
+                                    Light Rain
+                                {% else %}
+                                    {{ data.weather_condition|title }}
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row g-2 mt-3">
+                                <div class="col-6">
+                                    <div class="weather-card__stat">
+                                        <span class="weather-card__stat-label">Max</span>
+                                        <span class="weather-card__stat-value">{{ data.max_temp }}°C</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="weather-card__stat">
+                                        <span class="weather-card__stat-label">Min</span>
+                                        <span class="weather-card__stat-value">{{ data.min_temp }}°C</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="analytics-chart-card shadow">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-chart-line text-primary"></i>
+                            <h6 class="m-0 font-weight-bold text-primary">Temperature Trends - Today</h6>
+                        </div>
+                        <div class="analytics-chart-card__body chart-body">
+                            <canvas id="currentTemperatureChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="analytics-chart-card shadow">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-chart-line text-success"></i>
+                            <h6 class="m-0 font-weight-bold text-success">Next 48-Hour Forecast</h6>
+                        </div>
+                        <div class="analytics-chart-card__body chart-body">
+                            <canvas id="forecastTemperatureChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Tips -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="analytics-chart-card shadow">
+                        <div class="analytics-chart-card__header py-3 d-flex align-items-center gap-2">
+                            <i class="fas fa-lightbulb text-warning"></i>
+                            <h6 class="m-0 font-weight-bold text-warning">Weather Tips & Recommendations</h6>
+                        </div>
+                        <div class="analytics-chart-card__body">
+                            <div class="row g-4">
+                                <div class="col-md-4">
+                                    <div class="tip-card">
+                                        <div class="tip-card__icon">
+                                            <i class="fas fa-umbrella"></i>
+                                        </div>
+                                        <div class="tip-card__content">
+                                            <h6 class="tip-card__title">Rain Protection</h6>
+                                            <p class="tip-card__text">Keep an umbrella handy, especially during afternoon hours when rainfall is most likely.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="tip-card">
+                                        <div class="tip-card__icon tip-card__icon--warning">
+                                            <i class="fas fa-tshirt"></i>
+                                        </div>
+                                        <div class="tip-card__content">
+                                            <h6 class="tip-card__title">Dressing Advice</h6>
+                                            <p class="tip-card__text">Light, breathable clothing recommended as temperatures remain moderate throughout the day.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="tip-card">
+                                        <div class="tip-card__icon tip-card__icon--success">
+                                            <i class="fas fa-tint"></i>
+                                        </div>
+                                        <div class="tip-card__content">
+                                            <h6 class="tip-card__title">Stay Hydrated</h6>
+                                            <p class="tip-card__text">Drink plenty of water, especially during peak temperature hours between 11 AM and 3 PM.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Weather Forecast End-->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cityColors = {
+        "Lilongwe": "#FF6384",
+        "Blantyre": "#36A2EB",
+        "Zomba": "#4BC0C0",
+        "Mzuzu": "#9966FF",
+    };
+
+    const cityBackgroundColors = {
+        "Lilongwe": "rgba(255, 99, 132, 0.1)",
+        "Blantyre": "rgba(54, 162, 235, 0.1)",
+        "Zomba": "rgba(75, 192, 192, 0.1)",
+        "Mzuzu": "rgba(153, 102, 255, 0.1)",
+    };
+
+    // Current Temperature Chart
+    const currentWeatherData = {{ current_date_weather|safe }};
+    const currentCities = Object.keys(currentWeatherData).filter(city => !currentWeatherData[city].error);
+    
+    if (currentCities.length > 0) {
+        const currentDatasets = currentCities.map(city => ({
+            label: city,
+            data: currentWeatherData[city].temperatures,
+            borderColor: cityColors[city],
+            backgroundColor: cityBackgroundColors[city],
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 7,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+        }));
+
+        new Chart(document.getElementById('currentTemperatureChart'), {
+            type: 'line',
+            data: {
+                labels: currentWeatherData[currentCities[0]].dates,
+                datasets: currentDatasets,
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: {
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255,255,255,0.95)',
+                        titleColor: '#212529',
+                        bodyColor: '#5a5c69',
+                        borderColor: '#e3e6f0',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '°C';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: {
+                                size: 10
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time (UTC)',
+                            color: '#5a5c69',
+                            font: {
+                                size: 11,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(0,0,0,0.06)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Temperature (°C)',
+                            color: '#5a5c69',
+                            font: {
+                                size: 11,
+                                weight: '600'
+                            }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '°C';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Forecast Chart
+    const forecastWeatherData = {{ forecast_weather|safe }};
+    const forecastCities = Object.keys(forecastWeatherData).filter(city => !forecastWeatherData[city].error);
+    
+    if (forecastCities.length > 0) {
+        const forecastDatasets = forecastCities.map(city => ({
+            label: city,
+            data: forecastWeatherData[city].temperatures,
+            borderColor: cityColors[city],
+            backgroundColor: cityBackgroundColors[city],
+            fill: true,
+            tension: 0.4,
+            borderDash: [6, 4],
+            pointRadius: 4,
+            pointHoverRadius: 7,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointBackgroundColor: cityColors[city],
+        }));
+
+        new Chart(document.getElementById('forecastTemperatureChart'), {
+            type: 'line',
+            data: {
+                labels: forecastWeatherData[forecastCities[0]].dates,
+                datasets: forecastDatasets,
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: {
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255,255,255,0.95)',
+                        titleColor: '#212529',
+                        bodyColor: '#5a5c69',
+                        borderColor: '#e3e6f0',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '°C';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: {
+                                size: 10
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date/Time (UTC)',
+                            color: '#5a5c69',
+                            font: {
+                                size: 11,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(0,0,0,0.06)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Temperature (°C)',
+                            color: '#5a5c69',
+                            font: {
+                                size: 11,
+                                weight: '600'
+                            }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '°C';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+<style>
+/* ============================================
+   Weather Forecast Section
+   ============================================ */
+.weather-forecast {
+    padding: 50px 0 80px;
+    background: #f8f9fc;
+}
+
+.weather-forecast__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.weather-forecast__title i {
+    margin-right: 10px;
+}
+
+.weather-forecast__subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* ============================================
+   Weather Cards
+   ============================================ */
+.weather-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid #e3e6f0;
+    animation: fadeInUp 0.6s ease-out both;
+}
+
+.weather-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.weather-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.weather-card__city {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.weather-card__city i {
+    color: #4e73df;
+    margin-right: 8px;
+}
+
+.weather-card__badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    background: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.weather-card__badge i {
+    margin-right: 4px;
+}
+
+.weather-card__error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(231, 74, 59, 0.08);
+    border-radius: 8px;
+    color: #e74a3b;
+    font-size: 0.85rem;
+}
+
+.weather-card__body {
+    padding: 5px 0;
+}
+
+.weather-card__icon {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+}
+
+.weather-icon--sunny {
+    color: #f6c23e;
+    animation: float 3s ease-in-out infinite;
+}
+
+.weather-icon--cloudy {
+    color: #95a5a6;
+    animation: float 3s ease-in-out infinite;
+}
+
+.weather-icon--rainy {
+    color: #4e73df;
+    animation: float 3s ease-in-out infinite;
+}
+
+.weather-icon--default {
+    color: #858796;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.weather-card__temperature {
+    font-size: 3rem;
+    font-weight: 300;
+    color: #212529;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.weather-card__degree {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #858796;
+}
+
+.weather-card__condition {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-transform: capitalize;
+    margin-bottom: 12px;
+}
+
+.weather-card__stat {
+    background: #f8f9fc;
+    border-radius: 8px;
+    padding: 8px 6px;
+    transition: all 0.3s ease;
+}
+
+.weather-card__stat:hover {
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.weather-card__stat-label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #858796;
+    font-weight: 600;
+}
+
+.weather-card__stat-value {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #212529;
+    margin-top: 2px;
+}
+
+/* ============================================
+   Chart Cards
+   ============================================ */
+.analytics-chart-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e3e6f0;
+}
+
+.analytics-chart-card__header {
+    flex: 0 0 auto;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.9rem 1.25rem;
+}
+
+.analytics-chart-card__body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.chart-body {
+    min-height: 320px;
+    position: relative;
+}
+
+.chart-body canvas {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 350px;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1) !important;
+}
+
+.text-primary { color: #4e73df !important; }
+.text-success { color: #1cc88a !important; }
+.text-warning { color: #f6c23e !important; }
+.font-weight-bold { font-weight: 700 !important; }
+
+/* ============================================
+   Tip Cards
+   ============================================ */
+.tip-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.tip-card:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.tip-card__icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.1);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.tip-card__icon--warning {
+    background: rgba(246, 194, 62, 0.1);
+    color: #f6c23e;
+}
+
+.tip-card__icon--success {
+    background: rgba(28, 200, 138, 0.1);
+    color: #1cc88a;
+}
+
+.tip-card:hover .tip-card__icon {
+    transform: scale(1.05);
+}
+
+.tip-card__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.tip-card__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 4px 0;
+}
+
+.tip-card__text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ============================================
+   Refresh Button
+   ============================================ */
+.thm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: #4e73df;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.thm-btn:hover {
+    background: #2e59d9;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn:active {
+    transform: translateY(0);
+}
+
+.thm-btn--refresh {
+    background: #ffffff;
+    color: #4e73df;
+    border: 2px solid #4e73df;
+}
+
+.thm-btn--refresh:hover {
+    background: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 1199px) {
+    .weather-card__temperature {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 991px) {
+    .weather-forecast {
+        padding: 30px 0 50px;
+    }
+    
+    .weather-card__temperature {
+        font-size: 2.2rem;
+    }
+    
+    .chart-body {
+        min-height: 260px;
+    }
+}
+
+@media (max-width: 767px) {
+    .weather-forecast__title {
+        font-size: 20px;
+    }
+    
+    .weather-card__temperature {
+        font-size: 2rem;
+    }
+    
+    .weather-card__icon {
+        font-size: 2.8rem;
+    }
+    
+    .tip-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .tip-card__icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        font-size: 1rem;
+    }
+    
+    .chart-body {
+        min-height: 220px;
+    }
+    
+    .thm-btn {
+        width: 100%;
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .weather-forecast {
+        padding: 20px 0 30px;
+    }
+    
+    .weather-card {
+        padding: 15px;
+    }
+    
+    .weather-card__temperature {
+        font-size: 1.8rem;
+    }
+    
+    .weather-card__stat {
+        padding: 6px 4px;
+    }
+    
+    .analytics-chart-card__body {
+        padding: 0.75rem;
+    }
+    
+    .chart-body {
+        min-height: 180px;
+    }
+}
+</style>
+
+{% endblock %}

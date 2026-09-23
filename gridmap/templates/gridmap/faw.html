@@ -1,0 +1,83 @@
+{% extends 'page.html' %}
+{% load static %}
+
+{% block customCSS %}
+	<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.1.0/ol.css"> -->
+	<!--<link rel="stylesheet" href="{% static 'madisphs_maps/css/ol.css' %}" type="text/css">-->
+    <link rel="stylesheet" href="{% static 'gridmap/ol/ol.css' %}">
+
+	<style type="text/css">
+		#layerDateRange {
+			display: inline;
+			width: auto;
+		}
+	</style>
+{% endblock %}
+
+{% block customJS %}
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<!-- openlayers js -->
+	<script src="{% static 'gridmap/ol/dist/ol.js' %}"></script>
+
+	<!-- http://127.0.0.1:8000/static/gridmap/js/proj4.js -->
+	<script type="text/javascript" src="{% static 'gridmap/js/settings.js' %}"></script>
+	<script type="text/javascript" src="{% static 'gridmap/js/proj4.js' %}"></script>
+	<script type="text/javascript" src="{% static 'gridmap/js/moment.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'gridmap/js/util.js' %}"></script>
+	<script type="text/javascript" src="{% static 'gridmap/js/gridmap.js' %}"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			//debugger;
+
+			//var longitude = {settings.MAP_CENTER_LONGITUDE|unlocalize};
+			//var latitude = {settings.MAP_CENTER_LATITUDE|unlocalize};
+			//var zoomLevel = {settings.MAP_ZOOMLEVEL};
+			//initGridMap("{model_id}","{{url}}", "{settings.MAP_ATTRIBUTION|safe}");
+
+			var longitude = 33.66237;
+			var latitude = -14.147115;
+			var zoomLevel = 8;
+
+			//var url_map = "https://geodata.icipe.org/geoserver/MaDiPHS_VIPS/Tuta_Absoluta/wms"; //https://geodata.icipe.org/geoserver/MaDiPHS_VIPS/ows
+			//var model_id = "TUTA"
+
+			var url_map = "https://geodata.icipe.org/geoserver/MaDiPHS_VIPS/Fall_armyworm/wms"
+			var model_id = "FAW"
+
+			initGridMap(model_id,url_map, "&copy; <a href='http://www.openstreetmap.org'>OpenStreetMap</a> contributors");
+
+			//initGridMap("PSILARTEMP","https://testvips.nibio.no/cgi-bin/PSILARTEMP", "&copy; <a href='http://www.openstreetmap.org'>OpenStreetMap</a> contributors");
+		});
+	</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="col-md-12">
+		<h2 id="modelTitle"></h2>
+		<div id="modelAbstractPreamble"></div>
+	</div>
+	<!-- Start map container -->
+
+	<div class="col-md-12" id="mapContainer" style="position: relative; height: 800px; padding-top: 15px; padding-bottom: 15px;">
+		<div id="slidecontainer" class="slidecontainer" style="position: absolute; left: 20px; bottom: 20px; background-color: white; z-index: 1000;padding: 15px; border-radius: 15px; margin-bottom: 15px;">
+			<div>Current date</div>: <span id="currentDate"></span> <br/>
+			<button type="button" class="btn" onclick="moveDateSlider(-1);"><i class="fa fa-step-backward" aria-hidden="true"></i></button>
+			<input type="range" min="0" max="0" value="0" step="1" id="layerDateRange" onchange="switchLayer(parseInt(this.value));">
+			<button type="button" class="btn" onclick="moveDateSlider(1);"><i class="fa fa-step-forward" aria-hidden="true"></i></button>
+		</div>
+		<div class="form-group" id="paramselector" style="position: absolute; right: 20px; bottom: 20px; background-color: white; z-index: 1000;padding: 15px; border-radius: 15px;">
+		</div>
+		<div id="layerLegend" style="position: absolute; right: 20px; top: 20px; background-color: white; z-index: 1000;padding: 15px; border-radius: 15px;">
+		</div>
+		<div id="errorMessageContainer" style="display: none; position: absolute; left: 100px; top: 100px; background-color: white; z-index: 1000;padding: 15px; border-radius: 15px;"></div>
+	</div>
+	<div id="popup" title=""></div>
+	<div class="col-md-12">
+		<div id="modelAbstractBody"></div>
+	</div>
+</div>
+{% endblock %}
+
+
+

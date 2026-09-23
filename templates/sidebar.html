@@ -1,0 +1,304 @@
+{% load static %}
+
+<!-- Sidebar -->
+<div class="sidebar" data-background-color="dark">
+  <div class="sidebar-logo">
+    <div class="logo-header" data-background-color="white">
+      <a href="{% url 'core:index' %}" class="logo">
+        <img src="{% static 'assets/img/logo.png' %}" alt="navbar brand" class="navbar-brand" height="30"/>
+        <span>&nbsp; National Client </span>
+      </a>
+
+      <div class="nav-toggle">
+        <button class="btn btn-toggle toggle-sidebar">
+          <i class="gg-menu-right"></i>
+        </button>
+        <button class="btn btn-toggle sidenav-toggler">
+          <i class="gg-menu-left"></i>
+        </button>
+      </div>
+
+      <button class="topbar-toggler more">
+        <i class="gg-more-vertical-alt"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="sidebar-wrapper scrollbar scrollbar-inner">
+    <div class="sidebar-content">
+
+<ul class="nav nav-secondary">
+
+<!-- ABOUT -->
+<li class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+  <a href="{% url 'core:index' %}">
+    <p>About National Client</p>
+  </a>
+</li>
+
+
+<!-- ANALYTICS -->
+<li class="nav-item
+{% if request.resolver_match.url_name in 'analytics_dashboard visualizations crop_analytics time_series_analytics disease_dashboard compare_dashboards disease_map forecasting' %}
+active
+{% endif %}">
+
+<a data-bs-toggle="collapse" href="#analyticsMenu">
+  <p>Analytics & Insights</p>
+  <span class="caret"></span>
+</a>
+
+<div class="collapse
+{% if request.resolver_match.url_name in 'analytics_dashboard visualizations crop_analytics time_series_analytics disease_dashboard compare_dashboards disease_map forecasting' %}
+show
+{% endif %}"
+id="analyticsMenu">
+
+<ul class="nav nav-collapse">
+
+<li class="{% if request.resolver_match.url_name == 'analytics_dashboard' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Dashboard Overview</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'visualizations' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Visualizations</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'crop_analytics' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Crop Analytics</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'time_series_analytics' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Time Series Analysis</span>
+  </a>
+</li>
+
+
+<!-- DISEASE ANALYTICS -->
+<li class="nav-item-submenu">
+  <a data-bs-toggle="collapse" href="#dataReportsMenu">
+    <span class="sub-item">Disease Analytics by District</span>
+    <span class="caret"></span>
+  </a>
+
+<div class="collapse
+{% if request.resolver_match.url_name in 'disease_dashboard compare_dashboards disease_map forecasting' %}
+show
+{% endif %}"
+id="dataReportsMenu">
+
+<ul class="nav nav-collapse">
+
+<li class="{% if request.resolver_match.url_name == 'disease_dashboard' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Disease Report</span>
+  </a>
+</li>
+
+<!-- <li class="{% if request.resolver_match.url_name == 'compare_dashboards' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Compare Disease Infection</span>
+  </a>
+</li> -->
+
+<li class="{% if request.resolver_match.url_name == 'disease_map' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Disease Maps</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'forecasting' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Disease Forecasting</span>
+  </a>
+</li>
+
+</ul>
+</div>
+</li>
+
+</ul>
+</div>
+</li>
+
+
+<!-- WEATHER -->
+<li class="nav-item
+{% if request.resolver_match.url_name in 'forecasting_temperature forecasting_rainfall' %}
+active
+{% endif %}">
+
+<a data-bs-toggle="collapse" href="#weatherMenu">
+  <p>Weather & Climate</p>
+  <span class="caret"></span>
+</a>
+
+<div class="collapse
+{% if request.resolver_match.url_name in 'forecasting_temperature forecasting_rainfall' %}
+show
+{% endif %}"
+id="weatherMenu">
+
+<ul class="nav nav-collapse">
+
+<li class="{% if request.resolver_match.url_name == 'forecasting_temperature' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Temperature Forecasts</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'forecasting_rainfall' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Rainfall Forecasts</span>
+  </a>
+</li>
+
+</ul>
+</div>
+</li>
+
+
+<!-- RISK MAPS -->
+<li class="nav-item
+{% if request.resolver_match.url_name in 'gridmap_example gridmap_example2 gridmap_example5 gridmap_example4' %}
+active
+{% endif %}">
+
+<a data-bs-toggle="collapse" href="#riskMapsMenu">
+  <p>Pest & Disease Risk Maps</p>
+  <span class="caret"></span>
+</a>
+
+<div class="collapse
+{% if request.resolver_match.url_name in 'gridmap_example gridmap_example2 gridmap_example5 gridmap_example4' %}
+show
+{% endif %}"
+id="riskMapsMenu">
+
+<ul class="nav nav-collapse">
+
+<li class="{% if request.resolver_match.url_name == 'gridmap_example' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Tuta Absoluta</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'gridmap_example2' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Fall Armyworm</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'gridmap_example5' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">African Armyworm</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'gridmap_example4' %}active{% endif %}">
+  <a href="">
+    <span class="sub-item">Striga</span>
+  </a>
+</li>
+
+</ul>
+</div>
+</li>
+
+
+<!-- CABI / PRISE BULLETINS -->
+<li class="nav-item
+{% if request.resolver_match.url_name in 'prise_bulletin_intro prise_bulletin_example' %}
+active
+{% endif %}">
+
+<a data-bs-toggle="collapse" href="#submenu7">
+  <p>CABI/PRISE bulletins</p>
+  <span class="caret"></span>
+</a>
+
+<div class="collapse
+{% if request.resolver_match.url_name in 'prise_bulletin_intro prise_bulletin_example' %}
+show
+{% endif %}"
+id="submenu7">
+
+<ul class="nav nav-collapse">
+
+<li class="{% if request.resolver_match.url_name == 'prise_bulletin_intro' %}active{% endif %}">
+  <a href="">
+    <span class="sub-item">Introduction / Getting Started</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'prise_bulletin_example' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Bulletin Example</span>
+  </a>
+</li>
+
+</ul>
+</div>
+</li>
+
+
+<!-- KNOWLEDGE -->
+<li class="nav-item
+{% if request.resolver_match.url_name in 'ckan ckan_getting_started advanced_filter' %}
+active
+{% endif %}">
+
+<a data-bs-toggle="collapse" href="#knowledgeMenu">
+  <p>Knowledge & Data Services</p>
+  <span class="caret"></span>
+</a>
+
+<div class="collapse
+{% if request.resolver_match.url_name in 'ckan ckan_getting_started advanced_filter' %}
+show
+{% endif %}"
+id="knowledgeMenu">
+
+<ul class="nav nav-collapse">
+
+<li class="{% if request.resolver_match.url_name == 'ckan' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">CKAN Introduction</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'ckan_getting_started' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Getting Started</span>
+  </a>
+</li>
+
+<li class="{% if request.resolver_match.url_name == 'advanced_filter' %}active{% endif %}">
+  <a href=" ">
+    <span class="sub-item">Dataset Discovery</span>
+  </a>
+</li>
+
+<li>
+  <a href="https://ckan.madiphs.org/" target="_blank">
+    <span class="sub-item">Knowledge Library</span>
+  </a>
+</li>
+
+</ul>
+</div>
+</li>
+
+
+</ul>
+</div>
+</div>
+</div> 
+<!-- End Sidebar -->

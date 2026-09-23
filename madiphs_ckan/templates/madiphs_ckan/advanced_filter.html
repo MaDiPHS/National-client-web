@@ -1,0 +1,1710 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!--Page Header Start-->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+    </div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>CKAN Advanced Filters</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'analytics:analytics_dashboard' %}">Analytics Dashboard</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'madiphs_ckan:ckan' %}">CKAN Documentation</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>Advanced Filters</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Page Header End-->
+
+<!--CKAN Advanced Filters Start-->
+<section class="ckan-filters">
+    <div class="container">
+        <div class="ckan-filters__content">
+            <!-- Progress Steps -->
+            <div class="ckan-progress mb-4">
+                <div class="ckan-progress__steps">
+                    <div class="ckan-progress__step">
+                        <div class="ckan-progress__circle completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="ckan-progress__label">Getting Started</span>
+                    </div>
+                    <div class="ckan-progress__connector"></div>
+                    <div class="ckan-progress__step">
+                        <div class="ckan-progress__circle completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="ckan-progress__label">Browse Tags</span>
+                    </div>
+                    <div class="ckan-progress__connector"></div>
+                    <div class="ckan-progress__step">
+                        <div class="ckan-progress__circle completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span class="ckan-progress__label">Search Datasets</span>
+                    </div>
+                    <div class="ckan-progress__connector"></div>
+                    <div class="ckan-progress__step">
+                        <div class="ckan-progress__circle active">4</div>
+                        <span class="ckan-progress__label active">Advanced Filters</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Audience -->
+            <div class="ckan-section ckan-section--highlight mb-4">
+                <div class="ckan-section__icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="ckan-section__content">
+                    <h5 class="ckan-section__title">Target Audience</h5>
+                    <p class="ckan-section__text">
+                        This page allows users to filter datasets from the 
+                        <a href="https://ckan.madiphs.org/" target="_blank" class="ckan-link">MADIPHS CKAN Catalogue</a> 
+                        using advanced criteria including crop type, pest, country, and dataset type.
+                    </p>
+                    <div class="audience-tags">
+                        <span class="audience-tag"><i class="fas fa-flask"></i> Researchers</span>
+                        <span class="audience-tag"><i class="fas fa-chart-bar"></i> Data Analysts</span>
+                        <span class="audience-tag"><i class="fas fa-landmark"></i> Policymakers</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Card -->
+            <div class="ckan-card ckan-card--filters mb-4">
+                <div class="ckan-card__header">
+                    <i class="fas fa-sliders-h ckan-card__icon"></i>
+                    <h5 class="ckan-card__title">Advanced Filters</h5>
+                    <span class="ckan-card__badge">Refine Your Search</span>
+                </div>
+                <div class="ckan-card__body">
+                    <form method="get" id="filterForm" class="ckan-filter-form">
+                        <div class="row g-4">
+                            <!-- Crop Selection -->
+                            <div class="col-md-3">
+                                <div class="ckan-filter-group">
+                                    <label class="ckan-filter-group__label" for="cropSelect">
+                                        <i class="fas fa-seedling"></i>
+                                        Crop
+                                        <span class="ckan-filter-group__tooltip" title="Select a crop to enable pest filtering">
+                                            <i class="fas fa-info-circle"></i>
+                                        </span>
+                                        <small class="text-muted">(Ctrl+Shift+F)</small>
+                                    </label>
+                                    <select name="crop" id="cropSelect" class="ckan-filter-group__select">
+                                        <option value="">-- Select a Crop --</option>
+                                        <option value="maize" {% if search_params.crop == 'maize' %}selected{% endif %}>🌽 Maize</option>
+                                        <option value="tomato" {% if search_params.crop == 'tomato' %}selected{% endif %}>🍅 Tomato</option>
+                                        <option value="groundnut" {% if search_params.crop == 'groundnut' %}selected{% endif %}>🥜 Groundnut</option>
+                                        <option value="soybean" {% if search_params.crop == 'soybean' %}selected{% endif %}>🌱 Soybean</option>
+                                        <option value="cassava" {% if search_params.crop == 'cassava' %}selected{% endif %}>🌿 Cassava</option>
+                                        <option value="banana" {% if search_params.crop == 'banana' %}selected{% endif %}>🍌 Banana</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Country Selection -->
+                            <div class="col-md-3">
+                                <div class="ckan-filter-group">
+                                    <label class="ckan-filter-group__label" for="country">
+                                        <i class="fas fa-globe-africa"></i>
+                                        Country
+                                        <span class="ckan-filter-group__tooltip" title="Filter datasets by country">
+                                            <i class="fas fa-info-circle"></i>
+                                        </span>
+                                    </label>
+                                    <select name="country" id="country" class="ckan-filter-group__select">
+                                        <option value="">-- Any Country --</option>
+                                        <option value="MWI" {% if search_params.country == 'MWI' %}selected{% endif %}>🇲🇼 Malawi</option>
+                                        <option value="KEN" {% if search_params.country == 'KEN' %}selected{% endif %}>🇰🇪 Kenya</option>
+                                        <option value="TZA" {% if search_params.country == 'TZA' %}selected{% endif %}>🇹🇿 Tanzania</option>
+                                        <option value="ZMB" {% if search_params.country == 'ZMB' %}selected{% endif %}>🇿🇲 Zambia</option>
+                                        <option value="MOZ" {% if search_params.country == 'MOZ' %}selected{% endif %}>🇲🇿 Mozambique</option>
+                                        <option value="ZWE" {% if search_params.country == 'ZWE' %}selected{% endif %}>🇿🇼 Zimbabwe</option>
+                                        <option value="UGA" {% if search_params.country == 'UGA' %}selected{% endif %}>🇺🇬 Uganda</option>
+                                        <option value="RWA" {% if search_params.country == 'RWA' %}selected{% endif %}>🇷🇼 Rwanda</option>
+                                        <option value="ETH" {% if search_params.country == 'ETH' %}selected{% endif %}>🇪🇹 Ethiopia</option>
+                                        <option value="NGA" {% if search_params.country == 'NGA' %}selected{% endif %}>🇳🇬 Nigeria</option>
+                                        <option value="GHA" {% if search_params.country == 'GHA' %}selected{% endif %}>🇬🇭 Ghana</option>
+                                        <option value="ZAF" {% if search_params.country == 'ZAF' %}selected{% endif %}>🇿🇦 South Africa</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Dataset Type -->
+                            <div class="col-md-3">
+                                <div class="ckan-filter-group">
+                                    <label class="ckan-filter-group__label" for="type">
+                                        <i class="fas fa-database"></i>
+                                        Dataset Type
+                                        <span class="ckan-filter-group__tooltip" title="Type of dataset">
+                                            <i class="fas fa-info-circle"></i>
+                                        </span>
+                                    </label>
+                                    <select name="type" id="type" class="ckan-filter-group__select">
+                                        <option value="">-- Any Type --</option>
+                                        <option value="Guide" {% if search_params.type == 'Guide' %}selected{% endif %}>📚 Guide</option>
+                                        <option value="Dataset" {% if search_params.type == 'Dataset' %}selected{% endif %}>📊 Dataset</option>
+                                        <option value="Report" {% if search_params.type == 'Report' %}selected{% endif %}>📑 Report</option>
+                                        <option value="Tool" {% if search_params.type == 'Tool' %}selected{% endif %}>🔧 Tool</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Filter Button -->
+                            <div class="col-md-3">
+                                <div class="ckan-filter-group ckan-filter-group--action">
+                                    <button type="submit" class="thm-btn thm-btn--filter">
+                                        <i class="fas fa-filter"></i> Apply Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pest Selection -->
+                        <div class="ckan-pest-section mt-4" id="pestSection">
+                            <div class="ckan-pest-section__header">
+                                <div class="ckan-pest-section__title">
+                                    <i class="fas fa-bug"></i>
+                                    Pest / Disease
+                                    <span id="selectedCropName" class="ckan-pest-section__crop-name"></span>
+                                </div>
+                                <span class="ckan-pest-section__help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Select pests specific to your crop
+                                </span>
+                            </div>
+
+                            <!-- Maize Pests -->
+                            <div class="ckan-pest-category" id="maizePests" data-crop="maize">
+                                <div class="ckan-pest-category__header">
+                                    <span class="ckan-pest-category__title">
+                                        <i class="fas fa-corn"></i> Maize Pests & Diseases
+                                    </span>
+                                    <button type="button" class="ckan-pest-category__select-all" onclick="toggleAllPests('maize', true)">
+                                        Select All
+                                    </button>
+                                </div>
+                                <div class="ckan-pest-category__options">
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/HELIAR" data-crop="maize" {% if 'https://gd.eppo.int/taxon/HELIAR' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🐛 African Bollworm</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/BUSSFU" data-crop="maize" {% if 'https://gd.eppo.int/taxon/BUSSFU' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🐛 Maize Stem Borer</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/LAPHEX" data-crop="maize" {% if 'https://gd.eppo.int/taxon/LAPHEX' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🐛 African Armyworm</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/LAPHFR" data-crop="maize" {% if 'https://gd.eppo.int/taxon/LAPHFR' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🐛 Fall Armyworm</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/MSV000" data-crop="maize" {% if 'https://gd.eppo.int/taxon/MSV000' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🦠 Maize Streak Virus</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/PUCCPY" data-crop="maize" {% if 'https://gd.eppo.int/taxon/PUCCPY' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🍄 Maize Rust</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/STRHE" data-crop="maize" {% if 'https://gd.eppo.int/taxon/STRHE' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🌿 Striga</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="http://voc.madiphs.org#c_37c84fd7" data-crop="maize" {% if 'http://voc.madiphs.org#c_37c84fd7' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🦠 Maize Lethal Necrosis</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Tomato Pests -->
+                            <div class="ckan-pest-category" id="tomatoPests" data-crop="tomato">
+                                <div class="ckan-pest-category__header">
+                                    <span class="ckan-pest-category__title">
+                                        <i class="fas fa-tomato"></i> Tomato Pests & Diseases
+                                    </span>
+                                    <button type="button" class="ckan-pest-category__select-all" onclick="toggleAllPests('tomato', true)">
+                                        Select All
+                                    </button>
+                                </div>
+                                <div class="ckan-pest-category__options">
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/GNORAB" data-crop="tomato" {% if 'https://gd.eppo.int/taxon/GNORAB' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🐛 Tomato Leaf Miner (Tuta absoluta)</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/PHYTIN" data-crop="tomato" {% if 'https://gd.eppo.int/taxon/PHYTIN' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🍄 Late Blight</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/ALTESO" data-crop="tomato" {% if 'https://gd.eppo.int/taxon/ALTESO' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🍄 Early Blight</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/TETREV" data-crop="tomato" {% if 'https://gd.eppo.int/taxon/TETREV' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🕷️ Red Spider Mite</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/RALSSL" data-crop="tomato" {% if 'https://gd.eppo.int/taxon/RALSSL' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🦠 Bacterial Wilt</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Groundnut Pests -->
+                            <div class="ckan-pest-category" id="groundnutPests" data-crop="groundnut">
+                                <div class="ckan-pest-category__header">
+                                    <span class="ckan-pest-category__title">
+                                        <i class="fas fa-seedling"></i> Groundnut Pests & Diseases
+                                    </span>
+                                    <button type="button" class="ckan-pest-category__select-all" onclick="toggleAllPests('groundnut', true)">
+                                        Select All
+                                    </button>
+                                </div>
+                                <div class="ckan-pest-category__options">
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/APHICR" data-crop="groundnut" {% if 'https://gd.eppo.int/taxon/APHICR' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🐛 Groundnut Aphid</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/GRV000" data-crop="groundnut" {% if 'https://gd.eppo.int/taxon/GRV000' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🦠 Groundnut Rosette Disease</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/ASPEFL" data-crop="groundnut" {% if 'https://gd.eppo.int/taxon/ASPEFL' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🍄 Aspergillus flavus (Aflatoxin)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Soybean Pests -->
+                            <div class="ckan-pest-category" id="soybeanPests" data-crop="soybean">
+                                <div class="ckan-pest-category__header">
+                                    <span class="ckan-pest-category__title">
+                                        <i class="fas fa-seedling"></i> Soybean Pests & Diseases
+                                    </span>
+                                    <button type="button" class="ckan-pest-category__select-all" onclick="toggleAllPests('soybean', true)">
+                                        Select All
+                                    </button>
+                                </div>
+                                <div class="ckan-pest-category__options">
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/PHAKIS" data-crop="soybean" {% if 'https://gd.eppo.int/taxon/PHAKIS' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🍄 Soybean Rust</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/SPODLI" data-crop="soybean" {% if 'https://gd.eppo.int/taxon/SPODLI' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🐛 Cutworm</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Cassava Pests -->
+                            <div class="ckan-pest-category" id="cassavaPests" data-crop="cassava">
+                                <div class="ckan-pest-category__header">
+                                    <span class="ckan-pest-category__title">
+                                        <i class="fas fa-leaf"></i> Cassava Pests & Diseases
+                                    </span>
+                                    <button type="button" class="ckan-pest-category__select-all" onclick="toggleAllPests('cassava', true)">
+                                        Select All
+                                    </button>
+                                </div>
+                                <div class="ckan-pest-category__options">
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/MONOSE" data-crop="cassava" {% if 'https://gd.eppo.int/taxon/MONOSE' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🕷️ Cassava Green Mite</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/BEMITA" data-crop="cassava" {% if 'https://gd.eppo.int/taxon/BEMITA' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🦋 Silverleaf Whitefly</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/CBSAV0" data-crop="cassava" {% if 'https://gd.eppo.int/taxon/CBSAV0' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🦠 Cassava Brown Streak Virus</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Banana Pests -->
+                            <div class="ckan-pest-category" id="bananaPests" data-crop="banana">
+                                <div class="ckan-pest-category__header">
+                                    <span class="ckan-pest-category__title">
+                                        <i class="fas fa-leaf"></i> Banana Pests & Diseases
+                                    </span>
+                                    <button type="button" class="ckan-pest-category__select-all" onclick="toggleAllPests('banana', true)">
+                                        Select All
+                                    </button>
+                                </div>
+                                <div class="ckan-pest-category__options">
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/COSMSO" data-crop="banana" {% if 'https://gd.eppo.int/taxon/COSMSO' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🐛 Banana Borer Weevil</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/BBTV00" data-crop="banana" {% if 'https://gd.eppo.int/taxon/BBTV00' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🦠 Banana Bunchy Top Virus</span>
+                                    </label>
+                                    <label class="ckan-pest-option">
+                                        <input type="checkbox" name="pest" value="https://gd.eppo.int/taxon/FUSACB" data-crop="banana" {% if 'https://gd.eppo.int/taxon/FUSACB' in selected_pests %}checked{% endif %}>
+                                        <span class="ckan-pest-option__label">🍄 Panama Disease</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- No Crop Selected Message -->
+                            <div id="noCropMessage" class="ckan-pest-empty">
+                                <i class="fas fa-hand-pointer ckan-pest-empty__icon"></i>
+                                <h6 class="ckan-pest-empty__title">Please select a crop first</h6>
+                                <p class="ckan-pest-empty__text">Pest and disease options will appear based on your crop selection</p>
+                            </div>
+                        </div>
+
+                        <!-- Active Filters Display -->
+                        {% if has_active_filters %}
+                        <div class="ckan-active-filters mt-4">
+                            <div class="ckan-active-filters__header">
+                                <i class="fas fa-filter-circle"></i>
+                                <strong>Active Filters:</strong>
+                            </div>
+                            <div class="ckan-active-filters__list">
+                                {% if search_params.crop %}
+                                <span class="ckan-filter-tag">
+                                    <i class="fas fa-seedling"></i>
+                                    Crop: 
+                                    {% if search_params.crop == 'maize' %}🌽 Maize
+                                    {% elif search_params.crop == 'tomato' %}🍅 Tomato
+                                    {% elif search_params.crop == 'groundnut' %}🥜 Groundnut
+                                    {% elif search_params.crop == 'soybean' %}🌱 Soybean
+                                    {% elif search_params.crop == 'cassava' %}🌿 Cassava
+                                    {% elif search_params.crop == 'banana' %}🍌 Banana
+                                    {% endif %}
+                                    <button class="ckan-filter-tag__remove" onclick="removeFilter('crop')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </span>
+                                {% endif %}
+                                {% if selected_pests %}
+                                    {% for pest in selected_pests %}
+                                    <span class="ckan-filter-tag">
+                                        <i class="fas fa-bug"></i>
+                                        {% if 'HELIAR' in pest %}African Bollworm
+                                        {% elif 'BUSSFU' in pest %}Maize Stem Borer
+                                        {% elif 'LAPHEX' in pest %}African Armyworm
+                                        {% elif 'LAPHFR' in pest %}Fall Armyworm
+                                        {% elif 'MSV000' in pest %}Maize Streak Virus
+                                        {% elif 'PUCCPY' in pest %}Maize Rust
+                                        {% elif 'GNORAB' in pest %}Tuta absoluta
+                                        {% elif 'PHYTIN' in pest %}Late Blight
+                                        {% elif 'RALSSL' in pest %}Bacterial Wilt
+                                        {% elif 'APHICR' in pest %}Groundnut Aphid
+                                        {% elif 'PHAKIS' in pest %}Soybean Rust
+                                        {% elif 'MONOSE' in pest %}Cassava Green Mite
+                                        {% elif 'COSMSO' in pest %}Banana Weevil
+                                        {% else %}Selected Pest{% endif %}
+                                        <button class="ckan-filter-tag__remove" onclick="removePest('{{ pest }}')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </span>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if search_params.country %}
+                                <span class="ckan-filter-tag">
+                                    <i class="fas fa-globe"></i>
+                                    Country: {{ search_params.country }}
+                                    <button class="ckan-filter-tag__remove" onclick="removeFilter('country')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </span>
+                                {% endif %}
+                                {% if search_params.type %}
+                                <span class="ckan-filter-tag">
+                                    <i class="fas fa-database"></i>
+                                    Type: {{ search_params.type }}
+                                    <button class="ckan-filter-tag__remove" onclick="removeFilter('type')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Show All Button -->
+                        <div class="ckan-filter-actions mt-4">
+                            <button type="submit" name="show_all" value="true" class="thm-btn thm-btn--show-all">
+                                <i class="fas fa-list-ul"></i> Show All Datasets
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            {% if datasets %}
+            <div class="ckan-card ckan-card--results mb-4">
+                <div class="ckan-card__header">
+                    <div class="ckan-card__header-left">
+                        <i class="fas fa-database ckan-card__icon"></i>
+                        <h5 class="ckan-card__title">Filter Results</h5>
+                    </div>
+                    <span class="ckan-card__badge ckan-card__badge--large">
+                        <i class="fas fa-list"></i> {{ datasets|length }} datasets found
+                    </span>
+                </div>
+                <div class="ckan-card__body ckan-card__body--table">
+                    <div class="table-responsive">
+                        <table class="ckan-table">
+                            <thead>
+                                <tr>
+                                    <th>Author</th>
+                                    <th>Organization</th>
+                                    <th>Title / Name</th>
+                                    <th>URL</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in datasets %}
+                                <tr>
+                                    <td class="ckan-table__author">{{ row.0 }}</td>
+                                    <td>
+                                        <span class="ckan-table__org-badge">{{ row.1 }}</span>
+                                    </td>
+                                    <td class="ckan-table__title">{{ row.2 }}</td>
+                                    <td>
+                                        <a href="{{ row.3 }}" target="_blank" class="ckan-table__link">
+                                            <i class="fas fa-external-link-alt"></i> View
+                                        </a>
+                                    </td>
+                                    <td class="ckan-table__description">
+                                        <span class="description-text" data-full="{{ row.4 }}">
+                                            {{ row.4|truncatechars:100 }}
+                                            {% if row.4|length > 100 %}
+                                            <a href="#" class="ckan-table__read-more">...more</a>
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                {% if has_active_filters %}
+                <div class="ckan-empty-state ckan-empty-state--filters">
+                    <i class="fas fa-database ckan-empty-state__icon"></i>
+                    <h5 class="ckan-empty-state__title">No datasets match your filters</h5>
+                    <p class="ckan-empty-state__text">Try adjusting your filter criteria or click "Show All" to see all datasets.</p>
+                </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Navigation Buttons -->
+            <div class="ckan-navigation">
+                <a href="{% url 'madiphs_ckan:ckan_getting_started3' %}" class="thm-btn thm-btn--back">
+                    <i class="fas fa-arrow-left"></i> Back to Search
+                </a>
+                {% if datasets.has_next %}
+                <a href="?page={{ datasets.next_page_number }}" class="thm-btn thm-btn--next">
+                    Next Page <i class="fas fa-arrow-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+<!--CKAN Advanced Filters End-->
+
+<!-- Loading Spinner -->
+<div class="ckan-spinner" id="loadingSpinner">
+    <div class="ckan-spinner__container">
+        <div class="ckan-spinner__ring"></div>
+        <p class="ckan-spinner__text">Applying filters...</p>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="ckan-toast" id="liveToast">
+    <div class="ckan-toast__header">
+        <i class="fas fa-info-circle ckan-toast__icon"></i>
+        <strong class="ckan-toast__title">Notification</strong>
+        <button class="ckan-toast__close" onclick="hideToast()">&times;</button>
+    </div>
+    <div class="ckan-toast__body" id="toastMessage"></div>
+</div>
+
+<script>
+// Show loading spinner on form submit
+document.getElementById('filterForm').addEventListener('submit', function() {
+    document.getElementById('loadingSpinner').style.display = 'flex';
+});
+
+// Hide spinner when page loads
+window.addEventListener('load', function() {
+    document.getElementById('loadingSpinner').style.display = 'none';
+    initializePestSection();
+});
+
+// Initialize pest section based on selected crop
+function initializePestSection() {
+    const cropSelect = document.getElementById('cropSelect');
+    const selectedCrop = cropSelect.value;
+    
+    if (selectedCrop) {
+        showPestsForCrop(selectedCrop);
+    } else {
+        showNoCropMessage();
+    }
+}
+
+// Crop selection change handler
+document.getElementById('cropSelect').addEventListener('change', function() {
+    const selectedCrop = this.value;
+    
+    if (selectedCrop) {
+        showPestsForCrop(selectedCrop);
+    } else {
+        showNoCropMessage();
+    }
+});
+
+function showPestsForCrop(crop) {
+    // Hide all pest categories
+    document.querySelectorAll('.ckan-pest-category').forEach(cat => {
+        cat.style.display = 'none';
+    });
+    
+    // Hide no crop message
+    document.getElementById('noCropMessage').style.display = 'none';
+    
+    // Show selected crop's pest category
+    const selectedCategory = document.getElementById(crop + 'Pests');
+    if (selectedCategory) {
+        selectedCategory.style.display = 'block';
+        
+        // Update selected crop name display
+        const cropNames = {
+            'maize': '🌽 Maize',
+            'tomato': '🍅 Tomato',
+            'groundnut': '🥜 Groundnut',
+            'soybean': '🌱 Soybean',
+            'cassava': '🌿 Cassava',
+            'banana': '🍌 Banana'
+        };
+        document.getElementById('selectedCropName').textContent = `- ${cropNames[crop]}`;
+    }
+}
+
+function showNoCropMessage() {
+    // Hide all pest categories
+    document.querySelectorAll('.ckan-pest-category').forEach(cat => {
+        cat.style.display = 'none';
+    });
+    
+    // Show no crop message
+    document.getElementById('noCropMessage').style.display = 'block';
+    document.getElementById('selectedCropName').textContent = '';
+}
+
+// Toggle all pests in a category
+function toggleAllPests(crop, select) {
+    const checkboxes = document.querySelectorAll(`#${crop}Pests input[type="checkbox"]`);
+    checkboxes.forEach(cb => {
+        cb.checked = select;
+    });
+    
+    showToast(select ? 'All pests selected' : 'All pests deselected');
+}
+
+// Read more functionality
+document.querySelectorAll('.ckan-table__read-more').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const span = this.closest('.description-text');
+        const fullText = span.dataset.full;
+        span.innerHTML = fullText;
+    });
+});
+
+// Remove filter functions
+function removeFilter(filterName) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(filterName);
+    
+    if (filterName === 'crop') {
+        url.searchParams.delete('pest');
+    }
+    
+    window.location.href = url.toString();
+}
+
+function removePest(pestValue) {
+    const url = new URL(window.location.href);
+    const pests = url.searchParams.getAll('pest');
+    url.searchParams.delete('pest');
+    pests.forEach(p => {
+        if (p !== pestValue) {
+            url.searchParams.append('pest', p);
+        }
+    });
+    window.location.href = url.toString();
+}
+
+// Toast functions
+function showToast(message) {
+    const toast = document.getElementById('liveToast');
+    document.getElementById('toastMessage').textContent = message;
+    toast.classList.add('show');
+    setTimeout(function() {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+function hideToast() {
+    document.getElementById('liveToast').classList.remove('show');
+}
+
+// Keyboard shortcut: Ctrl/Cmd + Shift + F to focus crop filter
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'F') {
+        e.preventDefault();
+        document.getElementById('cropSelect').focus();
+    }
+});
+
+// Tooltip functionality for filter labels
+document.querySelectorAll('.ckan-filter-group__tooltip').forEach(tooltip => {
+    tooltip.addEventListener('mouseenter', function(e) {
+        const title = this.getAttribute('title');
+        if (title) {
+            showToast(title);
+        }
+    });
+});
+</script>
+
+<style>
+/* ============================================
+   CKAN Filters Section
+   ============================================ */
+.ckan-filters {
+    padding: 50px 0 80px;
+    background: #f8f9fc;
+}
+
+/* ============================================
+   Progress Steps
+   ============================================ */
+.ckan-progress__steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    background: #ffffff;
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+}
+
+.ckan-progress__step {
+    display: flex;
+    align-items: center;
+}
+
+.ckan-progress__circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #e3e6f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #858796;
+    transition: all 0.3s ease;
+}
+
+.ckan-progress__circle.active {
+    background: #4e73df;
+    border-color: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 0.25rem 0.75rem rgba(78, 115, 223, 0.3);
+}
+
+.ckan-progress__circle.completed {
+    background: #1cc88a;
+    border-color: #1cc88a;
+    color: #ffffff;
+}
+
+.ckan-progress__label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #858796;
+    margin: 0 8px;
+}
+
+.ckan-progress__label.active {
+    color: #4e73df;
+}
+
+.ckan-progress__connector {
+    width: 40px;
+    height: 2px;
+    background: #e3e6f0;
+    margin: 0 4px;
+}
+
+/* ============================================
+   Sections
+   ============================================ */
+.ckan-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 24px 28px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+}
+
+.ckan-section--highlight {
+    background: linear-gradient(135deg, #f8f9fc 0%, #e9ecf2 100%);
+    border-left: 4px solid #f6c23e;
+}
+
+.ckan-section__icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.1);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1.2rem;
+}
+
+.ckan-section__content {
+    flex: 1;
+}
+
+.ckan-section__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 8px 0;
+}
+
+.ckan-section__text {
+    font-size: 0.95rem;
+    color: #5a5c69;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.ckan-link {
+    color: #4e73df;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ckan-link:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   Audience Tags
+   ============================================ */
+.audience-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.audience-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5a5c69;
+    transition: all 0.3s ease;
+}
+
+.audience-tag i {
+    color: #4e73df;
+}
+
+.audience-tag:hover {
+    background: #4e73df;
+    color: #ffffff;
+    border-color: #4e73df;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.audience-tag:hover i {
+    color: #ffffff;
+}
+
+/* ============================================
+   CKAN Cards
+   ============================================ */
+.ckan-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    overflow: hidden;
+}
+
+.ckan-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 24px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    flex-wrap: wrap;
+}
+
+.ckan-card__header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ckan-card__icon {
+    font-size: 1.2rem;
+    color: #4e73df;
+    width: 24px;
+    text-align: center;
+}
+
+.ckan-card__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0;
+}
+
+.ckan-card__badge {
+    display: inline-block;
+    padding: 4px 14px;
+    background: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.ckan-card__badge--large {
+    padding: 6px 18px;
+    font-size: 0.85rem;
+}
+
+.ckan-card__badge i {
+    margin-right: 6px;
+}
+
+.ckan-card__body {
+    padding: 24px;
+}
+
+.ckan-card__body--table {
+    padding: 0;
+}
+
+.ckan-card--filters .ckan-card__icon {
+    color: #4e73df;
+}
+
+.ckan-card--results .ckan-card__icon {
+    color: #36b9cc;
+}
+
+/* ============================================
+   Filter Groups
+   ============================================ */
+.ckan-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ckan-filter-group--action {
+    justify-content: flex-end;
+}
+
+.ckan-filter-group__label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #212529;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ckan-filter-group__label i {
+    color: #4e73df;
+}
+
+.ckan-filter-group__label small {
+    font-weight: 400;
+    color: #858796;
+    font-size: 0.7rem;
+}
+
+.ckan-filter-group__tooltip {
+    color: #858796;
+    cursor: help;
+    font-size: 0.8rem;
+}
+
+.ckan-filter-group__select {
+    padding: 10px 14px;
+    border: 2px solid #e3e6f0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    background: #ffffff;
+    color: #212529;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.ckan-filter-group__select:focus {
+    outline: none;
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+}
+
+/* ============================================
+   Pest Section
+   ============================================ */
+.ckan-pest-section {
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #e3e6f0;
+}
+
+.ckan-pest-section__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.ckan-pest-section__title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #212529;
+}
+
+.ckan-pest-section__title i {
+    color: #4e73df;
+    margin-right: 8px;
+}
+
+.ckan-pest-section__crop-name {
+    color: #4e73df;
+    font-weight: 700;
+}
+
+.ckan-pest-section__help {
+    font-size: 0.8rem;
+    color: #858796;
+}
+
+.ckan-pest-section__help i {
+    margin-right: 4px;
+}
+
+/* ============================================
+   Pest Categories
+   ============================================ */
+.ckan-pest-category {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid #e3e6f0;
+    display: none;
+}
+
+.ckan-pest-category:last-child {
+    margin-bottom: 0;
+}
+
+.ckan-pest-category__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ckan-pest-category__title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #212529;
+}
+
+.ckan-pest-category__title i {
+    margin-right: 6px;
+}
+
+.ckan-pest-category__select-all {
+    padding: 4px 14px;
+    background: #ffffff;
+    border: 1px solid #4e73df;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4e73df;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ckan-pest-category__select-all:hover {
+    background: #4e73df;
+    color: #ffffff;
+}
+
+.ckan-pest-category__options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 6px;
+}
+
+/* ============================================
+   Pest Options
+   ============================================ */
+.ckan-pest-option {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #f8f9fc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ckan-pest-option:hover {
+    background: #e9ecef;
+}
+
+.ckan-pest-option input[type="checkbox"] {
+    display: none;
+}
+
+.ckan-pest-option input[type="checkbox"]:checked + .ckan-pest-option__label {
+    background: #4e73df;
+    color: #ffffff;
+}
+
+.ckan-pest-option__label {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.ckan-pest-option input[type="checkbox"]:checked + .ckan-pest-option__label {
+    background: #4e73df;
+    color: #ffffff;
+}
+
+/* ============================================
+   Pest Empty State
+   ============================================ */
+.ckan-pest-empty {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.ckan-pest-empty__icon {
+    font-size: 2.5rem;
+    color: #c3c6d4;
+    margin-bottom: 12px;
+}
+
+.ckan-pest-empty__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212529;
+    margin: 0 0 4px 0;
+}
+
+.ckan-pest-empty__text {
+    font-size: 0.85rem;
+    color: #858796;
+    margin: 0;
+}
+
+/* ============================================
+   Active Filters
+   ============================================ */
+.ckan-active-filters {
+    background: #f8f9fc;
+    border-radius: 10px;
+    padding: 16px 20px;
+    border: 1px solid #e3e6f0;
+}
+
+.ckan-active-filters__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    color: #212529;
+}
+
+.ckan-active-filters__header i {
+    color: #4e73df;
+}
+
+.ckan-active-filters__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ckan-filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #ffffff;
+    border: 1px solid #e3e6f0;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #212529;
+}
+
+.ckan-filter-tag i {
+    color: #4e73df;
+}
+
+.ckan-filter-tag__remove {
+    background: none;
+    border: none;
+    color: #e74a3b;
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.ckan-filter-tag__remove:hover {
+    transform: scale(1.2);
+}
+
+/* ============================================
+   Filter Actions
+   ============================================ */
+.ckan-filter-actions {
+    text-align: center;
+}
+
+/* ============================================
+   Table
+   ============================================ */
+.ckan-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+}
+
+.ckan-table thead th {
+    background: #f8f9fc;
+    color: #5a5c69;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 12px 16px;
+    border-bottom: 2px solid #e3e6f0;
+    text-align: left;
+}
+
+.ckan-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f1f5;
+    vertical-align: middle;
+    color: #3a3b45;
+}
+
+.ckan-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ckan-table tbody tr:hover {
+    background: #f8f9fc;
+}
+
+.ckan-table__author {
+    font-weight: 600;
+    color: #212529;
+}
+
+.ckan-table__org-badge {
+    display: inline-block;
+    padding: 2px 12px;
+    background: #e9ecef;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.ckan-table__title {
+    font-weight: 500;
+    color: #212529;
+}
+
+.ckan-table__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    background: #4e73df;
+    color: #ffffff;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.ckan-table__link:hover {
+    background: #2e59d9;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.ckan-table__description {
+    color: #6c757d;
+    max-width: 250px;
+}
+
+.ckan-table__read-more {
+    color: #4e73df;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.ckan-table__read-more:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   Empty State
+   ============================================ */
+.ckan-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+}
+
+.ckan-empty-state--filters {
+    padding: 40px 20px;
+}
+
+.ckan-empty-state__icon {
+    font-size: 3rem;
+    color: #c3c6d4;
+    margin-bottom: 12px;
+}
+
+.ckan-empty-state__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 8px 0;
+}
+
+.ckan-empty-state__text {
+    font-size: 0.9rem;
+    color: #858796;
+    margin: 0;
+}
+
+/* ============================================
+   Spinner
+   ============================================ */
+.ckan-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.ckan-spinner__container {
+    text-align: center;
+}
+
+.ckan-spinner__ring {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e3e6f0;
+    border-top: 4px solid #4e73df;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.ckan-spinner__text {
+    color: #858796;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* ============================================
+   Toast
+   ============================================ */
+.ckan-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0.5rem 2rem rgba(0,0,0,0.15);
+    min-width: 300px;
+    max-width: 400px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 10000;
+    border: 1px solid #e3e6f0;
+}
+
+.ckan-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.ckan-toast__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.ckan-toast__icon {
+    color: #4e73df;
+    font-size: 1.1rem;
+}
+
+.ckan-toast__title {
+    flex: 1;
+    font-size: 0.9rem;
+    color: #212529;
+}
+
+.ckan-toast__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #858796;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.ckan-toast__close:hover {
+    color: #212529;
+}
+
+.ckan-toast__body {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    color: #5a5c69;
+}
+
+/* ============================================
+   Navigation
+   ============================================ */
+.ckan-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #e3e6f0;
+}
+
+/* ============================================
+   Buttons
+   ============================================ */
+.thm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+}
+
+.thm-btn:hover {
+    transform: translateY(-2px);
+}
+
+.thm-btn--filter {
+    background: #4e73df;
+    color: #ffffff;
+    width: 100%;
+}
+
+.thm-btn--filter:hover {
+    background: #2e59d9;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn--show-all {
+    background: #ffffff;
+    color: #6c757d;
+    border: 2px solid #e3e6f0;
+}
+
+.thm-btn--show-all:hover {
+    background: #f8f9fc;
+    color: #495057;
+}
+
+.thm-btn--back {
+    background: #ffffff;
+    color: #4e73df;
+    border: 2px solid #4e73df;
+}
+
+.thm-btn--back:hover {
+    background: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn--next {
+    background: #4e73df;
+    color: #ffffff;
+}
+
+.thm-btn--next:hover {
+    background: #2e59d9;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 991px) {
+    .ckan-filters {
+        padding: 30px 0 50px;
+    }
+    
+    .ckan-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .audience-tags {
+        justify-content: center;
+    }
+    
+    .ckan-progress__steps {
+        padding: 12px 16px;
+    }
+    
+    .ckan-progress__label {
+        font-size: 0.7rem;
+        margin: 0 4px;
+    }
+    
+    .ckan-progress__connector {
+        width: 20px;
+    }
+    
+    .ckan-filter-group--action {
+        justify-content: flex-start;
+    }
+    
+    .ckan-pest-category__options {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .ckan-section__text {
+        font-size: 0.9rem;
+    }
+    
+    .ckan-card__header {
+        padding: 12px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .ckan-card__body {
+        padding: 16px;
+    }
+    
+    .ckan-pest-section {
+        padding: 14px;
+    }
+    
+    .ckan-pest-section__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .ckan-pest-category__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .ckan-table thead th,
+    .ckan-table tbody td {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+    
+    .ckan-table__description {
+        max-width: 120px;
+    }
+    
+    .ckan-navigation {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .thm-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .ckan-progress__steps {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .ckan-progress__connector {
+        display: none;
+    }
+    
+    .ckan-toast {
+        min-width: auto;
+        max-width: calc(100% - 32px);
+        right: 16px;
+        bottom: 16px;
+    }
+    
+    .ckan-active-filters__list {
+        flex-direction: column;
+    }
+    
+    .ckan-filter-tag {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 576px) {
+    .ckan-filters {
+        padding: 20px 0 30px;
+    }
+    
+    .ckan-card__title {
+        font-size: 0.95rem;
+    }
+    
+    .ckan-table thead th,
+    .ckan-table tbody td {
+        padding: 6px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .ckan-table__org-badge {
+        font-size: 0.65rem;
+        padding: 1px 8px;
+    }
+    
+    .ckan-table__link {
+        font-size: 0.65rem;
+        padding: 2px 8px;
+    }
+    
+    .ckan-table__description {
+        max-width: 80px;
+    }
+    
+    .ckan-pest-option__label {
+        font-size: 0.8rem;
+    }
+}
+</style>
+
+{% endblock %}

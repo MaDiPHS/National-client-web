@@ -1,0 +1,527 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!--Page Header Start-->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
+    </div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>Crop Analytics</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'analytics:analytics_dashboard' %}">Analytics Dashboard</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>Crop Analytics</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Page Header End-->
+
+<!--Analytics Dashboard Start -->
+<section class="analytics-dashboard">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12">
+                <div class="analytics-dashboard__content">
+                    <!-- Header with Filters -->
+                    <div class="analytics-dashboard__header d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                        <div class="analytics-dashboard__title-box">
+                            <h3 class="analytics-dashboard__title">Crop Analytics</h3>
+                            {% if selected_crop %}
+                                <p class="analytics-dashboard__subtitle mb-0">Showing data for <strong>{{ selected_crop }}</strong></p>
+                            {% else %}
+                                <p class="analytics-dashboard__subtitle mb-0">Select a crop to view its analytics</p>
+                            {% endif %}
+                        </div>
+                        <div class="analytics-dashboard__filter-box d-flex gap-2 flex-wrap">
+                            <select class="form-select" id="cropSelect" style="max-width: 220px;">
+                                <option value="">Select a crop...</option>
+                                {% for crop in all_crops %}
+                                <option value="{{ crop }}" {% if crop == selected_crop %}selected{% endif %}>{{ crop }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="date" class="form-control" id="startDate" style="max-width: 150px;">
+                            <input type="date" class="form-control" id="endDate" style="max-width: 150px;">
+                            <button class="thm-btn btn-sm" onclick="applyFilters()">Apply Filters</button>
+                        </div>
+                    </div>
+
+                    {% if selected_crop %}
+
+                    <!-- Crop Statistics -->
+                    <div class="row mb-4 g-3">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="analytics-card border-left-primary shadow h-100 py-2">
+                                <div class="analytics-card__body text-center">
+                                    <div class="analytics-card__value analytics-card__value--lg text-primary">{{ total_ai_cases }}</div>
+                                    <div class="analytics-card__label text-muted text-uppercase mb-0">AI Detected Cases</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="analytics-card border-left-success shadow h-100 py-2">
+                                <div class="analytics-card__body text-center">
+                                    <div class="analytics-card__value analytics-card__value--lg text-success">{{ total_other_cases }}</div>
+                                    <div class="analytics-card__label text-muted text-uppercase mb-0">Human Detected Reports</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="analytics-card border-left-info shadow h-100 py-2">
+                                <div class="analytics-card__body text-center">
+                                    <div class="analytics-card__value analytics-card__value--lg text-info">{{ avg_infection_rate|floatformat:2 }}%</div>
+                                    <div class="analytics-card__label text-muted text-uppercase mb-0">Average Infection Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row 1 -->
+                    <div class="row mb-4 g-4">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="analytics-chart-card shadow h-100">
+                                <div class="analytics-chart-card__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Monthly Trend</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    {% if crop_trend_chart %}
+                                        <div class="chart-container">
+                                            {{ crop_trend_chart|safe }}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-center text-muted">No trend data available</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-12">
+                            <div class="analytics-chart-card shadow h-100">
+                                <div class="analytics-chart-card__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Top Diseases</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    {% if crop_diseases_chart %}
+                                        <div class="chart-container">
+                                            {{ crop_diseases_chart|safe }}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-center text-muted">No disease data available</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row 2 -->
+                    <div class="row mb-4 g-4">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="analytics-chart-card shadow h-100">
+                                <div class="analytics-chart-card__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Infection Rate Over Time</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    {% if crop_infection_chart %}
+                                        <div class="chart-container">
+                                            {{ crop_infection_chart|safe }}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-center text-muted">No infection data available</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-12">
+                            <div class="analytics-chart-card shadow h-100">
+                                <div class="analytics-chart-card__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Geographic Distribution</h6>
+                                </div>
+                                <div class="analytics-chart-card__body">
+                                    {% if crop_geographic_chart %}
+                                        <div class="chart-container">
+                                            {{ crop_geographic_chart|safe }}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-center text-muted">No geographic data available</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Diseases List -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="analytics-quick-links shadow">
+                                <div class="analytics-quick-links__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Most Common Diseases</h6>
+                                </div>
+                                <div class="analytics-quick-links__body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table analytics-table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Disease</th>
+                                                    <th>Number of Cases</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for disease in top_diseases %}
+                                                <tr>
+                                                    <td>{{ disease.original_disease }}</td>
+                                                    <td>{{ disease.count }}</td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="2" class="text-center text-muted py-4">No disease data available</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% else %}
+
+                    <!-- Crop Selection Prompt -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="analytics-quick-links shadow">
+                                <div class="analytics-quick-links__header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Select a Crop to View Analytics</h6>
+                                </div>
+                                <div class="analytics-quick-links__body">
+                                    <div class="row g-3">
+                                        {% for crop in all_crops|slice:":12" %}
+                                        <div class="col-md-3 col-sm-6">
+                                            <a href="?crop_name={{ crop|urlencode }}" class="analytics-link">
+                                                <i class="fas fa-leaf mb-2"></i>{{ crop }}
+                                            </a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if all_crops|length > 12 %}
+                                    <div class="text-center mt-3">
+                                        <p class="text-muted mb-0">Showing 12 of {{ all_crops|length }} crops. Use the dropdown above to select others.</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--Analytics Dashboard End-->
+
+<script>
+function applyFilters() {
+    const crop = document.getElementById('cropSelect').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    
+    const params = new URLSearchParams();
+    if (crop) params.append('crop_name', crop);
+    if (startDate) params.append('start_date', startDate);
+    if (endDate) params.append('end_date', endDate);
+    
+    window.location.href = '?' + params.toString();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default dates to last 6 months
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 6);
+    
+    document.getElementById('endDate').valueAsDate = endDate;
+    document.getElementById('startDate').valueAsDate = startDate;
+
+    initChartResizing();
+});
+
+/**
+ * Makes Plotly charts genuinely responsive to their .chart-container,
+ * same approach used on the main Analytics Dashboard page. Plotly.Plots.resize()
+ * recalculates axes/legends/margins to fit the container instead of just
+ * stretching the SVG with CSS, which avoids both overlap and cropping.
+ */
+function initChartResizing() {
+    const chartDivs = document.querySelectorAll('.chart-container .js-plotly-plot');
+
+    if (chartDivs.length === 0) {
+        return;
+    }
+
+    function resizeAllCharts() {
+        chartDivs.forEach(function (gd) {
+            if (window.Plotly) {
+                Plotly.Plots.resize(gd);
+            }
+        });
+    }
+
+    setTimeout(resizeAllCharts, 100);
+
+    let resizeTimer;
+    window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resizeAllCharts, 150);
+    });
+
+    if (window.ResizeObserver) {
+        const ro = new ResizeObserver(function () {
+            resizeAllCharts();
+        });
+        document.querySelectorAll('.chart-container').forEach(function (el) {
+            ro.observe(el);
+        });
+    }
+}
+</script>
+
+<style>
+/* Analytics Dashboard Custom Styles (shared with the other analytics pages) */
+.analytics-dashboard {
+    padding: 60px 0 80px;
+}
+
+.analytics-dashboard__header {
+    margin-bottom: 30px;
+    row-gap: 15px;
+}
+
+.analytics-dashboard__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.analytics-dashboard__subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.analytics-dashboard__filter-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.analytics-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 0.35rem;
+    border-left: 0.25rem solid #4e73df;
+    padding: 20px;
+    background: #fff;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.analytics-card.border-left-success { border-left-color: #1cc88a; }
+.analytics-card.border-left-info { border-left-color: #36b9cc; }
+.analytics-card.border-left-warning { border-left-color: #f6c23e; }
+
+.analytics-card__body { width: 100%; }
+
+.analytics-card__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.analytics-card__value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #5a5c69;
+}
+
+.analytics-card__value--lg {
+    font-size: 2rem;
+    line-height: 1.3;
+}
+
+.analytics-chart-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 0.35rem;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.analytics-chart-card__header {
+    flex: 0 0 auto;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+.analytics-chart-card__body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    overflow: hidden;
+}
+
+.chart-container .js-plotly-plot,
+.chart-container .plot-container,
+.chart-container .svg-container {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.analytics-quick-links {
+    background: #fff;
+    border-radius: 0.35rem;
+    overflow: hidden;
+}
+
+.analytics-quick-links__header {
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.75rem 1.25rem;
+}
+
+.analytics-quick-links__body {
+    padding: 1.25rem;
+}
+
+.analytics-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 15px;
+    color: #5a5c69;
+    background: #f8f9fc;
+    border-radius: 0.35rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    font-weight: 600;
+}
+
+.analytics-link i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.analytics-link:hover {
+    background: #4e73df;
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+/* Table styling to match the card theme instead of raw Bootstrap defaults */
+.analytics-table {
+    margin-bottom: 0;
+}
+
+.analytics-table thead th {
+    background: #f8f9fc;
+    border-bottom: 2px solid #e3e6f0;
+    color: #5a5c69;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 0.9rem 1.25rem;
+}
+
+.analytics-table tbody td {
+    padding: 0.85rem 1.25rem;
+    vertical-align: middle;
+    border-top: 1px solid #f1f1f5;
+}
+
+.analytics-table tbody tr:hover {
+    background-color: #f8f9fc;
+}
+
+.text-primary { color: #4e73df !important; }
+.text-success { color: #1cc88a !important; }
+.text-info { color: #36b9cc !important; }
+.text-warning { color: #f6c23e !important; }
+.text-gray-800 { color: #5a5c69 !important; }
+.text-uppercase { text-transform: uppercase !important; }
+.font-weight-bold { font-weight: 700 !important; }
+.shadow { box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .analytics-dashboard__header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .analytics-dashboard__filter-box {
+        margin-top: 15px;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .analytics-dashboard__filter-box select,
+    .analytics-dashboard__filter-box input {
+        max-width: 100% !important;
+        flex: 1 1 100%;
+    }
+
+    .analytics-dashboard__filter-box .thm-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .chart-container {
+        height: 260px;
+    }
+}
+
+@media (max-width: 576px) {
+    .analytics-dashboard {
+        padding: 30px 0 40px;
+    }
+
+    .analytics-card {
+        padding: 15px;
+    }
+
+    .analytics-card__value--lg {
+        font-size: 1.5rem;
+    }
+
+    .chart-container {
+        height: 220px;
+    }
+}
+</style>
+
+{% endblock content %}
