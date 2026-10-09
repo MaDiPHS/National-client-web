@@ -2,7 +2,694 @@
 {% load static %}
 
 {% block content %}
+<style>
+/* ============================================
+   Rainfall Forecast Section
+   ============================================ */
+.rainfall-forecast {
+    padding: 50px 0 80px;
+    background: #f8f9fc;
+}
 
+.rainfall-forecast__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.rainfall-forecast__title i {
+    margin-right: 10px;
+}
+
+.rainfall-forecast__subtitle {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+.rainfall-forecast__subtitle strong {
+    color: #4e73df;
+}
+
+/* ============================================
+   DCCMS Acknowledgement Styles
+   ============================================ */
+.dccms-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(78, 115, 223, 0.06);
+    border-left: 4px solid #4e73df;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #5a5c69;
+}
+
+.dccms-banner i {
+    color: #4e73df;
+    font-size: 1rem;
+}
+
+.dccms-banner strong {
+    color: #212529;
+}
+
+.dccms-attribution {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8f9fc 0%, #eef2ff 100%);
+    border-radius: 10px;
+    border: 1px solid #e3e6f0;
+}
+
+.dccms-attribution__icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.12);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1.3rem;
+}
+
+.dccms-attribution__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 6px 0;
+}
+
+.dccms-attribution__text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.dccms-attribution__text strong {
+    color: #4e73df;
+}
+
+.dccms-footer-note {
+    display: flex;
+    align-items: center;
+    font-size: 0.82rem;
+    color: #858796;
+    border-top: 1px solid #e3e6f0;
+}
+
+.dccms-footer-note strong {
+    color: #4e73df;
+}
+
+/* ============================================
+   Rainfall Cards — FIXED (no shiver)
+   ============================================ */
+.rainfall-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    height: 100%;
+    border: 1px solid #e3e6f0;
+    /* Only animate specific properties — NOT "all" */
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    /* Use will-change to hint the browser */
+    will-change: box-shadow;
+    /* Remove the fadeInUp animation that conflicts with hover */
+}
+
+.rainfall-card:hover {
+    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
+    border-color: #d1d9f0;
+    /* REMOVED: transform: translateY(-5px) — this caused the shiver */
+}
+
+.rainfall-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.rainfall-card__city {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #212529;
+}
+
+.rainfall-card__city i {
+    color: #4e73df;
+    margin-right: 8px;
+}
+
+.rainfall-card__badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    background: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.rainfall-card__badge i {
+    margin-right: 4px;
+}
+
+.rainfall-card__error {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(231, 74, 59, 0.08);
+    border-radius: 8px;
+    color: #e74a3b;
+    font-size: 0.85rem;
+}
+
+.rainfall-card__body {
+    padding: 5px 0;
+}
+
+.rainfall-card__icon {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+}
+
+/* Static icon colors — no animation (removed float to stop shiver) */
+.rainfall-icon--heavy {
+    color: #0d47a1;
+}
+
+.rainfall-icon--moderate {
+    color: #1976d2;
+}
+
+.rainfall-icon--light {
+    color: #42a5f5;
+}
+
+.rainfall-icon--drizzle {
+    color: #90caf9;
+}
+
+.rainfall-icon--default {
+    color: #ffa726;
+}
+
+.rainfall-card__precipitation {
+    font-size: 3rem;
+    font-weight: 300;
+    color: #212529;
+    line-height: 1;
+}
+
+.rainfall-card__unit {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #858796;
+}
+
+.rainfall-card__label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.rainfall-card__condition {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4e73df;
+    text-transform: capitalize;
+    margin-bottom: 12px;
+}
+
+.rainfall-card__intensity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rainfall-card__intensity-bar {
+    flex: 1;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.rainfall-card__intensity-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4e73df, #0d47a1);
+    border-radius: 3px;
+    /* Only transition width — not "all" */
+    transition: width 1s ease;
+}
+
+.rainfall-card__intensity-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+    white-space: nowrap;
+}
+
+/* ============================================
+   Alert
+   ============================================ */
+.rainfall-alert {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    border-radius: 12px;
+}
+
+.rainfall-alert--danger {
+    background: linear-gradient(135deg, #e74a3b, #c0392b);
+    color: #ffffff;
+}
+
+.rainfall-alert__icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.rainfall-alert__content {
+    flex: 1;
+}
+
+.rainfall-alert__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #ffffff;
+}
+
+.rainfall-alert__text {
+    font-size: 0.9rem;
+    opacity: 0.95;
+    margin: 0;
+}
+
+/* ============================================
+   Chart Cards
+   ============================================ */
+.analytics-chart-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e3e6f0;
+}
+
+.analytics-chart-card__header {
+    flex: 0 0 auto;
+    background: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 0.9rem 1.25rem;
+}
+
+.analytics-chart-card__body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.chart-body {
+    position: relative;
+    height: 350px;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+.chart-body canvas {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none;
+}
+
+.shadow {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1) !important;
+}
+
+.text-primary { color: #4e73df !important; }
+.text-success { color: #1cc88a !important; }
+.text-info { color: #36b9cc !important; }
+.text-warning { color: #f6c23e !important; }
+.font-weight-bold { font-weight: 700 !important; }
+
+/* ============================================
+   Daily Forecast Items — FIXED (no shiver)
+   ============================================ */
+.daily-forecast {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px 5px;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: #4e73df #e9ecef;
+}
+
+.daily-forecast::-webkit-scrollbar {
+    height: 6px;
+}
+
+.daily-forecast::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 10px;
+}
+
+.daily-forecast::-webkit-scrollbar-thumb {
+    background: #4e73df;
+    border-radius: 10px;
+}
+
+.daily-item {
+    min-width: 160px;
+    text-align: center;
+    padding: 16px 12px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    border: 1px solid #e3e6f0;
+    flex-shrink: 0;
+    /* Only transition specific props */
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    will-change: box-shadow;
+}
+
+.daily-item:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    /* REMOVED: transform: scale(1.03) — caused layout jitter */
+}
+
+.daily-item--heavy {
+    border-left: 3px solid #0d47a1;
+}
+
+.daily-item--moderate {
+    border-left: 3px solid #1976d2;
+}
+
+.daily-item--light {
+    border-left: 3px solid #42a5f5;
+}
+
+.daily-item--dry {
+    border-left: 3px solid #ffa726;
+}
+
+.daily-item__date {
+    font-weight: 700;
+    color: #212529;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.daily-item__city {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 6px;
+}
+
+.daily-item__total {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: #212529;
+    line-height: 1;
+}
+
+.daily-item__unit {
+    font-size: 0.9rem;
+    color: #858796;
+}
+
+.daily-item__bar {
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 8px 0 6px 0;
+}
+
+.daily-item__bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4e73df, #0d47a1);
+    border-radius: 3px;
+    transition: width 1s ease;
+}
+
+.daily-item__level {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+/* ============================================
+   Tip Cards — FIXED (no shiver)
+   ============================================ */
+.tip-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fc;
+    border-radius: 10px;
+    transition: box-shadow 0.3s ease;
+    will-change: box-shadow;
+}
+
+.tip-card:hover {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.tip-card__icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.1);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1.2rem;
+    /* REMOVED: transform scale on parent hover — caused shiver */
+}
+
+.tip-card__icon--primary {
+    background: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+}
+
+.tip-card__icon--success {
+    background: rgba(28, 200, 138, 0.1);
+    color: #1cc88a;
+}
+
+.tip-card__icon--danger {
+    background: rgba(231, 74, 59, 0.1);
+    color: #e74a3b;
+}
+
+.tip-card__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.tip-card__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 4px 0;
+}
+
+.tip-card__text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ============================================
+   Refresh Button
+   ============================================ */
+.thm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: #4e73df;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    /* Only transition specific props */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.thm-btn:hover {
+    background: #2e59d9;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.thm-btn--refresh {
+    background: #ffffff;
+    color: #4e73df;
+    border: 2px solid #4e73df;
+}
+
+.thm-btn--refresh:hover {
+    background: #4e73df;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+@media (max-width: 1199px) {
+    .rainfall-card__precipitation {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 991px) {
+    .rainfall-forecast {
+        padding: 30px 0 50px;
+    }
+    
+    .rainfall-card__precipitation {
+        font-size: 2.2rem;
+    }
+
+    .chart-body {
+        height: 300px;
+    }
+
+
+    .dccms-attribution {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 767px) {
+    .rainfall-forecast__title {
+        font-size: 20px;
+    }
+    
+    .rainfall-card__precipitation {
+        font-size: 2rem;
+    }
+    
+    .rainfall-card__icon {
+        font-size: 2.8rem;
+    }
+    
+    .rainfall-alert {
+        flex-direction: column;
+        text-align: center;
+        padding: 16px;
+    }
+    
+    .tip-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .tip-card__icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        font-size: 1rem;
+    }
+    
+    .daily-item {
+        min-width: 140px;
+        padding: 12px 10px;
+    }
+    
+    .daily-item__total {
+        font-size: 1.5rem;
+    }
+    
+    .chart-body {
+        height: 260px;
+    }
+    
+    .thm-btn {
+        width: 100%;
+        padding: 10px 16px;
+    }
+
+    .dccms-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .rainfall-forecast {
+        padding: 20px 0 30px;
+    }
+    
+    .rainfall-card {
+        padding: 15px;
+    }
+    
+    .rainfall-card__precipitation {
+        font-size: 1.8rem;
+    }
+    
+    .rainfall-card__unit {
+        font-size: 1.1rem;
+    }
+    
+    .analytics-chart-card__body {
+        padding: 0.75rem;
+    }
+    
+    .chart-body {
+        height: 220px;
+    }
+    
+    .daily-item {
+        min-width: 120px;
+        padding: 10px 8px;
+    }
+    
+    .daily-item__total {
+        font-size: 1.3rem;
+    }
+
+    .dccms-footer-note {
+        flex-direction: column;
+        text-align: center;
+        gap: 4px;
+    }
+}
+</style>
 <!--Page Header Start-->
 <section class="page-header">
     <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});">
@@ -36,13 +723,26 @@
                             <i class="fas fa-cloud-rain text-primary"></i> Malawi Rainfall Forecast
                         </h3>
                         <p class="rainfall-forecast__subtitle mb-0">
-                            <i class="far fa-calendar-alt"></i> {{ current_date }} | Real-time precipitation data from DCCMS
+                            <i class="far fa-calendar-alt"></i> {{ current_date }} | 
+                            <i class="fas fa-satellite-dish"></i> 
+                            Data source: <strong>DCCMS</strong> – Department of Climate Change and Meteorological Services
                         </p>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         <button class="thm-btn thm-btn--refresh" onclick="location.reload()">
                             <i class="fas fa-sync-alt"></i> Refresh Data
                         </button>
+                    </div>
+                </div>
+                <!-- DCCMS Acknowledgement Banner -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="dccms-banner">
+                            <i class="fas fa-info-circle"></i>
+                            <span>All rainfall and precipitation data on this page is provided by the 
+                                <strong>Department of Climate Change and Meteorological Services (DCCMS)</strong>, Malawi.
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -126,6 +826,27 @@
                     </div>
                 </div>
                 {% endfor %}
+            </div>
+
+            <!-- DCCMS Data Attribution Note -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="dccms-attribution">
+                        <div class="dccms-attribution__icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="dccms-attribution__content">
+                            <h6 class="dccms-attribution__title">Data Source Acknowledgement</h6>
+                            <p class="dccms-attribution__text mb-0">
+                                The rainfall and precipitation data displayed on this page is sourced from the 
+                                <strong>Department of Climate Change and Meteorological Services (DCCMS)</strong>, 
+                                Malawi. DCCMS is the national authority responsible for weather forecasting, 
+                                climate monitoring, and the provision of meteorological services to support 
+                                safety, agriculture, health, and socio-economic development across Malawi.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Flood Risk Alert - Only show if heavy rain detected -->
@@ -235,6 +956,14 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- DCCMS Footer Acknowledgement -->
+                            <div class="dccms-footer-note mt-4 pt-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span class="ms-2">
+                                    Rainfall data verified and provided by 
+                                    <strong>DCCMS – Department of Climate Change and Meteorological Services, Malawi</strong>.
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -244,7 +973,6 @@
 </section>
 <!--Rainfall Forecast End-->
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const cityColors = {
@@ -517,614 +1245,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     populateDailyTotals();
 });
+
 </script>
 
-<style>
-/* ============================================
-   Rainfall Forecast Section
-   ============================================ */
-.rainfall-forecast {
-    padding: 50px 0 80px;
-    background: #f8f9fc;
-}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-.rainfall-forecast__title {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0;
-    color: #212529;
-}
-
-.rainfall-forecast__title i {
-    margin-right: 10px;
-}
-
-.rainfall-forecast__subtitle {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin-top: 4px;
-}
-
-/* ============================================
-   Rainfall Cards
-   ============================================ */
-.rainfall-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
-    transition: all 0.3s ease;
-    height: 100%;
-    border: 1px solid #e3e6f0;
-    animation: fadeInUp 0.6s ease-out both;
-}
-
-.rainfall-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.rainfall-card__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.rainfall-card__city {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #212529;
-}
-
-.rainfall-card__city i {
-    color: #4e73df;
-    margin-right: 8px;
-}
-
-.rainfall-card__badge {
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 4px 12px;
-    background: rgba(78, 115, 223, 0.1);
-    color: #4e73df;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-}
-
-.rainfall-card__badge i {
-    margin-right: 4px;
-}
-
-.rainfall-card__error {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
-    background: rgba(231, 74, 59, 0.08);
-    border-radius: 8px;
-    color: #e74a3b;
-    font-size: 0.85rem;
-}
-
-.rainfall-card__body {
-    padding: 5px 0;
-}
-
-.rainfall-card__icon {
-    font-size: 3.5rem;
-    margin-bottom: 10px;
-}
-
-.rainfall-icon--heavy {
-    color: #0d47a1;
-    animation: float 3s ease-in-out infinite;
-}
-
-.rainfall-icon--moderate {
-    color: #1976d2;
-    animation: float 3s ease-in-out infinite;
-}
-
-.rainfall-icon--light {
-    color: #42a5f5;
-    animation: float 3s ease-in-out infinite;
-}
-
-.rainfall-icon--drizzle {
-    color: #90caf9;
-    animation: float 3s ease-in-out infinite;
-}
-
-.rainfall-icon--default {
-    color: #ffa726;
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-}
-
-.rainfall-card__precipitation {
-    font-size: 3rem;
-    font-weight: 300;
-    color: #212529;
-    line-height: 1;
-}
-
-.rainfall-card__unit {
-    font-size: 1.5rem;
-    font-weight: 300;
-    color: #858796;
-}
-
-.rainfall-card__label {
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin-bottom: 8px;
-}
-
-.rainfall-card__condition {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #4e73df;
-    text-transform: capitalize;
-    margin-bottom: 12px;
-}
-
-.rainfall-card__intensity {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.rainfall-card__intensity-bar {
-    flex: 1;
-    height: 6px;
-    background: #e9ecef;
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-.rainfall-card__intensity-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #4e73df, #0d47a1);
-    border-radius: 3px;
-    transition: width 1s ease;
-}
-
-.rainfall-card__intensity-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #6c757d;
-    white-space: nowrap;
-}
-
-/* ============================================
-   Alert
-   ============================================ */
-.rainfall-alert {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 18px 24px;
-    border-radius: 12px;
-    animation: fadeInUp 0.6s ease-out;
-}
-
-.rainfall-alert--danger {
-    background: linear-gradient(135deg, #e74a3b, #c0392b);
-    color: #ffffff;
-}
-
-.rainfall-alert__icon {
-    font-size: 2rem;
-    flex-shrink: 0;
-}
-
-.rainfall-alert__content {
-    flex: 1;
-}
-
-.rainfall-alert__title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0 0 4px 0;
-    color: #ffffff;
-}
-
-.rainfall-alert__text {
-    font-size: 0.9rem;
-    opacity: 0.95;
-    margin: 0;
-}
-
-/* ============================================
-   Chart Cards
-   ============================================ */
-.analytics-chart-card {
-    display: flex;
-    flex-direction: column;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #e3e6f0;
-}
-
-.analytics-chart-card__header {
-    flex: 0 0 auto;
-    background: #f8f9fc;
-    border-bottom: 1px solid #e3e6f0;
-    padding: 0.9rem 1.25rem;
-}
-
-.analytics-chart-card__body {
-    flex: 1 1 auto;
-    padding: 1.25rem;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.chart-body {
-    min-height: 320px;
-    position: relative;
-}
-
-.chart-body canvas {
-    width: 100% !important;
-    height: 100% !important;
-    max-height: 350px;
-}
-
-.shadow {
-    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1) !important;
-}
-
-.text-primary { color: #4e73df !important; }
-.text-success { color: #1cc88a !important; }
-.text-info { color: #36b9cc !important; }
-.text-warning { color: #f6c23e !important; }
-.font-weight-bold { font-weight: 700 !important; }
-
-/* ============================================
-   Daily Forecast Items
-   ============================================ */
-.daily-forecast {
-    display: flex;
-    overflow-x: auto;
-    padding: 10px 5px;
-    gap: 16px;
-    scrollbar-width: thin;
-    scrollbar-color: #4e73df #e9ecef;
-}
-
-.daily-forecast::-webkit-scrollbar {
-    height: 6px;
-}
-
-.daily-forecast::-webkit-scrollbar-track {
-    background: #e9ecef;
-    border-radius: 10px;
-}
-
-.daily-forecast::-webkit-scrollbar-thumb {
-    background: #4e73df;
-    border-radius: 10px;
-}
-
-.daily-item {
-    min-width: 160px;
-    text-align: center;
-    padding: 16px 12px;
-    background: #f8f9fc;
-    border-radius: 10px;
-    border: 1px solid #e3e6f0;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-}
-
-.daily-item:hover {
-    transform: scale(1.03);
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.daily-item--heavy {
-    border-left: 3px solid #0d47a1;
-}
-
-.daily-item--moderate {
-    border-left: 3px solid #1976d2;
-}
-
-.daily-item--light {
-    border-left: 3px solid #42a5f5;
-}
-
-.daily-item--dry {
-    border-left: 3px solid #ffa726;
-}
-
-.daily-item__date {
-    font-weight: 700;
-    color: #212529;
-    font-size: 0.9rem;
-    margin-bottom: 2px;
-}
-
-.daily-item__city {
-    font-size: 0.8rem;
-    color: #6c757d;
-    margin-bottom: 6px;
-}
-
-.daily-item__total {
-    font-size: 1.8rem;
-    font-weight: 300;
-    color: #212529;
-    line-height: 1;
-}
-
-.daily-item__unit {
-    font-size: 0.9rem;
-    color: #858796;
-}
-
-.daily-item__bar {
-    height: 6px;
-    background: #e9ecef;
-    border-radius: 3px;
-    overflow: hidden;
-    margin: 8px 0 6px 0;
-}
-
-.daily-item__bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #4e73df, #0d47a1);
-    border-radius: 3px;
-    transition: width 1s ease;
-}
-
-.daily-item__level {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #6c757d;
-}
-
-/* ============================================
-   Tip Cards
-   ============================================ */
-.tip-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    padding: 15px;
-    background: #f8f9fc;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-}
-
-.tip-card:hover {
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-}
-
-.tip-card__icon {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(78, 115, 223, 0.1);
-    border-radius: 50%;
-    color: #4e73df;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
-}
-
-.tip-card__icon--primary {
-    background: rgba(78, 115, 223, 0.1);
-    color: #4e73df;
-}
-
-.tip-card__icon--success {
-    background: rgba(28, 200, 138, 0.1);
-    color: #1cc88a;
-}
-
-.tip-card__icon--danger {
-    background: rgba(231, 74, 59, 0.1);
-    color: #e74a3b;
-}
-
-.tip-card:hover .tip-card__icon {
-    transform: scale(1.05);
-}
-
-.tip-card__content {
-    flex: 1;
-    min-width: 0;
-}
-
-.tip-card__title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #212529;
-    margin: 0 0 4px 0;
-}
-
-.tip-card__text {
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin: 0;
-    line-height: 1.5;
-}
-
-/* ============================================
-   Refresh Button
-   ============================================ */
-.thm-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 24px;
-    background: #4e73df;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.thm-btn:hover {
-    background: #2e59d9;
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
-}
-
-.thm-btn:active {
-    transform: translateY(0);
-}
-
-.thm-btn--refresh {
-    background: #ffffff;
-    color: #4e73df;
-    border: 2px solid #4e73df;
-}
-
-.thm-btn--refresh:hover {
-    background: #4e73df;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
-}
-
-/* ============================================
-   Responsive Adjustments
-   ============================================ */
-@media (max-width: 1199px) {
-    .rainfall-card__precipitation {
-        font-size: 2.5rem;
-    }
-}
-
-@media (max-width: 991px) {
-    .rainfall-forecast {
-        padding: 30px 0 50px;
-    }
-    
-    .rainfall-card__precipitation {
-        font-size: 2.2rem;
-    }
-    
-    .chart-body {
-        min-height: 260px;
-    }
-}
-
-@media (max-width: 767px) {
-    .rainfall-forecast__title {
-        font-size: 20px;
-    }
-    
-    .rainfall-card__precipitation {
-        font-size: 2rem;
-    }
-    
-    .rainfall-card__icon {
-        font-size: 2.8rem;
-    }
-    
-    .rainfall-alert {
-        flex-direction: column;
-        text-align: center;
-        padding: 16px;
-    }
-    
-    .tip-card {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    
-    .tip-card__icon {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-        font-size: 1rem;
-    }
-    
-    .daily-item {
-        min-width: 140px;
-        padding: 12px 10px;
-    }
-    
-    .daily-item__total {
-        font-size: 1.5rem;
-    }
-    
-    .chart-body {
-        min-height: 220px;
-    }
-    
-    .thm-btn {
-        width: 100%;
-        padding: 10px 16px;
-    }
-}
-
-@media (max-width: 576px) {
-    .rainfall-forecast {
-        padding: 20px 0 30px;
-    }
-    
-    .rainfall-card {
-        padding: 15px;
-    }
-    
-    .rainfall-card__precipitation {
-        font-size: 1.8rem;
-    }
-    
-    .rainfall-card__unit {
-        font-size: 1.1rem;
-    }
-    
-    .analytics-chart-card__body {
-        padding: 0.75rem;
-    }
-    
-    .chart-body {
-        min-height: 180px;
-    }
-    
-    .daily-item {
-        min-width: 120px;
-        padding: 10px 8px;
-    }
-    
-    .daily-item__total {
-        font-size: 1.3rem;
-    }
-}
-</style>
 
 {% endblock %}

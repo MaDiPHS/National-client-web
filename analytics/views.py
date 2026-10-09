@@ -295,38 +295,43 @@ class AnalyticsDashboardView(TemplateView):
 class CropAnalyticsView(TemplateView):
     template_name = 'analytics/crop_analytics.html'
     
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         crop_name = self.request.GET.get('crop_name')
-        
+
+        # ---- ALWAYS build the list of crops, regardless of selection ----
+        ai_crops = AIDisease.objects.values_list('crop_name', flat=True).distinct()
+        other_crops = HumanDetectedDisease.objects.values_list('crop_name', flat=True).distinct()
+        # Filter out None / empty strings so the dropdown isn't polluted
+        all_crops = sorted({
+            c for c in list(ai_crops) + list(other_crops) if c and c.strip()
+        })
+        context['all_crops'] = all_crops
+
+        # ---- No crop selected: stop here, just show the picker ----
         if not crop_name:
-            # Get all unique crops
-            ai_crops = AIDisease.objects.values_list('crop_name', flat=True).distinct()
-            other_crops = HumanDetectedDisease.objects.values_list('crop_name', flat=True).distinct()
-            all_crops = sorted(set(list(ai_crops) + list(other_crops)))
-            context['all_crops'] = all_crops
             return context
-        
-        # Filter data for specific crop
+
+        # ---- Filter data for specific crop ----
         start_date = self.request.GET.get('start_date')
         end_date = self.request.GET.get('end_date')
-        
+
         ai_diseases = AIDisease.objects.filter(crop_name=crop_name)
-        other_crops = HumanDetectedDisease.objects.filter(crop_name=crop_name)
-        
+        other_crops_qs = HumanDetectedDisease.objects.filter(crop_name=crop_name)
+
         if start_date:
             ai_diseases = ai_diseases.filter(record_date__gte=start_date)
-            other_crops = other_crops.filter(record_date__gte=start_date)
+            other_crops_qs = other_crops_qs.filter(record_date__gte=start_date)
         if end_date:
             ai_diseases = ai_diseases.filter(record_date__lte=end_date)
-            other_crops = other_crops.filter(record_date__lte=end_date)
-        
-        # Statistics for this crop
+            other_crops_qs = other_crops_qs.filter(record_date__lte=end_date)
+
         context.update({
             'selected_crop': crop_name,
             'total_ai_cases': ai_diseases.count(),
-            'total_other_cases': other_crops.count(),
-            'avg_infection_rate': other_crops.aggregate(
+            'total_other_cases': other_crops_qs.count(),
+            'avg_infection_rate': other_crops_qs.aggregate(
                 Avg('infection_percentage')
             )['infection_percentage__avg'] or 0,
             'most_common_farm': ai_diseases.values('farm__farm_name').annotate(
@@ -336,13 +341,12 @@ class CropAnalyticsView(TemplateView):
                 count=Count('id')
             ).order_by('-count')[:5],
         })
-        
-        # Generate crop-specific charts
-        context['crop_trend_chart'] = self.create_crop_trend_chart(ai_diseases, other_crops)
+
+        context['crop_trend_chart'] = self.create_crop_trend_chart(ai_diseases, other_crops_qs)
         context['crop_diseases_chart'] = self.create_crop_diseases_chart(ai_diseases)
-        context['crop_infection_chart'] = self.create_crop_infection_chart(other_crops)
+        context['crop_infection_chart'] = self.create_crop_infection_chart(other_crops_qs)
         context['crop_geographic_chart'] = self.create_crop_geographic_chart(ai_diseases)
-        
+
         return context
     
     def create_crop_trend_chart(self, ai_diseases, other_crops):
@@ -640,14 +644,18 @@ class TimeSeriesAnalyticsView(TemplateView):
             ).values('year', 'month').annotate(
                 count=Count('id')
             ).order_by('year', 'month')
-            x = [f"{item['year']}-{item['month']:02d}" for item in data]
+            x = [
+                f"{int(item['year'])}-{int(item['month']):02d}"
+                for item in data
+                if item['year'] is not None and item['month'] is not None
+            ]
         elif period == 'yearly':
             data = queryset.annotate(
                 year=ExtractYear('record_date')
             ).values('year').annotate(
                 count=Count('id')
             ).order_by('year')
-            x = [str(item['year']) for item in data]
+            x = [str(int(item['year'])) for item in data if item['year'] is not None]
         else:  # weekly
             # Simplified weekly grouping
             data = queryset.extra({
@@ -656,7 +664,12 @@ class TimeSeriesAnalyticsView(TemplateView):
             }).values('year', 'week').annotate(
                 count=Count('id')
             ).order_by('year', 'week')
-            x = [f"{item['year']}-W{item['week']:02d}" for item in data]
+
+            x = []
+            for item in data:
+                year = int(item['year']) if item['year'] is not None else 0
+                week = int(item['week']) if item['week'] is not None else 0
+                x.append(f"{year}-W{week:02d}")
         
         y = [item['count'] for item in data]
         
@@ -682,42 +695,59 @@ class TimeSeriesAnalyticsView(TemplateView):
     
     def create_combined_time_series_chart(self, ai_queryset, other_queryset, period):
         fig = go.Figure()
-        
-        # Add AI Diseases trace
-        if period == 'monthly':
-            ai_data = ai_queryset.annotate(
-                month=ExtractMonth('record_date'),
-                year=ExtractYear('record_date')
-            ).values('year', 'month').annotate(
-                count=Count('id')
-            ).order_by('year', 'month')
-            x = [f"{item['year']}-{item['month']:02d}" for item in ai_data]
-            ai_y = [item['count'] for item in ai_data]
-            
-            other_data = other_queryset.annotate(
-                month=ExtractMonth('record_date'),
-                year=ExtractYear('record_date')
-            ).values('year', 'month').annotate(
-                count=Count('id')
-            ).order_by('year', 'month')
-            other_y = [item['count'] for item in other_data]
-        
+
+        def build_series(qs):
+            if period == 'daily':
+                data = qs.values('record_date').annotate(
+                    count=Count('id')
+                ).order_by('record_date')
+                x = [item['record_date'].strftime('%Y-%m-%d') for item in data]
+            elif period == 'weekly':
+                data = qs.extra({
+                    'week': "EXTRACT(WEEK FROM record_date)",
+                    'year': "EXTRACT(YEAR FROM record_date)"
+                }).values('year', 'week').annotate(
+                    count=Count('id')
+                ).order_by('year', 'week')
+                x = []
+                for item in data:
+                    year = int(item['year']) if item['year'] is not None else 0
+                    week = int(item['week']) if item['week'] is not None else 0
+                    x.append(f"{year}-W{week:02d}")
+            elif period == 'yearly':
+                data = qs.annotate(
+                    year=ExtractYear('record_date')
+                ).values('year').annotate(
+                    count=Count('id')
+                ).order_by('year')
+                x = [str(int(item['year'])) for item in data if item['year'] is not None]
+            else:  # monthly
+                data = qs.annotate(
+                    month=ExtractMonth('record_date'),
+                    year=ExtractYear('record_date')
+                ).values('year', 'month').annotate(
+                    count=Count('id')
+                ).order_by('year', 'month')
+                x = [
+                    f"{int(item['year'])}-{int(item['month']):02d}"
+                    for item in data
+                    if item['year'] is not None and item['month'] is not None
+                ]
+            y = [item['count'] for item in data]
+            return x, y
+
+        x_ai, ai_y = build_series(ai_queryset)
+        x_other, other_y = build_series(other_queryset)
+
         fig.add_trace(go.Scatter(
-            x=x,
-            y=ai_y,
-            mode='lines+markers',
-            name='AI Diseases',
-            line=dict(color='#2E86AB', width=3)
+            x=x_ai, y=ai_y, mode='lines+markers',
+            name='AI Diseases', line=dict(color='#2E86AB', width=3)
         ))
-        
         fig.add_trace(go.Scatter(
-            x=x,
-            y=other_y,
-            mode='lines+markers',
-            name='Other Crops Reports',
-            line=dict(color='#A23B72', width=3)
+            x=x_other, y=other_y, mode='lines+markers',
+            name='Other Crops Reports', line=dict(color='#A23B72', width=3)
         ))
-        
+
         fig.update_layout(
             title=f'Combined Time Series - {period.capitalize()}',
             xaxis_title='Time',
@@ -726,7 +756,7 @@ class TimeSeriesAnalyticsView(TemplateView):
             paper_bgcolor='white',
             hovermode='x unified'
         )
-        
+
         return opy.plot(fig, auto_open=False, output_type='div')
     
     @staticmethod

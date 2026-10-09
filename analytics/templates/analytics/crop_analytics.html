@@ -34,21 +34,33 @@
                     <div class="analytics-dashboard__header d-flex justify-content-between align-items-center mb-4 flex-wrap">
                         <div class="analytics-dashboard__title-box">
                             <h3 class="analytics-dashboard__title">Crop Analytics</h3>
+                            <span class="plantvillage-badge">
+                                <i class="fas fa-leaf"></i> Powered by PlantVillage
+                            </span>
                             {% if selected_crop %}
                                 <p class="analytics-dashboard__subtitle mb-0">Showing data for <strong>{{ selected_crop }}</strong></p>
                             {% else %}
                                 <p class="analytics-dashboard__subtitle mb-0">Select a crop to view its analytics</p>
                             {% endif %}
                         </div>
-                        <div class="analytics-dashboard__filter-box d-flex gap-2 flex-wrap">
-                            <select class="form-select" id="cropSelect" style="max-width: 220px;">
+                        <div class="analytics-dashboard__filter-box">
+                         <div class="filter-field filter-field--select">
+                           <select id="cropSelect" class="wide no-nice-select" placeholder="Search or select a crop...">
                                 <option value="">Select a crop...</option>
+
                                 {% for crop in all_crops %}
-                                <option value="{{ crop }}" {% if crop == selected_crop %}selected{% endif %}>{{ crop }}</option>
+                                <option value="{{ crop }}" {% if crop == selected_crop %}selected{% endif %}>
+                                    {{ crop }}
+                                </option>
                                 {% endfor %}
                             </select>
-                            <input type="date" class="form-control" id="startDate" style="max-width: 150px;">
-                            <input type="date" class="form-control" id="endDate" style="max-width: 150px;">
+                        </div>
+                            <div class="filter-field">
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="filter-field">
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
                             <button class="thm-btn btn-sm" onclick="applyFilters()">Apply Filters</button>
                         </div>
                     </div>
@@ -192,6 +204,21 @@
                         </div>
                     </div>
 
+                    <!-- PlantVillage Attribution Note -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="plantvillage-attribution">
+                                <i class="fas fa-database"></i>
+                                <span>
+                                    All crop analytics on this page are derived from the 
+                                    <strong>PlantVillage dataset</strong> — a publicly available benchmark 
+                                    containing over 54,000 leaf images across 38 crop‑disease pairs. 
+                                    The dataset is used for research and educational purposes.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     {% else %}
 
                     <!-- Crop Selection Prompt -->
@@ -221,6 +248,20 @@
                         </div>
                     </div>
 
+                    <!-- PlantVillage Attribution Note -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="plantvillage-attribution">
+                                <i class="fas fa-database"></i>
+                                <span>
+                                    All crop analytics on this page are derived from the 
+                                    <strong>PlantVillage dataset</strong> — a publicly available benchmark 
+                                    containing over 54,000 leaf images across 38 crop‑disease pairs.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     {% endif %}
                 </div>
             </div>
@@ -229,37 +270,75 @@
 </section>
 <!--Analytics Dashboard End-->
 
+<!-- Tom Select – searchable <select> (lightweight, no framework) -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
 <script>
 function applyFilters() {
+    // Tom Select keeps the original <select> in sync, so .value works fine
     const crop = document.getElementById('cropSelect').value;
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
-    
+
     const params = new URLSearchParams();
     if (crop) params.append('crop_name', crop);
     if (startDate) params.append('start_date', startDate);
     if (endDate) params.append('end_date', endDate);
-    
+
     window.location.href = '?' + params.toString();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Set default dates to last 6 months
+document.addEventListener('DOMContentLoaded', function () {
+    // ---------- Default dates: last 6 months ----------
     const endDate = new Date();
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - 6);
-    
     document.getElementById('endDate').valueAsDate = endDate;
     document.getElementById('startDate').valueAsDate = startDate;
+
+    // ---------- Crop select ----------
+    const cropElement = document.getElementById('cropSelect');
+
+    // Remove the theme's nice-select if it was already applied
+    function removeNiceSelect() {
+        if (window.jQuery && jQuery.fn.niceSelect) {
+            jQuery('#cropSelect').niceSelect('destroy');
+        }
+        document.querySelectorAll('.filter-field--select .nice-select')
+            .forEach(function (el) { el.remove(); });
+    }
+
+    removeNiceSelect();
+
+    if (window.TomSelect && !cropElement.tomselect) {
+        new TomSelect(cropElement, {
+            create: false,
+            maxItems: 1,
+            allowEmptyOption: true,
+            placeholder: 'Search or select a crop...',
+            sortField: { field: 'text', direction: 'asc' },
+            render: {
+                no_results: function (data, escape) {
+                    return '<div class="no-results">No crops found for "' +
+                        escape(data.input) + '"</div>';
+                }
+            },
+            onChange: function (value) {
+                if (value) applyFilters();
+            }
+        });
+    }
+
+    // The theme's script may run later (on window load), so clean up again
+    window.addEventListener('load', removeNiceSelect);
 
     initChartResizing();
 });
 
 /**
  * Makes Plotly charts genuinely responsive to their .chart-container,
- * same approach used on the main Analytics Dashboard page. Plotly.Plots.resize()
- * recalculates axes/legends/margins to fit the container instead of just
- * stretching the SVG with CSS, which avoids both overlap and cropping.
+ * same approach used on the main Analytics Dashboard page.
  */
 function initChartResizing() {
     const chartDivs = document.querySelectorAll('.chart-container .js-plotly-plot');
@@ -301,9 +380,24 @@ function initChartResizing() {
     padding: 60px 0 80px;
 }
 
+/* ------------------------------------------------------------------
+   Header / filter bar
+   ------------------------------------------------------------------
+   The filter bar must not be clipped by any ancestor with
+   overflow:hidden, and must sit above the chart cards below it so a
+   native <select> / Tom Select dropdown is drawn on top of them.
+   ------------------------------------------------------------------ */
 .analytics-dashboard__header {
+    position: relative;
+    z-index: 50;
     margin-bottom: 30px;
     row-gap: 15px;
+}
+
+.analytics-dashboard__title-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .analytics-dashboard__title {
@@ -316,14 +410,172 @@ function initChartResizing() {
 .analytics-dashboard__subtitle {
     color: #6c757d;
     font-size: 0.9rem;
+    margin: 0;
+}
+
+/* PlantVillage recognition badge */
+.plantvillage-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: linear-gradient(135deg, #2e6b4b 0%, #1d4f35 100%);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(46, 107, 75, 0.25);
+    white-space: nowrap;
+    line-height: 1;
+    align-self: flex-start;
+    margin-top: 4px;
+}
+
+.plantvillage-badge i {
+    font-size: 0.85rem;
+    color: #a8e6c1;
 }
 
 .analytics-dashboard__filter-box {
     display: flex;
     gap: 10px;
     align-items: center;
+    flex-wrap: wrap;
+    overflow: visible;          /* critical – lets Tom Select dropdown escape */
 }
 
+.filter-field {
+    display: flex;
+    align-items: center;
+}
+
+.filter-field--select {
+    min-width: 240px;
+    flex: 1 1 240px;
+    max-width: 320px;
+}
+
+/* Date inputs styling */
+.analytics-dashboard__filter-box input[type="date"] {
+    border: 1px solid #d7e0ec;
+    border-radius: 12px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.9rem;
+    min-height: 44px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(46, 107, 75, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    max-width: 160px;
+    width: 100%;
+}
+
+.analytics-dashboard__filter-box input[type="date"]:focus {
+    outline: none;
+    border-color: #2e6b4b;
+    box-shadow: 0 0 0 3px rgba(46, 107, 75, 0.15);
+}
+
+/* ------------------------------------------------------------------
+   Tom Select theme overrides (match the .viz-select look)
+   ------------------------------------------------------------------ */
+.ts-wrapper .ts-control,
+.ts-wrapper.single .ts-control {
+    border: 1px solid #d7e0ec !important;
+    border-radius: 12px !important;
+    min-height: 44px;
+    padding: 0.35rem 2.4rem 0.35rem 0.95rem !important;
+    background: #fff !important;
+    box-shadow: 0 2px 6px rgba(46, 107, 75, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #2c3e50;
+    cursor: text;
+}
+
+.ts-wrapper.single.input-active .ts-control,
+.ts-wrapper.focus .ts-control {
+    border-color: #2e6b4b !important;
+    box-shadow: 0 0 0 3px rgba(46, 107, 75, 0.15) !important;
+}
+
+.ts-wrapper .ts-control input {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.ts-wrapper .ts-control input::placeholder {
+    color: #9aa8bb;
+    font-weight: 400;
+}
+
+/* The dropdown arrow – use the same chevron as other selects */
+.ts-wrapper.single .ts-control::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0.85rem;
+    width: 14px;
+    height: 10px;
+    margin-top: -5px;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%232e6b4b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 14px 10px;
+    border: none;
+    pointer-events: none;
+}
+
+/* The dropdown panel itself */
+.ts-dropdown {
+    border: 1px solid #d7e0ec !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 28px rgba(46, 107, 75, 0.18) !important;
+    padding: 6px !important;
+    margin-top: 6px !important;
+    background: #fff !important;
+    z-index: 1000;
+}
+
+.ts-dropdown .option {
+    padding: 0.55rem 0.85rem;
+    border-radius: 8px;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.ts-dropdown .option:hover,
+.ts-dropdown .option.active {
+    background: #e9f2ec !important;
+    color: #1d4f35 !important;
+}
+
+.ts-dropdown .option.selected {
+    background: #2e6b4b !important;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+.ts-dropdown .no-results {
+    padding: 0.7rem 0.85rem;
+    color: #8e9fb1;
+    font-size: 0.9rem;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Hide the default Tom Select "clear" caret if present */
+.ts-wrapper.single .ts-control .clear-button {
+    display: none;
+}
+
+/* ------------------------------------------------------------------
+   Cards
+   ------------------------------------------------------------------ */
 .analytics-card {
     display: flex;
     flex-direction: column;
@@ -442,7 +694,7 @@ function initChartResizing() {
     box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
 }
 
-/* Table styling to match the card theme instead of raw Bootstrap defaults */
+/* Table styling */
 .analytics-table {
     margin-bottom: 0;
 }
@@ -467,6 +719,33 @@ function initChartResizing() {
     background-color: #f8f9fc;
 }
 
+/* PlantVillage attribution note */
+.plantvillage-attribution {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #e9f2ec;
+    border: 1px solid #cfe5d9;
+    border-radius: 2rem;
+    padding: 14px 24px;
+    color: #1e4a2f;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+    flex-wrap: wrap;
+}
+
+.plantvillage-attribution i {
+    font-size: 1.4rem;
+    color: #2e6b4b;
+    flex-shrink: 0;
+}
+
+.plantvillage-attribution strong {
+    color: #1d4f35;
+    font-weight: 800;
+}
+
 .text-primary { color: #4e73df !important; }
 .text-success { color: #1cc88a !important; }
 .text-info { color: #36b9cc !important; }
@@ -489,10 +768,15 @@ function initChartResizing() {
         width: 100%;
     }
 
-    .analytics-dashboard__filter-box select,
-    .analytics-dashboard__filter-box input {
-        max-width: 100% !important;
+    .filter-field,
+    .filter-field--select {
         flex: 1 1 100%;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .analytics-dashboard__filter-box input[type="date"] {
+        max-width: 100%;
     }
 
     .analytics-dashboard__filter-box .thm-btn {
@@ -502,6 +786,13 @@ function initChartResizing() {
 
     .chart-container {
         height: 260px;
+    }
+
+    .plantvillage-attribution {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 18px;
+        border-radius: 1rem;
     }
 }
 
@@ -521,6 +812,30 @@ function initChartResizing() {
     .chart-container {
         height: 220px;
     }
+}
+
+/* =========================================================
+   CROP SELECT - SHOW ONLY TOM SELECT
+   ========================================================= */
+
+/* Hide the original HTML select */
+#cropSelect {
+    display: none !important;
+}
+
+/* Show only the Tom Select generated control */
+.filter-field--select .ts-wrapper {
+    display: block !important;
+    width: 100% !important;
+}
+
+.filter-field--select .ts-control {
+    width: 100% !important;
+    min-height: 44px !important;
+}
+/* Kill the theme's nice-select clone; keep only Tom Select */
+.filter-field--select .nice-select {
+    display: none !important;
 }
 </style>
 

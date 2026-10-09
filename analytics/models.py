@@ -29,7 +29,7 @@ class Farm(models.Model):
 class AIDisease(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ai_disease_id = models.IntegerField()
-    user_id = models.IntegerField()
+    user_id = models.IntegerField(blank=True, null=True)
     lat = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True)
     lng = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True)
     farm = models.ForeignKey('Farm', on_delete=models.CASCADE, to_field='farm_id', null=True, blank=True)

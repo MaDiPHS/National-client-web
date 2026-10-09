@@ -33,6 +33,9 @@
                         <div class="analytics-dashboard__title-box">
                             <h3 class="analytics-dashboard__title">Data Visualizations</h3>
                             <p class="analytics-dashboard__subtitle mb-0">Interactive charts and graphical representations of farm and disease data</p>
+                            <span class="plantvillage-badge">
+                                <i class="fas fa-leaf"></i> Powered by PlantVillage
+                            </span>
                         </div>
                         <div class="analytics-dashboard__filter-box d-flex gap-2 flex-wrap">
                             <a href="{% url 'analytics:analytics_dashboard' %}" class="thm-btn btn-sm">
@@ -42,12 +45,12 @@
                     </div>
 
                     <!-- Visualization Controls -->
-                    <div class="analytics-chart-card shadow mb-4">
-                        <div class="analytics-chart-card__body">
+                    <div class="analytics-controls-card shadow mb-4">
+                        <div class="analytics-controls-card__body">
                             <div class="row g-3">
                                 <div class="col-md-3 col-sm-6">
-                                    <label class="form-label">Chart Type</label>
-                                    <select class="form-select" id="chartTypeSelect" onchange="changeChartType(this.value)">
+                                    <label class="form-label" for="chartTypeSelect">Chart Type</label>
+                                    <select class="form-select viz-select" id="chartTypeSelect" onchange="changeChartType(this.value)">
                                         <option value="line">Line Chart</option>
                                         <option value="bar">Bar Chart</option>
                                         <option value="scatter">Scatter Plot</option>
@@ -55,8 +58,8 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 col-sm-6">
-                                    <label class="form-label">Aggregation</label>
-                                    <select class="form-select" id="aggregationSelect" onchange="updateVisualization()">
+                                    <label class="form-label" for="aggregationSelect">Aggregation</label>
+                                    <select class="form-select viz-select" id="aggregationSelect" onchange="updateVisualization()">
                                         <option value="daily">Daily</option>
                                         <option value="weekly">Weekly</option>
                                         <option value="monthly">Monthly</option>
@@ -64,16 +67,16 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 col-sm-6">
-                                    <label class="form-label">Data Type</label>
-                                    <select class="form-select" id="dataTypeSelect" onchange="updateVisualization()">
+                                    <label class="form-label" for="dataTypeSelect">Data Type</label>
+                                    <select class="form-select viz-select" id="dataTypeSelect" onchange="updateVisualization()">
                                         <option value="all">All Data</option>
                                         <option value="ai_diseases">AI Diseases Only</option>
                                         <option value="other_crops">Human Detected Diseases Only</option>
                                     </select>
                                 </div>
                                 <div class="col-md-3 col-sm-6">
-                                    <label class="form-label">Color Theme</label>
-                                    <select class="form-select" id="colorThemeSelect" onchange="updateVisualization()">
+                                    <label class="form-label" for="colorThemeSelect">Color Theme</label>
+                                    <select class="form-select viz-select" id="colorThemeSelect" onchange="updateVisualization()">
                                         <option value="default">Default</option>
                                         <option value="pastel">Pastel</option>
                                         <option value="dark">Dark</option>
@@ -182,6 +185,17 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- PlantVillage Attribution Note -->
+                                    <div class="plantvillage-attribution mt-4">
+                                        <i class="fas fa-database"></i>
+                                        <span>
+                                            All visualizations on this page are generated from the 
+                                            <strong>PlantVillage dataset</strong> — a publicly available benchmark 
+                                            containing over 54,000 leaf images across 38 crop‑disease pairs. 
+                                            The dataset is used for research and educational purposes.
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -267,9 +281,6 @@ function initializeMainChart(chartData) {
         data: chartData,
         options: {
             responsive: true,
-            // Required so the canvas fills the fixed-height .chart-container
-            // (from CSS) instead of computing its own aspect ratio and
-            // overflowing into the card below.
             maintainAspectRatio: false,
             plugins: {
                 legend: { position: 'top' },
@@ -316,11 +327,6 @@ function initializeRegionalChart() {
         },
         options: {
             responsive: true,
-            // Was `true` before, which locks the canvas to Chart.js's
-            // default aspect ratio and ignores the container's fixed
-            // height -- that's what let this chart grow into the card
-            // below it. `false` + the .chart-container CSS height keeps
-            // it correctly boxed in, matching the dashboard page.
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: false }
@@ -354,7 +360,6 @@ function initializeCategoryChart() {
         },
         options: {
             responsive: true,
-            // Same fix as the regional chart above.
             maintainAspectRatio: false,
             plugins: {
                 legend: { position: 'bottom' },
@@ -528,6 +533,12 @@ function exportChart() {
     row-gap: 15px;
 }
 
+.analytics-dashboard__title-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .analytics-dashboard__title {
     font-size: 24px;
     font-weight: 700;
@@ -540,12 +551,122 @@ function exportChart() {
     font-size: 0.9rem;
 }
 
+/* PlantVillage recognition badge */
+.plantvillage-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: linear-gradient(135deg, #2e6b4b 0%, #1d4f35 100%);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(46, 107, 75, 0.25);
+    white-space: nowrap;
+    line-height: 1;
+    align-self: flex-start;
+    margin-top: 4px;
+}
+
+.plantvillage-badge i {
+    font-size: 0.85rem;
+    color: #a8e6c1;
+}
+
 .analytics-dashboard__filter-box {
     display: flex;
     gap: 10px;
     align-items: center;
 }
 
+/* ------------------------------------------------------------------
+   Controls card
+   ------------------------------------------------------------------
+   IMPORTANT: this card must NOT clip its contents (no overflow:hidden)
+   and must create a stacking context that sits above the chart card
+   below it, otherwise an open <select> dropdown would be drawn behind
+   the "Disease and Crop Reports Over Time" card.
+   ------------------------------------------------------------------ */
+.analytics-controls-card {
+    position: relative;
+    z-index: 50;               /* keep above the chart cards below */
+    background: #fff;
+    border-radius: 0.35rem;
+    border: 1px solid #e3e6f0;
+    /* No overflow:hidden here — the native dropdown needs to escape. */
+}
+
+.analytics-controls-card__body {
+    padding: 1.25rem;
+    overflow: visible;
+}
+
+/* Form controls inside the controls card */
+.analytics-controls-card .form-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6e7f96;
+    margin-bottom: 0.4rem;
+}
+
+.viz-select {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 0.6rem 2.4rem 0.6rem 0.95rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #2c3e50;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%232e6b4b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    background-size: 14px 10px;
+    border: 1px solid #d7e0ec;
+    border-radius: 12px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(46, 107, 75, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    height: auto;
+    min-height: 44px;
+}
+
+.viz-select:hover {
+    border-color: #2e6b4b;
+    background-color: #f7fbf9;
+}
+
+.viz-select:focus {
+    outline: none;
+    border-color: #2e6b4b;
+    box-shadow: 0 0 0 3px rgba(46, 107, 75, 0.15);
+    background-color: #fff;
+}
+
+/* Ensure the option list itself is readable on all platforms */
+.viz-select option {
+    color: #2c3e50;
+    background: #fff;
+    padding: 0.4rem;
+}
+
+/* Native select on some browsers ignores border-radius; keep it tidy */
+.viz-select::-ms-expand {
+    display: none;
+}
+
+/* Cards are flex columns so header/body never overlap each other
+   and every card in a row stacks cleanly regardless of content height */
 .analytics-card {
     display: flex;
     flex-direction: column;
@@ -636,6 +757,33 @@ function exportChart() {
     padding: 1.25rem;
 }
 
+/* PlantVillage attribution note */
+.plantvillage-attribution {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #e9f2ec;
+    border: 1px solid #cfe5d9;
+    border-radius: 2rem;
+    padding: 14px 24px;
+    color: #1e4a2f;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+    flex-wrap: wrap;
+}
+
+.plantvillage-attribution i {
+    font-size: 1.4rem;
+    color: #2e6b4b;
+    flex-shrink: 0;
+}
+
+.plantvillage-attribution strong {
+    color: #1d4f35;
+    font-weight: 800;
+}
+
 .text-primary { color: #4e73df !important; }
 .text-success { color: #1cc88a !important; }
 .text-info { color: #36b9cc !important; }
@@ -659,6 +807,13 @@ function exportChart() {
     .chart-container--tall {
         height: 50vh;
         min-height: 300px;
+    }
+
+    .plantvillage-attribution {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 18px;
+        border-radius: 1rem;
     }
 }
 

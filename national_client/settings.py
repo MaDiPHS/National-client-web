@@ -113,6 +113,30 @@ UNFOLD = {
                     },
                 ],
             },
+                        {
+                "title": "Content",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "News Posts",
+                        "icon": "newspaper",
+                        "link": "/admin/core/newspost/",
+                       
+                    },
+                    {
+                        "title": "News Categories",
+                        "icon": "category",
+                        "link": "/admin/core/newscategory/",
+                        
+                    },
+                    {
+                        "title": "Testimonials",
+                        "icon": "format_quote",
+                        "link": "/admin/core/testimonial/",
+                        
+                    },
+                ],
+            },
             {
                 "title": "Tools",
                 "separator": True,

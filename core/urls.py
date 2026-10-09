@@ -10,5 +10,6 @@ urlpatterns = [
     path('viamo/', views.Viamo_Getting_Started.as_view(), name = 'viamo'),
     path('about-us/', views.About_Page.as_view(), name = 'about'),
     
-    
+    path("news/", views.news_list, name="news_list"),
+path("news/<slug:slug>/", views.news_detail, name="news_detail"),
 ]

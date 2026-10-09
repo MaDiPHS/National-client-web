@@ -596,121 +596,65 @@
 </section>
 <!--Project One End -->
 
-<!--Testimonial One Start-->
-<section class="testimonial-one">
-    <div class="testimonial-one__bg" style="background-image: url({% static 'assets/images/backgrounds/testimonial-one-bg.jpg' %});"></div>
-    <div class="testimonial-one__shape-1 float-bob-x">
-        <img src="assets/images/shapes/testimonial-one-shape-1.png" alt="">
-    </div>
-    <div class="testimonial-one__shape-2 float-bob-y">
-        <img src="assets/images/shapes/testimonial-one-shape-2.png" alt="">
-    </div>
-    <div class="container">
-        <div class="section-title text-center sec-title-animation animation-style1">
-            <h6 class="section-title__tagline"><span class="section-title__tagline-border"></span>Testimonials
-            </h6>
-            <h3 class="section-title__title title-animation">What Our Clients Say</h3>
-        </div>
-        <div class="testimonial-one__carousel owl-theme owl-carousel">
-            <!--Testimonial One Single Start-->
-            <div class="item">
-                <div class="testimonial-one__single">
-                    <div class="testimonial-one__single-bdr"></div>
-                    <div class="testimonial-one__quote">
-                        <span class="fas fa-quote-right"></span>
-                    </div>
-                    <div class="testimonial-one__client-info-box">
-                        <div class="testimonial-one__client-info">
-                            <div class="testimonial-one__client-img-box">
-                                <div class="testimonial-one__client-img">
-                                    <img src="{% static 'assets/images/resources/charles-malidadi-420x280.jpg' %}" alt="">
-                                </div>
-                            </div>
-                            <div class="testimonial-one__client-content">
-                                <h3 class="testimonial-one__client-name"><a href="#">Charles Malidadi</a></h3>
-                                <p class="testimonial-one__client-sub-title">Commercial Farmer</p>
-                            </div>
-                        </div>
-                        <div class="testimonial-one__client-ratting">
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                        </div>
-                    </div>
-                    <p class="testimonial-one__text">"The pest risk maps have helped me plan my planting seasons better. Being able to predict Fall Armyworm outbreaks has saved my maize crops significantly."</p>
-                </div>
-            </div>
-            <!--Testimonial One Single End-->
-            <!--Testimonial One Single Start-->
-            <div class="item">
-                <div class="testimonial-one__single">
-                    <div class="testimonial-one__single-bdr"></div>
-                    <div class="testimonial-one__quote">
-                        <span class="fas fa-quote-right"></span>
-                    </div>
-                    <div class="testimonial-one__client-info-box">
-                        <div class="testimonial-one__client-info">
-                            <div class="testimonial-one__client-img-box">
-                                <div class="testimonial-one__client-img">
-                                    <img src="{% static 'assets/images/resources/lumbani.jpg' %}" alt="">
-                                </div>
-                            </div>
-                            <div class="testimonial-one__client-content">
-                                <h3 class="testimonial-one__client-name"><a href="#">Lumbani Banda</a></h3>
-                                <p class="testimonial-one__client-sub-title">Agricultural Researcher</p>
-                            </div>
-                        </div>
-                        <div class="testimonial-one__client-ratting">
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                        </div>
-                    </div>
-                    <p class="testimonial-one__text">"The CKAN repository has transformed how we share and access agricultural data. The FAIR principles implementation makes collaboration seamless."</p>
-                </div>
-            </div>
-            <!--Testimonial One Single End-->
-            <!--Testimonial One Single Start-->
-            <div class="item">
-                <div class="testimonial-one__single">
-                    <div class="testimonial-one__single-bdr"></div>
-                    <div class="testimonial-one__quote">
-                        <span class="fas fa-quote-right"></span>
-                    </div>
-                    <div class="testimonial-one__client-info-box">
-                        <div class="testimonial-one__client-info">
-                            <div class="testimonial-one__client-img-box">
-                                <div class="testimonial-one__client-img">
-                                    <img src="{% static 'assets/images/resources/mibei.jpg' %}" alt="">
-                                </div>
-                            </div>
-                            <div class="testimonial-one__client-content">
-                                <h3 class="testimonial-one__client-name"><a href="#">Henry Mibei</a></h3>
-                                <p class="testimonial-one__client-sub-title">CABI Officer</p>
-                            </div>
-                        </div>
-                        <div class="testimonial-one__client-ratting">
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                            <span class="fas fa-star"></span>
-                        </div>
-                    </div>
-                    <p class="testimonial-one__text">"Weather forecasts and disease alerts help me advise farmers in my district. The early warning system is invaluable for our community."</p>
-                </div>
-            </div>
-            <!--Testimonial One Single End-->
-        </div>
-    </div>
-</section>
-<!--Testimonial One End-->
+{% if testimonials %}
+<!--Testimonial One Start--> 
+<section class="testimonial-one"> 
+    <div class="testimonial-one__bg" style="background-image: url({% static 'assets/images/backgrounds/testimonial-one-bg.jpg' %});"></div> 
+   
+    <div class="container"> 
+        <div class="section-title text-center sec-title-animation animation-style1"> 
+            <h6 class="section-title__tagline"><span class="section-title__tagline-border"></span>Testimonials 
+            </h6> 
+            <h3 class="section-title__title title-animation">What Our Clients Say</h3> 
+        </div> 
+        <div class="testimonial-one__carousel owl-theme owl-carousel"> 
 
-<!--Blog One Start-->
+            {% for t in testimonials %}
+            <!--Testimonial One Single Start--> 
+            <div class="item"> 
+                <div class="testimonial-one__single"> 
+                    <div class="testimonial-one__single-bdr"></div> 
+                    <div class="testimonial-one__quote"> 
+                        <span class="fas fa-quote-right"></span> 
+                    </div> 
+                    <div class="testimonial-one__client-info-box"> 
+                        <div class="testimonial-one__client-info"> 
+                            <div class="testimonial-one__client-img-box"> 
+                                <div class="testimonial-one__client-img"> 
+                                    {% if t.photo %}
+                                    <img src="{{ t.photo.url }}" alt="{{ t.name }}"> 
+                                    {% else %}
+                                    <img src="{% static 'assets/images/resources/testimonial-placeholder.jpg' %}" alt="{{ t.name }}"> 
+                                    {% endif %}
+                                </div> 
+                            </div> 
+                            <div class="testimonial-one__client-content"> 
+                                <h3 class="testimonial-one__client-name"><a href="#">{{ t.name }}</a></h3> 
+                                <p class="testimonial-one__client-sub-title">{{ t.role }}</p> 
+                            </div> 
+                        </div> 
+                        <div class="testimonial-one__client-ratting"> 
+                            {% for i in t.stars %}
+                            <span class="fas fa-star"></span> 
+                            {% endfor %}
+                        </div> 
+                    </div> 
+                    <p class="testimonial-one__text">"{{ t.quote }}"</p> 
+                </div> 
+            </div> 
+            <!--Testimonial One Single End--> 
+            {% endfor %}
+
+        </div> 
+    </div> 
+</section> 
+<!--Testimonial One End--> 
+{% endif %}
+
+
+{% if latest_news %}
+<!--Blog One Start--> 
+ 
 <section class="blog-one">
     <div class="blog-one__shape-1 float-bob-x">
         <img src="assets/images/shapes/blog-one-shape-1.png" alt="">
@@ -720,115 +664,66 @@
     </div>
     <div class="container">
         <div class="section-title text-center sec-title-animation animation-style1">
-            <h6 class="section-title__tagline"><span class="section-title__tagline-border"></span>Latest News
-            </h6>
-            <h3 class="section-title__title title-animation">Agricultural Intelligence Updates
-                <br> & Insights</h3>
-        </div>
-        <div class="row">
-            <!--Blog One Single Start-->
-            <div class="col-xl-4 col-lg-4">
-                <div class="blog-one__single">
-                    <div class="blog-one__img-box">
-                        <div class="blog-one__img">
-                            <img src="{% static 'assets/images/project/fall_armyworm.png' %}" alt="">
-                            <div class="blog-one__plus">
-                                <a href="#"><i class="fa fa-plus"></i></a>
-                            </div>
-                        </div>
-                        <div class="blog-one__date">
-                            <p>15
-                                <br> Jan</p>
-                        </div>
-                    </div>
-                    <div class="blog-one__content">
-                        <ul class="blog-one__meta list-unstyled">
-                            <li>
-                                <p><span class="icon-user"></span>By Admin</p>
-                            </li>
-                            <li>
-                                <p><span class="icon-speech-bubbles"></span>12 Comments</p>
-                            </li>
-                        </ul>
-                        <h3 class="blog-one__title"><a href="#">New Fall Armyworm Alert System Launched in Southern Region</a></h3>
-                        <div class="blog-one__read-more">
-                            <a href="#">Learn More
-                                <span class="icon-arrow-right"></span></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--Blog One Single End-->
-            <!--Blog One Single Start-->
-            <div class="col-xl-4 col-lg-4 wow fadeInUp" data-wow-delay="300ms">
-                <div class="blog-one__single">
-                    <div class="blog-one__img-box">
-                        <div class="blog-one__img">
-                            <img src="{% static 'assets/images/resources/Tuta-adult-from-colony.jpg' %}" alt="">
-                            <div class="blog-one__plus">
-                                <a href="#"><i class="fa fa-plus"></i></a>
-                            </div>
-                        </div>
-                        <div class="blog-one__date">
-                            <p>28
-                                <br> Feb</p>
-                        </div>
-                    </div>
-                    <div class="blog-one__content">
-                        <ul class="blog-one__meta list-unstyled">
-                            <li>
-                                <p><span class="icon-user"></span>By Admin</p>
-                            </li>
-                            <li>
-                                <p><span class="icon-speech-bubbles"></span>8 Comments</p>
-                            </li>
-                        </ul>
-                        <h3 class="blog-one__title"><a href="#">Understanding the Impact of Climate Change on Pest Distribution</a></h3>
-                        <div class="blog-one__read-more">
-                            <a href="#">Learn More
-                                <span class="icon-arrow-right"></span></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--Blog One Single End-->
-            <!--Blog One Single Start-->
-            <div class="col-xl-4 col-lg-4 wow fadeInRight" data-wow-delay="500ms">
-                <div class="blog-one__single">
-                    <div class="blog-one__img-box">
-                        <div class="blog-one__img">
-                            <img src="{% static 'assets/images/resources/20230526_124021-e1701164487465.jpg' %}" alt="">
-                            <div class="blog-one__plus">
-                                <a href="#"><i class="fa fa-plus"></i></a>
-                            </div>
-                        </div>
-                        <div class="blog-one__date">
-                            <p>10
-                                <br> Mar</p>
-                        </div>
-                    </div>
-                    <div class="blog-one__content">
-                        <ul class="blog-one__meta list-unstyled">
-                            <li>
-                                <p><span class="icon-user"></span>By Admin</p>
-                            </li>
-                            <li>
-                                <p><span class="icon-speech-bubbles"></span>15 Comments</p>
-                            </li>
-                        </ul>
-                        <h3 class="blog-one__title"><a href="#">CABI and MaDiPHS Launch New PRISE Bulletin Platform</a></h3>
-                        <div class="blog-one__read-more">
-                            <a href="#">Learn More
-                                <span class="icon-arrow-right"></span></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--Blog One Single End-->
-        </div>
-    </div>
-</section>
-<!--Blog One End-->
+            <h6 class="section-title__tagline"><span class="section-title__tagline-border"></span>Latest News 
+            </h6> 
+            <h3 class="section-title__title title-animation">Agricultural Intelligence Updates 
+                <br> & Insights</h3> 
+        </div> 
+        <div class="row"> 
+
+            {% for post in latest_news %}
+            <!--Blog One Single Start--> 
+            <div class="col-xl-4 col-lg-4 
+                {% if forloop.counter == 2 %}wow fadeInUp
+                {% elif forloop.counter == 3 %}wow fadeInRight
+                {% endif %}"
+                {% if forloop.counter == 2 %}data-wow-delay="300ms"
+                {% elif forloop.counter == 3 %}data-wow-delay="500ms"
+                {% endif %}> 
+                <div class="blog-one__single"> 
+                    <div class="blog-one__img-box"> 
+                        <div class="blog-one__img"> 
+                            {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}"> 
+                            {% else %}
+                            <img src="{% static 'assets/images/resources/news-placeholder.jpg' %}" alt="{{ post.title }}"> 
+                            {% endif %}
+                            <div class="blog-one__plus"> 
+                                <a href="{{ post.get_absolute_url }}"><i class="fa fa-plus"></i></a> 
+                            </div> 
+                        </div> 
+                        <div class="blog-one__date"> 
+                            <p>{{ post.published_at|date:"d" }} 
+                                <br> {{ post.published_at|date:"M" }}</p> 
+                        </div> 
+                    </div> 
+                    <div class="blog-one__content"> 
+                        <ul class="blog-one__meta list-unstyled"> 
+                            <li> 
+                                <p><span class="icon-user"></span>By {{ post.author_name }}</p> 
+                            </li> 
+                            {% if post.category %}
+                            <li> 
+                                <p><span class="icon-speech-bubbles"></span>{{ post.category.name }}</p> 
+                            </li> 
+                            {% endif %}
+                        </ul> 
+                        <h3 class="blog-one__title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3> 
+                        <div class="blog-one__read-more"> 
+                            <a href="{{ post.get_absolute_url }}">Learn More 
+                                <span class="icon-arrow-right"></span></a> 
+                        </div> 
+                    </div> 
+                </div> 
+            </div> 
+            <!--Blog One Single End--> 
+            {% endfor %}
+
+        </div> 
+    </div> 
+</section> 
+<!--Blog One End--> 
+{% endif %}
 <!-- GEOLOCATION SCRIPT -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {

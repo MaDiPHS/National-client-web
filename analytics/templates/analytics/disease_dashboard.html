@@ -359,7 +359,51 @@
         </div>
     </div>
 </section>
-<!--Analytics Dashboard End-->
+<!-- Tom Select: searchable selects -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.default.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('filter-form');
+    if (!form || !window.TomSelect) return;
+
+    // Remove the theme's nice-select clones (they cause duplicate fields)
+    function removeNiceSelect() {
+        form.querySelectorAll('select').forEach(function (sel) {
+            if (window.jQuery && jQuery.fn.niceSelect) {
+                try { jQuery(sel).niceSelect('destroy'); } catch (e) {}
+            }
+        });
+        form.querySelectorAll('.nice-select').forEach(function (el) { el.remove(); });
+    }
+    removeNiceSelect();
+
+    // Upgrade every select in the filter form
+    form.querySelectorAll('select').forEach(function (sel) {
+        if (sel.tomselect) return;
+
+        const label = form.querySelector('label[for="' + sel.id + '"]');
+        const labelText = label ? label.textContent.replace(':', '').trim().toLowerCase() : 'option';
+
+        new TomSelect(sel, {
+            create: false,
+            allowEmptyOption: true,
+            maxItems: sel.multiple ? null : 1,
+            plugins: sel.multiple ? ['remove_button'] : [],
+            placeholder: 'Search or select ' + labelText + '...',
+            render: {
+                no_results: function (data, escape) {
+                    return '<div class="no-results">No results for "' + escape(data.input) + '"</div>';
+                }
+            }
+        });
+    });
+
+    // The theme may initialise nice-select on window load, so clean up again
+    window.addEventListener('load', removeNiceSelect);
+});
+</script>
 
 <style>
 /* Shared analytics styling */
@@ -401,12 +445,7 @@
     overflow: hidden;
 }
 
-/* The Filter Options card reuses .analytics-chart-card, but it holds a
-   native <form>/<select>, not a chart. overflow:hidden here can clip the
-   select's dropdown popup in some browsers (mobile Chrome/Safari,
-   in-app webviews), making it look like the field has almost no
-   options even though all of them are still in the DOM. Charts need
-   the clipping; this form doesn't. */
+
 .filter-card,
 .filter-card .analytics-chart-card__body {
     overflow: visible;
@@ -600,6 +639,57 @@
     .analytics-dashboard { padding: 30px 0 40px; }
     .chart-container { height: 240px; }
     .analytics-chart-card__body { padding: 1rem; }
+}
+
+/* Stop generic .filter-form input/select rules from breaking Tom Select */
+.filter-form .ts-control input {
+    width: auto !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* Hide theme's nice-select clone */
+.filter-form .nice-select {
+    display: none !important;
+}
+
+/* Tom Select theme (matches the Crop Analytics page) */
+.filter-form .ts-wrapper .ts-control {
+    border: 1px solid #d7e0ec;
+    border-radius: 0.375rem;
+    min-height: 40px;
+    padding: 0.35rem 0.75rem;
+    background: #fff;
+    font-size: 0.9rem;
+    box-shadow: none;
+}
+
+.filter-form .ts-wrapper.focus .ts-control {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+}
+
+.ts-dropdown {
+    border: 1px solid #d7e0ec;
+    border-radius: 0.5rem;
+    box-shadow: 0 12px 28px rgba(58, 59, 69, 0.18);
+    z-index: 1000;
+    font-size: 0.9rem;
+}
+
+.ts-dropdown .option:hover,
+.ts-dropdown .option.active {
+    background: #eef2fd;
+    color: #2c3e9e;
+}
+
+.ts-dropdown .no-results {
+    padding: 0.7rem 0.85rem;
+    color: #8e9fb1;
+    font-style: italic;
+    text-align: center;
 }
 </style>
 

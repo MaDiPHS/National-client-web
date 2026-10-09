@@ -36,13 +36,26 @@
                             <i class="fas fa-sun text-warning"></i> Malawi Temperature Forecast
                         </h3>
                         <p class="weather-forecast__subtitle mb-0">
-                            <i class="far fa-calendar-alt"></i> {{ current_date }} | Real-time weather data from DCCMS
+                            <i class="far fa-calendar-alt"></i> {{ current_date }} | 
+                            <i class="fas fa-satellite-dish"></i> 
+                            Data source: <strong>DCCMS</strong> – Department of Climate Change and Meteorological Services
                         </p>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         <button class="thm-btn thm-btn--refresh" onclick="location.reload()">
                             <i class="fas fa-sync-alt"></i> Refresh Data
                         </button>
+                    </div>
+                </div>
+                <!-- DCCMS Acknowledgement Banner -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="dccms-banner">
+                            <i class="fas fa-info-circle"></i>
+                            <span>All weather and climate data on this page is provided by the 
+                                <strong>Department of Climate Change and Meteorological Services (DCCMS)</strong>, Malawi.
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,6 +135,27 @@
                 {% endfor %}
             </div>
 
+            <!-- DCCMS Data Attribution Note -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="dccms-attribution">
+                        <div class="dccms-attribution__icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="dccms-attribution__content">
+                            <h6 class="dccms-attribution__title">Data Source Acknowledgement</h6>
+                            <p class="dccms-attribution__text mb-0">
+                                The weather and temperature data displayed on this page is sourced from the 
+                                <strong>Department of Climate Change and Meteorological Services (DCCMS)</strong>, 
+                                Malawi. DCCMS is the national authority responsible for weather forecasting, 
+                                climate monitoring, and the provision of meteorological services to support 
+                                safety, agriculture, health, and socio-economic development across Malawi.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Charts Section -->
             <div class="row g-4 mb-4">
                 <div class="col-lg-6">
@@ -192,6 +226,14 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <!-- DCCMS Footer Acknowledgement -->
+                            <div class="dccms-footer-note mt-4 pt-3">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span class="ms-2">
+                                    Weather data verified and provided by 
+                                    <strong>DCCMS – Department of Climate Change and Meteorological Services, Malawi</strong>.
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -467,6 +509,86 @@ document.addEventListener('DOMContentLoaded', function() {
     margin-top: 4px;
 }
 
+.weather-forecast__subtitle strong {
+    color: #4e73df;
+}
+
+/* ============================================
+   DCCMS Acknowledgement Styles
+   ============================================ */
+.dccms-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(78, 115, 223, 0.06);
+    border-left: 4px solid #4e73df;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #5a5c69;
+}
+
+.dccms-banner i {
+    color: #4e73df;
+    font-size: 1rem;
+}
+
+.dccms-banner strong {
+    color: #212529;
+}
+
+.dccms-attribution {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8f9fc 0%, #eef2ff 100%);
+    border-radius: 10px;
+    border: 1px solid #e3e6f0;
+}
+
+.dccms-attribution__icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(78, 115, 223, 0.12);
+    border-radius: 50%;
+    color: #4e73df;
+    font-size: 1.3rem;
+}
+
+.dccms-attribution__title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0 0 6px 0;
+}
+
+.dccms-attribution__text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.dccms-attribution__text strong {
+    color: #4e73df;
+}
+
+.dccms-footer-note {
+    display: flex;
+    align-items: center;
+    font-size: 0.82rem;
+    color: #858796;
+    border-top: 1px solid #e3e6f0;
+}
+
+.dccms-footer-note strong {
+    color: #4e73df;
+}
+
 /* ============================================
    Weather Cards
    ============================================ */
@@ -652,14 +774,18 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .chart-body {
-    min-height: 320px;
     position: relative;
+    height: 350px;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
 }
 
 .chart-body canvas {
+    display: block !important;
     width: 100% !important;
     height: 100% !important;
-    max-height: 350px;
+    max-height: none;
 }
 
 .shadow {
@@ -800,6 +926,12 @@ document.addEventListener('DOMContentLoaded', function() {
     .chart-body {
         min-height: 260px;
     }
+    
+    .dccms-attribution {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
 }
 
 @media (max-width: 767px) {
@@ -836,6 +968,11 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 100%;
         padding: 10px 16px;
     }
+
+    .dccms-banner {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 
 @media (max-width: 576px) {
@@ -861,6 +998,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     .chart-body {
         min-height: 180px;
+    }
+
+    .dccms-footer-note {
+        flex-direction: column;
+        text-align: center;
+        gap: 4px;
     }
 }
 </style>

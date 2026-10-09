@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+    <div class="page-header__bg" style="background-image: url({% static 'assets/images/backgrounds/page-header-bg.jpg' %});"></div>
+    <div class="container">
+        <div class="page-header__inner">
+            <h3>{{ post.title|truncatechars:60 }}</h3>
+            <div class="thm-breadcrumb__inner">
+                <ul class="thm-breadcrumb list-unstyled">
+                    <li><a href="{% url 'core:index' %}">Home</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li><a href="{% url 'core:news_list' %}">News</a></li>
+                    <li><span class="icon-angle-right"></span></li>
+                    <li>{{ post.title|truncatechars:40 }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ARTICLE -->
+<section class="madiphs-about">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Main article -->
+            <div class="col-lg-8">
+                <article class="madiphs-card">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="news-article__image">
+                    {% endif %}
+                    <div class="news-article__body">
+                        {% if post.category %}
+                            <span class="madiphs-label">{{ post.category.name }}</span>
+                        {% endif %}
+                        <h1 class="news-article__title">{{ post.title }}</h1>
+
+                        <ul class="news-meta">
+                            <li><i class="fas fa-user"></i> {{ post.author_name }}</li>
+                            <li><i class="fas fa-calendar-alt"></i> {{ post.published_at|date:"F j, Y" }}</li>
+                            <li><i class="fas fa-clock"></i> {{ post.reading_time }} min read</li>
+                        </ul>
+
+                        {% if post.excerpt %}
+                            <p class="news-article__excerpt">{{ post.excerpt }}</p>
+                        {% endif %}
+
+                        <div class="news-article__content">
+                            {{ post.content|linebreaks }}
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="madiphs-card mb-4">
+                    <div class="madiphs-card__header">
+                        <i class="fas fa-newspaper"></i>
+                        <h5>Recent News</h5>
+                    </div>
+                    <div class="madiphs-card__body">
+                        {% for p in recent_posts %}
+                        <a href="{{ p.get_absolute_url }}" class="news-recent">
+                            {% if p.image %}<img src="{{ p.image.url }}" alt="">{% else %}<span class="news-recent__ph"></span>{% endif %}
+                            <div>
+                                <strong>{{ p.title }}</strong>
+                                <span>{{ p.published_at|date:"M d, Y" }}</span>
+                            </div>
+                        </a>
+                        {% empty %}
+                        <p class="text-muted mb-0">No other news yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if categories %}
+                <div class="madiphs-card">
+                    <div class="madiphs-card__header">
+                        <i class="fas fa-tags"></i>
+                        <h5>Categories</h5>
+                    </div>
+                    <div class="madiphs-card__body">
+                        <div class="news-tags">
+                            {% for c in categories %}
+                                <a href="{% url 'core:news_list' %}?category={{ c.slug }}"
+                                   {% if post.category_id == c.id %}class="is-active"{% endif %}>{{ c.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Related -->
+        {% if related_posts %}
+        <div class="section-heading">
+            <span>KEEP READING</span>
+            <h3>More in {{ post.category.name }}</h3>
+        </div>
+        <div class="row g-4">
+            {% for p in related_posts %}
+            <div class="col-lg-4 col-md-6">
+                <a href="{{ p.get_absolute_url }}" class="news-card">
+                    {% if p.image %}<img src="{{ p.image.url }}" alt="{{ p.title }}" class="news-card__img">{% else %}<div class="news-card__img"></div>{% endif %}
+                    <div class="news-card__body">
+                        <h5>{{ p.title }}</h5>
+                        {% if p.excerpt %}<p>{{ p.excerpt|truncatechars:100 }}</p>{% endif %}
+                        <span class="news-card__date">{{ p.published_at|date:"M d, Y" }}</span>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- CTA -->
+        <div class="madiphs-cta">
+            <div class="madiphs-cta__icon"><i class="fas fa-leaf"></i></div>
+            <div class="madiphs-cta__content">
+                <h4>Explore the MaDiPHS National Client</h4>
+                <p>Discover plant-health intelligence, weather information, risk maps and knowledge resources.</p>
+            </div>
+            <div>
+                <a href="{% url 'analytics:analytics_dashboard' %}" class="thm-btn thm-btn--light">Explore Platform</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'core/_news_styles.html' %}
+
+{% endblock %}
